@@ -15,4 +15,42 @@ class WebForm
 
 
 
+	/**
+	<fusedoc>
+		<io>
+			<in>
+				<structure name="$data">
+				</structure>
+			</in>
+			<out>
+				<number name="~return~" comments="last insert ID" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function save($data) {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<io>
+			<in>
+				<structure name="$data">
+				</structure>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function validate($data) {
+
+	}
+
+
 } // class

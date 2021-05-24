@@ -57,6 +57,12 @@ switch ( $fusebox->action ) :
 		break;
 
 
+	// save submitted data
+	case 'save':
+		break;
+
+
+	// not found
 	default:
 		F::pageNotFound();
 
