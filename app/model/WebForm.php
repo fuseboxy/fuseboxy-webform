@@ -1,11 +1,16 @@
 <?php
-class WebForm
+class Webform {
 
 
 	// properties : webform config
 	public static $config;
 	// properties : library for corresponding methods
-	public static $libPath = array();
+	public static $libPath = array(
+		'uploadFile'         => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
+		'uploadFileProgress' => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/uploadProgress.php',
+	);
+
+
 
 
 	// get (latest) error message
