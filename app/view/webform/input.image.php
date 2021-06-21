@@ -1,0 +1,1 @@
+<div class="form-control-plaintext">image</div>
