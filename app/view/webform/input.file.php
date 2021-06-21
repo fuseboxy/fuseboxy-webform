@@ -15,6 +15,10 @@
 				<number name="filesize" optional="yes" />
 				<list name="filetype" delim="," optional="yes" />
 			</structure>
+			<structure name="$xfa">
+				<string name="upload" />
+				<string name="uploadProgress" />
+			</structure>
 		</in>
 		<out>
 			<structure name="data" scope="form" optional="yes">
@@ -25,21 +29,20 @@
 </fusedoc>
 */
 $btnText = empty($fieldValue) ? 'Choose File' : 'Choose Another File';
-?><label
-	for="<?php echo $fieldID; ?>"
-	class="form-control-file btn btn-light text-left p-3"
-	<?php if ( !empty($attr['filesize']) ) : ?>data-file-size="<?php echo $attr['filesize']; ?>"<?php endif; ?>
-	<?php if ( !empty($attr['filetype']) ) : ?>data-file-type="<?php echo $attr['filetype'];  ?>"<?php endif; ?>
-	data-field="<?php echo $fieldName; ?>"
-><?php
+?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3"><?php
 	// upload button
 	?><button 
 		type="button" 
 		id="<?php echo $fieldID; ?>" 
-		class="btn-ajax-upload btn btn-sm btn-primary mr-2"
+		class="btn-webform-upload btn btn-sm btn-primary mr-2"
+		data-field="<?php echo $fieldName; ?>"
+		data-upload="<?php echo F::url($xfa['upload']); ?>"
+		data-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
+		<?php if ( !empty($attr['filesize']) ) : ?>data-file-size="<?php echo $attr['filesize']; ?>"<?php endif; ?>
+		<?php if ( !empty($attr['filetype']) ) : ?>data-file-type="<?php echo $attr['filetype'];  ?>"<?php endif; ?>
 	><?php echo $btnText; ?></button><?php
 	// preview link
-	?><small class="preview"><?php if ( !empty($fieldValue) ) echo Webform::fileLink($fieldValue); ?></small><?php
+	?><small class="preview"><?php if ( !empty($fieldValue) ) echo 'file url'; ?></small><?php
 	// psuedo-hidden field to submit
 	// ===> to be updated after ajax upload
 	if ( empty($fieldConfig['readonly']) ) :

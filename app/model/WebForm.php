@@ -573,12 +573,15 @@ class Webform {
 	public static function render($step) {
 		// validation
 		if ( !self::stepExists($step) ) return false;
-		// exit points
+		// exit point
 		$prevStep = self::prevStep($step);
 		$nextStep = self::nextStep($step);
 		if ( $prevStep !== false ) $xfa['back'] = F::command('controller').'.back&step='.$prevStep;
 		if ( $nextStep !== false ) $xfa['next'] = F::command('controller').'.validate&step='.$step;
 		else $xfa['submit'] = F::command('controller').'.save';
+		// exit point (for ajax upload)
+		$xfa['upload'] = F::command('controller').'.upload';
+		$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
 		// prepare variables
 		$fieldLayout = self::$config['steps'][$step];
 		$fieldConfigAll = self::$config['fieldConfig'];

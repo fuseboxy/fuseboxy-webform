@@ -180,6 +180,29 @@ if ( isset($arguments['data']) ) {
 		break;
 
 
+	// ajax file upload
+	case 'upload':
+/*
+		$result = Scaffold::uploadFile($arguments);
+		$result = ( $result !== false ) ? $result : array(
+			'success' => false,
+			'msg' => Scaffold::error(),
+		);
+		echo json_encode($result);
+*/
+		echo json_encode([
+			'success' => false,
+			'msg' => 'under construction'
+		]);
+		break;
+
+
+	// ajax upload progress
+	case 'upload-proress':
+		require Scaffold::$libPath['uploadFileProgress'];
+		break;
+
+
 	// not found
 	default:
 		F::pageNotFound();
