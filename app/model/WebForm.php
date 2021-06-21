@@ -382,6 +382,30 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			determine mode of webform (new or edit)
+		</description>
+		<io>
+			<in>
+				<number name="$config" scope="self">
+					<number name="beanID" optional="yes" />
+				</number>
+			</in>
+			<out>
+				<string name="~return~" comments="new|edit" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function mode() {
+		return empty(self::$config['beanID']) ? 'new' : 'edit';
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			obtain step name next to specified step
 		</description>
 		<io>
