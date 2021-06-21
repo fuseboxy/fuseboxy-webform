@@ -19,7 +19,7 @@
 				<!-- settings of each field used in form -->
 				<structure name="fieldConfig">
 					<structure name="~fieldName~">
-						<string name="format" default="text" comments="text*|textarea|checkbox|radio|file|image|signature|captcha|hidden|output" />
+						<string name="format" default="text" comments="text|textarea|checkbox|radio|date|file|image|signature|captcha|hidden|output" />
 						<string name="label" optional="yes" />
 						<string name="inline-label" optional="yes" />
 						<string name="placeholder" optional="yes" />

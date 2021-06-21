@@ -98,6 +98,17 @@ class Webform {
 
 	/**
 	<fusedoc>
+	</fusedoc>
+	*/
+	public static function fileLink($uuid) {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
 		<description>
 			obtain first step name
 		</description>
@@ -237,7 +248,7 @@ class Webform {
 					</structure>
 					<structure name="fieldConfig">
 						<structure name="~fieldName~">
-							<string name="format" default="text" comments="output|hidden|textarea|checkbox|radio|dropdown|file|image|signature|captcha|text" />
+							<string name="format" default="text" comments="text|textarea|checkbox|radio|date|file|image|signature|captcha|hidden|output" />
 							<string name="label" optional="yes" />
 							<string name="label-inline" optional="yes" />
 							<string name="placeholder" optional="yes" />
