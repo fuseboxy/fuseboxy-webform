@@ -62,7 +62,7 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 				elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
 				else $fieldValue = '';
 				// display field
-				include F::appPath('view/webform/input.php');
+				include 'input.php';
 			endforeach;
 		?></div><!--/.row--><?php
 	endif;

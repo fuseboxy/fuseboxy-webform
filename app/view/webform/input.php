@@ -26,7 +26,7 @@
 		?></label><?php
 	endif;
 	// field
-	include F::appPath("view/webform/input.{$fieldConfig['format']}.php");
+	include 'input.'.$fieldConfig['format'].'.php';
 	// help
 	if ( !empty($fieldConfig['help']) ) :
 		?><small class="form-text text-muted"><?php echo $fieldConfig['help']; ?></small><?php

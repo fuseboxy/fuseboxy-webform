@@ -55,12 +55,12 @@
 				?><optgroup label="<?php echo $optGroupLabel; ?>"><?php
 					// optgroup-option
 					foreach ( $optGroupItems as $optValue => $optText ) :
-						include F::appPath('view/webform/input.dropdown.item.php');
+						include 'input.dropdown.item.php';
 					endforeach;
 				?></optgroup><?php
 			// option
 			else :
-				include F::appPath('view/webform/input.dropdown.item.php');
+				include 'input.dropdown.item.php';
 			endif;
 		endforeach;
 	?></select>

@@ -345,8 +345,8 @@ class Webform {
 		}
 		// set default script path
 		if ( empty(self::$config['scriptPath']) ) self::$config['scriptPath'] = array();
-		if ( empty(self::$config['scriptPath']['form']) ) self::$config['scriptPath']['form'] = F::appPath('view/webform/form.php');
-		if ( empty(self::$config['scriptPath']['completed']) ) self::$config['scriptPath']['completed'] = F::appPath('view/webform/completed.php');
+		if ( empty(self::$config['scriptPath']['form']) ) self::$config['scriptPath']['form'] = dirname(__DIR__).'/view/webform/form.php';
+		if ( empty(self::$config['scriptPath']['completed']) ) self::$config['scriptPath']['completed'] = dirname(__DIR__).'/view/webform/completed.php';
 		// done!
 		return true;
 	}

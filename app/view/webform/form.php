@@ -11,6 +11,6 @@
 </fusedoc>
 */ ?>
 <form id="webform-form" class="<?php echo Webform::$config['beanType']; ?>" method="post"><?php
-include F::appPath('view/webform/form.body.php');
-include F::appPath('view/webform/form.button.php');
+include 'form.body.php';
+include 'form.button.php';
 ?></form>

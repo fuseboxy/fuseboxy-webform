@@ -22,11 +22,11 @@ foreach ( $fieldConfig['options'] as $optValue => $optText ) :
 		$optGroupItems = $optText;
 		?><small><strong><?php echo $optGroupLabel; ?></strong></small><?php
 		foreach ( $optGroupItems as $optValue => $optText ) :
-			include F::appPath('view/webform/input.radio.item.php');
+			include 'input.radio.item.php';
 			$optIndex++;
 		endforeach;
 	else :
-		include F::appPath('view/webform/input.radio.item.php');
+		include 'input.radio.item.php';
 		$optIndex++;
 	endif;
 endforeach;
