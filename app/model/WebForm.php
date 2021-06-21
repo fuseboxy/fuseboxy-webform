@@ -6,8 +6,8 @@ class Webform {
 	public static $config;
 	// properties : library for corresponding methods
 	public static $libPath = array(
-		'uploadFile'         => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
-		'uploadFileProgress' => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/uploadProgress.php',
+		'uploadFile'     => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
+		'uploadProgress' => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/uploadProgress.php',
 	);
 
 
@@ -98,10 +98,36 @@ class Webform {
 
 	/**
 	<fusedoc>
+		<description>
+			convert human-readable file-size string to number
+		</description>
+		<io>
+			<in>
+				<string name="$input" example="2MB|110KB" />
+			</in>
+			<out>
+				<number name="~return~" />
+			</out>
+		</io>
 	</fusedoc>
 	*/
-	public static function fileLink($uuid) {
-
+	public static function fileSizeNumeric($input) {
+		$kb = 1024;
+		$mb = $kb * 1024;
+		$gb = $mb * 1024;
+		$tb = $gb * 1024;
+		// extra unit
+		$input = strtoupper(str_replace(' ', '', $input));
+		$lastOneDigit = substr($input, -1);
+		$lastTwoDigit = substr($input, -2);
+		// calculation
+		if     ( $lastOneDigit == 'T' or $lastTwoDigit == 'TB' ) $result = floatval($input) * $tb;
+		elseif ( $lastOneDigit == 'G' or $lastTwoDigit == 'GB' ) $result = floatval($input) * $gb;
+		elseif ( $lastOneDigit == 'M' or $lastTwoDigit == 'MB' ) $result = floatval($input) * $mb;
+		elseif ( $lastOneDigit == 'K' or $lastTwoDigit == 'KB' ) $result = floatval($input) * $kb;
+		else $result = floatval($input);
+		// done!
+		return $result;
 	}
 
 
@@ -729,6 +755,121 @@ class Webform {
 	*/
 	public static function token() {
 		return self::$config['beanType'].'::'.self::$config['beanID'];
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			perform (ajax) file upload of webform file/image fields
+			upload to temp directory only
+		</description>
+		<io>
+			<in>
+				<!-- framework -->
+				<structure name="config" scope="$fusebox">
+					<string name="uploadDir" example="/path/to/upload/dir/" />
+					<string name="uploadUrl" example="https://my.domain.com/base/url/to/upload/dir/" />
+				</structure>
+				<!-- library -->
+				<structure name="$libPath" scope="self">
+					<string name="uploadFile" comments="server-side script of SimpleAjaxUploader library" />
+				</structure>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<string name="beanType" />
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" />
+							<list name="filetype" delim="," />
+							<string name="filesize" example="5MB|100KB|etc." />
+						</structure>
+					</structure>
+				</structure>
+				<!-- parameter -->
+				<string name="$uploaderID" comments="id of button which applied simple-ajax-uploader" />
+				<string name="$originalName" comments="original filename" />
+				<string name="$fieldName" comments="webform field name" />
+			</in>
+			<out>
+				<!-- output file -->
+				<file name="~uploadDir~/~beanType~/~uniqueFilename~.~fileExt~" />
+				<!-- return value -->
+				<structure name="~return~">
+					<boolean name="success" />
+					<string name="msg" />
+					<string name="filename" optional="yes" oncondition="when success" />
+					<string name="baseUrl" optional="yes" oncondition="when success" />
+					<string name="fileUrl" optional="yes" oncondition="when success" />
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function uploadFile($uploaderID, $originalName, $fieldName) {
+		// load library
+		$lib = self::$libPath['uploadFile'];
+		if ( !file_exists($lib) ) {
+			self::$error = "Could not load [SimpleAjaxUploader] library (path={$lib})";
+			return false;
+		}
+		require_once $lib;
+		// validation
+		$err = array();
+		if ( !isset(self::$config['fieldConfig'][$fieldName]) ) {
+			$err[] = "Field config for [{$fieldName}] is required";
+		}
+		if ( !in_array(self::$config['fieldConfig'][$fieldName]['format'], ['file','image']) ) {
+			$err[] = "Field [{$fieldName}] must be [format=file|image]";
+		}
+		// validation error (if any)
+		if ( !empty($err) ) {
+			self::$error = implode("\n", $err);
+			return false;
+		}
+		// fix config
+		$uploadDir  = str_replace('\\', '/', F::config('uploadDir'));
+		$uploadDir .= ( substr($uploadDir, -1) == '/' ) ? '' : '/';
+		$uploadDir .= self::$config['beanType'].'/'.$fieldName.'/';
+		$uploadBaseUrl  = str_replace('\\', '/', F::config('uploadUrl'));
+		$uploadBaseUrl .= ( substr($uploadBaseUrl, -1) == '/' ) ? '' : '/';
+		$uploadBaseUrl .= self::$config['beanType'].'/'.$fieldName.'/';
+		// create directory (when necessary)
+		if ( !file_exists($uploadDir) and !mkdir($uploadDir, 0766, true) ) {
+			self::$error = error_get_last()['message'];
+			return false;
+		}
+		// init object (specify [uploaderID] to know which DOM to update)
+		$uploader = new FileUpload($uploaderID);
+		// config : array of permitted file extensions (only allow image & doc by default)
+		$uploader->allowedExtensions = explode(',', self::$config['fieldConfig'][$fieldName]['filetype']);
+		// config : max file upload size in bytes (default 10MB in library)
+		// ===> scaffold-controller turns human-readable-filesize into numeric
+		if ( !empty(self::$config['fieldConfig'][$fieldName]['filesize']) ) {
+			$uploader->sizeLimit = self::fileSizeNumeric( self::$config['fieldConfig'][$fieldName]['filesize'] );
+		}
+		// config : assign unique name to avoid overwrite
+		$originalName = urldecode($originalName);
+		$uniqueName = pathinfo($originalName, PATHINFO_FILENAME).'_'.date('YmdHis').'_'.uniqid().'.'.pathinfo($originalName, PATHINFO_EXTENSION);
+		$uploader->newFileName = $uniqueName;
+		// upload to specific directory
+		$uploader->uploadDir = $uploadDir;
+		$uploaded = $uploader->handleUpload();
+		// validate upload result
+		if ( !$uploaded ) {
+			self::$error = $uploader->getErrorMsg();
+			return false;
+		}
+		// success!
+		return array(
+			'success'  => true,
+			'msg'      => 'File uploaded successfully',
+			'filename' => $uploader->getFileName(),
+			'baseUrl'  => $uploadBaseUrl,
+			'fileUrl'  => $uploadBaseUrl.$uploader->getFileName(),
+		);
 	}
 
 

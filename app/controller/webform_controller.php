@@ -182,24 +182,31 @@ if ( isset($arguments['data']) ) {
 
 	// ajax file upload
 	case 'upload':
-/*
-		$result = Scaffold::uploadFile($arguments);
-		$result = ( $result !== false ) ? $result : array(
-			'success' => false,
-			'msg' => Scaffold::error(),
+		$result = Webform::uploadFile(
+			isset($arguments['uploaderID'])   ? $arguments['uploaderID']   : null,
+			isset($arguments['originalName']) ? $arguments['originalName'] : null,
+			isset($arguments['fieldName'])    ? $arguments['fieldName']    : null
 		);
+		// check result
+		if ( $result === false ) $result = array(
+			'success' => false,
+			'msg' => Webform::error(),
+		);
+		// done!
 		echo json_encode($result);
-*/
+/*
 		echo json_encode([
 			'success' => false,
-			'msg' => 'under construction'
+			'msg' => 'under construction',
+'param' => http_build_query($arguments),
 		]);
+*/
 		break;
 
 
 	// ajax upload progress
 	case 'upload-proress':
-		require Scaffold::$libPath['uploadFileProgress'];
+		require Webform::$libPath['uploadProgress'];
 		break;
 
 

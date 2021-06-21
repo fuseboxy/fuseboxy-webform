@@ -36,8 +36,8 @@ $btnText = empty($fieldValue) ? 'Choose File' : 'Choose Another File';
 		id="<?php echo $fieldID; ?>" 
 		class="btn-webform-upload btn btn-sm btn-primary mr-2"
 		data-field="<?php echo $fieldName; ?>"
-		data-upload="<?php echo F::url($xfa['upload']); ?>"
-		data-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
+		data-upload-handler="<?php echo F::url($xfa['upload']); ?>"
+		data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
 		<?php if ( !empty($attr['filesize']) ) : ?>data-file-size="<?php echo $attr['filesize']; ?>"<?php endif; ?>
 		<?php if ( !empty($attr['filetype']) ) : ?>data-file-type="<?php echo $attr['filetype'];  ?>"<?php endif; ?>
 	><?php echo $btnText; ?></button><?php
