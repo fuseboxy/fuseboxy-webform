@@ -265,11 +265,6 @@ class Webform {
 							<string name="resize" optional="yes" example="800x600|1024w|100h" />
 						</structure>
 					</structure>
-					<structure name="scriptPath">
-						<string name="form" />
-						<string name="completed" />
-						<string name="email" />
-					</structure>
 				</structure>
 			</in>
 			<out>
@@ -343,10 +338,6 @@ class Webform {
 				}
 			}
 		}
-		// set default script path
-		if ( empty(self::$config['scriptPath']) ) self::$config['scriptPath'] = array();
-		if ( empty(self::$config['scriptPath']['form']) ) self::$config['scriptPath']['form'] = dirname(__DIR__).'/view/webform/form.php';
-		if ( empty(self::$config['scriptPath']['completed']) ) self::$config['scriptPath']['completed'] = dirname(__DIR__).'/view/webform/completed.php';
 		// done!
 		return true;
 	}
@@ -561,7 +552,7 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
-		include self::$config['scriptPath']['form'];
+		include dirname(__DIR__).'/view/webform/form.php';
 		// done!
 		return ob_get_clean();
 	}

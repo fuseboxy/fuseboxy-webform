@@ -47,11 +47,6 @@
 						<string name="resize" optional="yes" example="800x600|1024w|100h" />
 					</structure>
 				</structure>
-				<!-- advanced settings for UI customization -->
-				<structure name="scriptPath" optional="yes">
-					<string name="form" optional="yes" />
-					<string name="completed" optional="yes" />
-				</structure>
 				<!-- settings for email notification -->
 				<structure name="notification" optional="yes" default="false" comments="set to false to send no email">
 					<string name="fromName" />
@@ -177,7 +172,7 @@ if ( isset($arguments['data']) ) {
 	case 'completed':
 		// display
 		ob_start();
-		include $webform['scriptPath']['completed'];
+		include dirname(__DIR__).'/view/webform/completed.php';
 		$layout['content'] = ob_get_clean();
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
