@@ -6,7 +6,6 @@
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
 			<structure name="$fieldConfig">
-				<string name="icon" optional="yes" />
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" />
 				<boolean name="readonly" />
@@ -28,13 +27,7 @@
 */ ?>
 <div class="input-group"><?php
 	// icon
-	if ( !empty($fieldConfig['icon']) ) :
-		?><div class="input-group-prepend">
-			<span class="input-group-text">
-				<i class="<?php echo $fieldConfig['icon']; ?>"></i>
-			</span>
-		</div><?php
-	endif;
+	include 'input.icon.php';
 	// field
 	?><select
 		id="<?php echo $fieldID; ?>"
