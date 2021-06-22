@@ -287,7 +287,7 @@ class Webform {
 					</structure>
 					<!-- default for [format=file|image|signature] only -->
 					<string name="filesize" default="10MB" />
-					<list name="filetype" delim="," default="gif,jpg,jpeg,png,svg,bmp,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
+					<list name="filetype" delim="," default="gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
 					<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
 					<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
 					<string name="buttonText" default="Choose File" />
@@ -333,7 +333,7 @@ class Webform {
 				// file size : default
 				if ( empty($cfg['filesize']) ) self::$config['fieldConfig'][$fieldName]['filesize'] = '10MB';
 				// file type : default
-				if ( empty($cfg['filetype']) ) self::$config['fieldConfig'][$fieldName]['filetype'] = in_array($cfg['format'], ['image','signature']) ? 'gif,jpg,jpeg,png,svg' : 'gif,jpg,jpeg,png,svg,bmp,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
+				if ( empty($cfg['filetype']) ) self::$config['fieldConfig'][$fieldName]['filetype'] = in_array($cfg['format'], ['image','signature']) ? 'gif,jpg,jpeg,png' : 'gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
 				// file size error : default
 				if ( empty($cfg['filesizeError']) ) self::$config['fieldConfig'][$fieldName]['filesizeError'] = 'File cannot exceed {FILE_SIZE}';
 				// file type error : default
@@ -835,9 +835,10 @@ class Webform {
 		// config : array of permitted file extensions (only allow image & doc by default)
 		// ===> validate file type again on server-side
 		$uploader->allowedExtensions = explode(',', self::$config['fieldConfig'][$fieldName]['filetype']);
-		// config : max file upload size in bytes (default 10MB in library)
+		// config : max file upload size in bytes
 		// ===> validate file size again on server-side
-		$uploader->sizeLimit = self::fileSizeInBytes( self::$config['fieldConfig'][$fieldName]['filesize'] );
+		// ===> please make sure php {upload_max_filesize} config is larger
+		$uploader->sizeLimit = self::fileSizeInBytes(self::$config['fieldConfig'][$fieldName]['filesize']);
 		// config : assign unique name to avoid overwrite
 		$originalName = urldecode($originalName);
 		$uploader->newFileName = pathinfo($originalName, PATHINFO_FILENAME).'_'.date('YmdHis').'_'.uniqid().'.'.pathinfo($originalName, PATHINFO_EXTENSION);
