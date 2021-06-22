@@ -1,1 +1,2 @@
-<div class="form-control-plaintext">image</div>
+<?php
+include 'input.file.php';
