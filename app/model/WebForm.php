@@ -432,6 +432,22 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			move uploaded file from temp to permanent directory
+		</description>
+		<io>
+		</io>
+	</fusedoc>
+	*/
+	public static function moveFileToPerm() {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			obtain step name next to specified step
 		</description>
 		<io>
@@ -797,7 +813,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function uploadFile($uploaderID, $fieldName, $originalName) {
+	public static function uploadFileToTemp($uploaderID, $fieldName, $originalName) {
 		// load library
 		$lib = self::$libPath['uploadFile'];
 		if ( !file_exists($lib) ) {

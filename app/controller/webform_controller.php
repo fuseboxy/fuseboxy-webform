@@ -194,7 +194,7 @@ if ( isset($arguments['data']) ) {
 		elseif ( empty($arguments['originalName']) ) $err = 'Argument [originalName] is required';
 		// commit to upload
 		if ( empty($err) ) {
-			$result = Webform::uploadFile($arguments['uploaderID'], $arguments['fieldName'], $arguments['originalName']);
+			$result = Webform::uploadFileToTemp($arguments['uploaderID'], $arguments['fieldName'], $arguments['originalName']);
 			if ( $result === false ) $err = Webform::error();
 		}
 		// check if any error
