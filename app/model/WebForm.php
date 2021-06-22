@@ -99,7 +99,7 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			convert human-readable file-size string to number
+			convert human-readable file-size string to number of bytes
 		</description>
 		<io>
 			<in>
@@ -111,7 +111,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function fileSizeNumeric($input) {
+	public static function fileSizeInBytes($input) {
 		$kb = 1024;
 		$mb = $kb * 1024;
 		$gb = $mb * 1024;
@@ -263,54 +263,38 @@ class Webform {
 		</description>
 		<io>
 			<in>
-				<structure name="$config" scope="self">
-					<number name="beanID" optional="yes" />
-					<structure name="steps">
-						<structure name="~stepName~">
-							<list name="~fieldNameList~" value="~fieldWidthList~" optional="yes" delim="|" comments="use bootstrap grid layout for width" />
-							<string name="~line~" optional="yes" example="---" comments="any number of dash(-) or equal(=)" />
-							<string name="~heading~" optional="yes" example="## General" comments="number of pound-signs means H1,H2,H3..." />
-						</structure>
-					</structure>
-					<structure name="fieldConfig">
-						<structure name="~fieldName~">
-							<string name="format" default="text" comments="text|textarea|checkbox|radio|date|file|image|signature|captcha|hidden|output" />
-							<string name="label" optional="yes" />
-							<string name="label-inline" optional="yes" />
-							<string name="placeholder" optional="yes" />
-							<string name="icon" optional="yes" />
-							<string name="help" optional="yes" comments="help text show after input field" />
-							<!-- options -->
-							<structure name="options" optional="yes" comments="show dropdown when specified">
-								<string name="~optionValue~" value="~optionText~" optional="yes" />
-								<structure name="~optGroup~" optional="yes">
-									<structure name="~optionValue~" value="~optionText~" />
-								</structure>
-							</structure>
-							<!-- attribute -->
-							<boolean name="required" optional="yes" />
-							<boolean name="readonly" optional="yes" comments="output does not pass value; readonly does" />
-							<string name="default" optional="yes" comments="filling with this value if field has no value" />
-							<string name="value" optional="yes" comments="force filling with this value even if field has value" />
-							<!-- styling -->
-							<string name="class" optional="yes" />
-							<string name="style" optional="yes" />
-							<!-- for [format=file|image] only -->
-							<string name="filesize" optional="yes" comments="max file size in bytes" example="2MB|500KB" />
-							<list name="filetype" optional="yes" delim="," example="pdf,doc,docx" />
-							<string name="filesizeError" optional="yes" comments="error message shown when file size failed; use {FILE_SIZE} as mask" />
-							<string name="filetypeError" optional="yes" comments="error message shown when file type failed; use {FILE_TYPE} as mask" />
-							<string name="buttonText" optional="yes" comments="button text when no file chosen" />
-							<string name="buttonAltText" optional="yes" comments="button text when has file chosen" />
-						</structure>
-					</structure>
-				</structure>
+				<structure name="$config" scope="self" />
 			</in>
 			<out>
-				<!-- fixed config -->
-				<structure name="$config" scope="self" />
 				<!-- return value -->
 				<boolean name="~return~" />
+				<!-- fixed config -->
+				<structure name="$config" scope="self">
+					<number name="beanID" default="0" />
+					<!-- default steps (when unspecified) -->
+					<structure name="steps">
+						<structure name="default" />
+						<structure name="confirm" />
+					</structure>
+					<!-- default field config -->
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" default="text" />
+							<string name="label" optional="yes" comments="derived from field name" />
+							<string name="label-inline" optional="yes" comments="derived from field name" />
+							<string name="placeholder" optional="yes" comments="derived from field name" />
+						</structure>
+					</structure>
+					<!-- default for [format=file|image|signature] only -->
+					<string name="filesize" default="10MB" />
+					<list name="filetype" delim="," default="gif,jpg,jpeg,png,svg,bmp,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
+					<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
+					<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
+					<string name="buttonText" default="Choose File" />
+					<string name="buttonAltText" default="Choose Another File" />
+					<!-- attribute -->
+					<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
+				</structure>
 			</out>
 		</io>
 	</fusedoc>
@@ -349,11 +333,11 @@ class Webform {
 				// file size : default
 				if ( empty($cfg['filesize']) ) self::$config['fieldConfig'][$fieldName]['filesize'] = '10MB';
 				// file type : default
-				if ( empty($cfg['filetype']) ) self::$config['fieldConfig'][$fieldName]['filetype'] = in_array($cfg['format'], ['image','signature']) ? 'gif,jpg,jpeg,png' : 'jpg,jpeg,png,gif,bmp,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
+				if ( empty($cfg['filetype']) ) self::$config['fieldConfig'][$fieldName]['filetype'] = in_array($cfg['format'], ['image','signature']) ? 'gif,jpg,jpeg,png,svg' : 'gif,jpg,jpeg,png,svg,bmp,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
 				// file size error : default
 				if ( empty($cfg['filesizeError']) ) self::$config['fieldConfig'][$fieldName]['filesizeError'] = 'File cannot exceed {FILE_SIZE}';
 				// file type error : default
-				if ( empty($cfg['filetypeError']) ) self::$config['fieldConfig'][$fieldName]['filetypeError'] = 'Invalid file type. Only file of {FILE_TYPE} is allowed.';
+				if ( empty($cfg['filetypeError']) ) self::$config['fieldConfig'][$fieldName]['filetypeError'] = 'Only file of {FILE_TYPE} is allowed';
 				// button text : default
 				if ( empty($cfg['buttonText']) ) self::$config['fieldConfig'][$fieldName]['buttonText'] = 'Choose File';
 				// button alt-text : default
@@ -794,8 +778,9 @@ class Webform {
 					</structure>
 				</structure>
 				<!-- parameter -->
-				<string name="$originalName" comments="original filename" />
+				<string name="$uploaderID" comments="html elementID of button which applied simple-ajax-uploader" />
 				<string name="$fieldName" comments="webform field name" />
+				<string name="$originalName" comments="original filename" />
 			</in>
 			<out>
 				<!-- output file -->
@@ -812,7 +797,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function uploadFile($originalName, $fieldName) {
+	public static function uploadFile($uploaderID, $fieldName, $originalName) {
 		// load library
 		$lib = self::$libPath['uploadFile'];
 		if ( !file_exists($lib) ) {
@@ -845,20 +830,17 @@ class Webform {
 			self::$error = error_get_last()['message'];
 			return false;
 		}
-		// init object
-		$uploader = new FileUpload();
+		// init object (specify [uploaderID] to know which DOM to update)
+		$uploader = new FileUpload($uploaderID);
 		// config : array of permitted file extensions (only allow image & doc by default)
 		// ===> validate file type again on server-side
 		$uploader->allowedExtensions = explode(',', self::$config['fieldConfig'][$fieldName]['filetype']);
 		// config : max file upload size in bytes (default 10MB in library)
 		// ===> validate file size again on server-side
-		if ( !empty(self::$config['fieldConfig'][$fieldName]['filesize']) ) {
-			$uploader->sizeLimit = self::fileSizeNumeric( self::$config['fieldConfig'][$fieldName]['filesize'] );
-		}
+		$uploader->sizeLimit = self::fileSizeInBytes( self::$config['fieldConfig'][$fieldName]['filesize'] );
 		// config : assign unique name to avoid overwrite
 		$originalName = urldecode($originalName);
-		$uniqueName = pathinfo($originalName, PATHINFO_FILENAME).'_'.date('YmdHis').'_'.uniqid().'.'.pathinfo($originalName, PATHINFO_EXTENSION);
-		$uploader->newFileName = $uniqueName;
+		$uploader->newFileName = pathinfo($originalName, PATHINFO_FILENAME).'_'.date('YmdHis').'_'.uniqid().'.'.pathinfo($originalName, PATHINFO_EXTENSION);
 		// upload to specific directory
 		$uploader->uploadDir = $uploadDir;
 		$uploaded = $uploader->handleUpload();

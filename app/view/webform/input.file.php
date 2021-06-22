@@ -16,7 +16,7 @@
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
-				<number name="filesize" />
+				<number name="filesize" comments="server-side uses byte for validation; client-side uses KB for validation" />
 				<list name="filetype" delim="," />
 				<string name="filesizeError" comments="error message shown when file size failed" />
 				<string name="filetypeError" comments="error message shown when file type failed" />
@@ -25,6 +25,8 @@
 			</structure>
 		</in>
 		<out>
+			<string name="uploaderID" scope="url" oncondition="xfa.uploaderHandler" />
+			<string name="fieldName" scope="url" oncondition="xfa.uploaderHandler" />
 			<structure name="data" scope="form" optional="yes">
 				<string name="~fieldName~" />
 			</structure>
@@ -39,10 +41,9 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 		type="button" 
 		id="<?php echo $fieldID; ?>" 
 		class="btn-webform-upload btn btn-sm btn-primary mr-2"
-		data-field="<?php echo $fieldName; ?>"
-		data-upload-handler="<?php echo F::url($xfa['uploadHandler']); ?>"
+		data-upload-handler="<?php echo F::url($xfa['uploadHandler'].'&uploaderID='.$fieldID.'&fieldName='.$fieldName); ?>"
 		data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
-		data-filesize="<?php echo $fieldConfig['filesize']; ?>"
+		data-filesize="<?php echo Webform::fileSizeInBytes($fieldConfig['filesize']); ?>"
 		data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
 		data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
 		data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"

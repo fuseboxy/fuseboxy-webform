@@ -186,14 +186,17 @@ if ( isset($arguments['data']) ) {
 
 	// ajax file upload
 	case 'upload':
-		$result = Webform::uploadFile(
-			isset($arguments['originalName']) ? $arguments['originalName'] : null,
-			isset($arguments['fieldName'])    ? $arguments['fieldName']    : null
-		);
-		// check result
-		if ( $result === false ) {
-			$result = array('success' => false, 'msg' => Webform::error());
+		// validation
+		if     ( empty($arguments['uploaderID'])   ) $err = 'Argument [uploaderID] is required';
+		elseif ( empty($arguments['fieldName'])    ) $err = 'Argument [fieldName] is required';
+		elseif ( empty($arguments['originalName']) ) $err = 'Argument [originalName] is required';
+		// commit to upload
+		if ( empty($err) ) {
+			$result = Webform::uploadFile($arguments['uploaderID'], $arguments['fieldName'], $arguments['originalName']);
+			if ( $result === false ) $err = Webform::error();
 		}
+		// check if any error
+		if ( !empty($err) ) $result = array('success' => false, 'msg' => Webform::error());
 		// done!
 		echo json_encode($result);
 		break;
