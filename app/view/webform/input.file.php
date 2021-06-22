@@ -5,6 +5,10 @@
 	</description>
 	<io>
 		<in>
+			<structure name="$xfa">
+				<string name="uploadHandler" />
+				<string name="uploadProgress" />
+			</structure>
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
@@ -12,12 +16,12 @@
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
-				<number name="filesize" optional="yes" />
-				<list name="filetype" delim="," optional="yes" />
-			</structure>
-			<structure name="$xfa">
-				<string name="upload" />
-				<string name="uploadProgress" />
+				<number name="filesize" />
+				<list name="filetype" delim="," />
+				<string name="filesizeError" comments="error message shown when file size failed" />
+				<string name="filetypeError" comments="error message shown when file type failed" />
+				<string name="buttonText" comments="button text when no file chosen" />
+				<string name="buttonAltText" comments="button text when has file chosen" />
 			</structure>
 		</in>
 		<out>
@@ -28,7 +32,7 @@
 	</io>
 </fusedoc>
 */
-$btnText = empty($fieldValue) ? 'Choose File' : 'Choose Another File';
+$btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['buttonAltText'];
 ?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3"><?php
 	// upload button
 	?><button 
@@ -36,13 +40,21 @@ $btnText = empty($fieldValue) ? 'Choose File' : 'Choose Another File';
 		id="<?php echo $fieldID; ?>" 
 		class="btn-webform-upload btn btn-sm btn-primary mr-2"
 		data-field="<?php echo $fieldName; ?>"
-		data-upload-handler="<?php echo F::url($xfa['upload']); ?>"
+		data-upload-handler="<?php echo F::url($xfa['uploadHandler']); ?>"
 		data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
-		<?php if ( !empty($attr['filesize']) ) : ?>data-file-size="<?php echo $attr['filesize']; ?>"<?php endif; ?>
-		<?php if ( !empty($attr['filetype']) ) : ?>data-file-type="<?php echo $attr['filetype'];  ?>"<?php endif; ?>
+		data-filesize="<?php echo $fieldConfig['filesize']; ?>"
+		data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
+		data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
+		data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
+		data-button-text="<?php echo $fieldConfig['buttonText']; ?>"
+		data-button-alt-text="<?php echo $fieldConfig['buttonAltText']; ?>"
 	><?php echo $btnText; ?></button><?php
 	// preview link
-	?><small class="preview"><?php if ( !empty($fieldValue) ) echo 'file url'; ?></small><?php
+	?><small class="preview ml-2"><?php
+	if ( !empty($fieldValue) ) :
+		?><a href="<?php echo $fieldValue; ?>" target="_blank"><?php echo basename($fieldValue); ?></a><?php
+	endif;
+	?></small><?php
 	// psuedo-hidden field to submit
 	// ===> to be updated after ajax upload
 	if ( empty($fieldConfig['readonly']) ) :

@@ -298,8 +298,10 @@ class Webform {
 							<!-- for [format=file|image] only -->
 							<string name="filesize" optional="yes" comments="max file size in bytes" example="2MB|500KB" />
 							<list name="filetype" optional="yes" delim="," example="pdf,doc,docx" />
-							<!-- for [format=image] only -->
-							<string name="resize" optional="yes" example="800x600|1024w|100h" />
+							<string name="filesizeError" optional="yes" comments="error message shown when file size failed; use {FILE_SIZE} as mask" />
+							<string name="filetypeError" optional="yes" comments="error message shown when file type failed; use {FILE_TYPE} as mask" />
+							<string name="buttonText" optional="yes" comments="button text when no file chosen" />
+							<string name="buttonAltText" optional="yes" comments="button text when has file chosen" />
 						</structure>
 					</structure>
 				</structure>
@@ -342,17 +344,20 @@ class Webform {
 					}, explode('_', $fieldName)));
 				}
 			}
-			// filesize : default
-			if ( empty($cfg['filesize']) and isset($cfg['format']) and in_array($cfg['format'], ['file','image']) ) {
-				self::$config['fieldConfig'][$fieldName]['filesize'] = '10MB';
-			}
-			// filetype : default @ image
-			if ( empty($cfg['filetype']) and isset($cfg['format']) and $cfg['format'] == 'image' ) {
-				self::$config['fieldConfig'][$fieldName]['filetype'] = 'gif,jpg,jpeg,png';
-			}
-			// filetype : default @ file
-			if ( empty($cfg['filetype']) and isset($cfg['format']) and $cfg['format'] == 'file' ) {
-				self::$config['fieldConfig'][$fieldName]['filetype'] = 'jpg,jpeg,png,gif,bmp,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
+			// file config
+			if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) {
+				// file size : default
+				if ( empty($cfg['filesize']) ) self::$config['fieldConfig'][$fieldName]['filesize'] = '10MB';
+				// file type : default
+				if ( empty($cfg['filetype']) ) self::$config['fieldConfig'][$fieldName]['filetype'] = in_array($cfg['format'], ['image','signature']) ? 'gif,jpg,jpeg,png' : 'jpg,jpeg,png,gif,bmp,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
+				// file size error : default
+				if ( empty($cfg['filesizeError']) ) self::$config['fieldConfig'][$fieldName]['filesizeError'] = 'File cannot exceed {FILE_SIZE}';
+				// file type error : default
+				if ( empty($cfg['filetypeError']) ) self::$config['fieldConfig'][$fieldName]['filetypeError'] = 'Invalid file type. Only file of {FILE_TYPE} is allowed.';
+				// button text : default
+				if ( empty($cfg['buttonText']) ) self::$config['fieldConfig'][$fieldName]['buttonText'] = 'Choose File';
+				// button alt-text : default
+				if ( empty($cfg['buttonAltText']) ) self::$config['fieldConfig'][$fieldName]['buttonAltText'] = 'Choose Another File';
 			}
 		}
 		// set default steps
@@ -606,7 +611,7 @@ class Webform {
 		if ( $nextStep !== false ) $xfa['next'] = F::command('controller').'.validate&step='.$step;
 		else $xfa['submit'] = F::command('controller').'.save';
 		// exit point (for ajax upload)
-		$xfa['upload'] = F::command('controller').'.upload';
+		$xfa['uploadHandler'] = F::command('controller').'.upload';
 		$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
 		// prepare variables
 		$fieldLayout = self::$config['steps'][$step];
@@ -823,7 +828,7 @@ class Webform {
 		if ( !in_array(self::$config['fieldConfig'][$fieldName]['format'], ['file','image']) ) {
 			$err[] = "Field [{$fieldName}] must be [format=file|image]";
 		}
-		// validation error (if any)
+		// check if any error
 		if ( !empty($err) ) {
 			self::$error = implode("\n", $err);
 			return false;
@@ -843,9 +848,10 @@ class Webform {
 		// init object
 		$uploader = new FileUpload();
 		// config : array of permitted file extensions (only allow image & doc by default)
+		// ===> validate file type again on server-side
 		$uploader->allowedExtensions = explode(',', self::$config['fieldConfig'][$fieldName]['filetype']);
 		// config : max file upload size in bytes (default 10MB in library)
-		// ===> scaffold-controller turns human-readable-filesize into numeric
+		// ===> validate file size again on server-side
 		if ( !empty(self::$config['fieldConfig'][$fieldName]['filesize']) ) {
 			$uploader->sizeLimit = self::fileSizeNumeric( self::$config['fieldConfig'][$fieldName]['filesize'] );
 		}
