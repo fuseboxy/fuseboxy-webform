@@ -852,11 +852,12 @@ class Webform {
 		}
 		// success!
 		return array(
-			'success'  => true,
-			'msg'      => 'File uploaded successfully',
-			'filename' => $uploader->getFileName(),
-			'baseUrl'  => $uploadBaseUrl,
-			'fileUrl'  => $uploadBaseUrl.$uploader->getFileName(),
+			'success'    => true,
+			'msg'        => 'File uploaded successfully',
+			'baseUrl'    => $uploadBaseUrl,
+			'fileUrl'    => $uploadBaseUrl.$uploader->getFileName(),
+			'filename'   => $uploader->getFileName(),
+			'isWebImage' => $uploader->isWebImage($uploader->uploadDir.$uploader->getFileName()),
 		);
 	}
 
