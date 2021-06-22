@@ -126,7 +126,9 @@ switch ( $fusebox->action ) :
 	// simply return to specified step (without caching submitted data)
 	case 'back':
 		F::error('Argument [step] is required', empty($arguments['step']));
-		F::redirect("{$fusebox->controller}&step={$arguments['step']}");
+		$mode = Webform::mode();
+		F::error(Webform::error(), $mode === false);
+		F::redirect("{$fusebox->controller}.{$mode}&step={$arguments['step']}");
 		break;
 
 
