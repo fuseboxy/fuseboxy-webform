@@ -789,7 +789,6 @@ class Webform {
 					</structure>
 				</structure>
 				<!-- parameter -->
-				<string name="$uploaderID" comments="id of button which applied simple-ajax-uploader" />
 				<string name="$originalName" comments="original filename" />
 				<string name="$fieldName" comments="webform field name" />
 			</in>
@@ -808,7 +807,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function uploadFile($uploaderID, $originalName, $fieldName) {
+	public static function uploadFile($originalName, $fieldName) {
 		// load library
 		$lib = self::$libPath['uploadFile'];
 		if ( !file_exists($lib) ) {
@@ -841,8 +840,8 @@ class Webform {
 			self::$error = error_get_last()['message'];
 			return false;
 		}
-		// init object (specify [uploaderID] to know which DOM to update)
-		$uploader = new FileUpload($uploaderID);
+		// init object
+		$uploader = new FileUpload();
 		// config : array of permitted file extensions (only allow image & doc by default)
 		$uploader->allowedExtensions = explode(',', self::$config['fieldConfig'][$fieldName]['filetype']);
 		// config : max file upload size in bytes (default 10MB in library)
