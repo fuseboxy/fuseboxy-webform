@@ -36,6 +36,17 @@
 */
 $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['buttonAltText'];
 ?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3"><?php
+	// psuedo-hidden field to submit
+	// ===> to be updated after ajax upload
+	if ( empty($fieldConfig['readonly']) ) :
+		?><input 
+			type="text" 
+			class="w-0 p-0 op-0 float-right"
+			name="data[<?php echo $fieldName; ?>]"
+			value="<?php echo $fieldValue; ?>" 
+			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
+		/><?php
+	endif;
 	// upload button
 	?><button 
 		type="button" 
@@ -50,21 +61,11 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 		data-button-text="<?php echo $fieldConfig['buttonText']; ?>"
 		data-button-alt-text="<?php echo $fieldConfig['buttonAltText']; ?>"
 	><?php echo $btnText; ?></button><?php
-	// preview link
-	?><small class="preview ml-2"><?php
+	// preview link & image
 	if ( !empty($fieldValue) ) :
-		?><a href="<?php echo $fieldValue; ?>" target="_blank"><?php echo basename($fieldValue); ?></a><?php
-	endif;
-	?></small><?php
-	// psuedo-hidden field to submit
-	// ===> to be updated after ajax upload
-	if ( empty($fieldConfig['readonly']) ) :
-		?><input 
-			type="text" 
-			class="w-0 op-0"
-			name="data[<?php echo $fieldName; ?>]"
-			value="<?php echo $fieldValue; ?>" 
-			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
-		/><?php
+		?><a href="<?php echo $fieldValue; ?>" class="preview-link ml-2 small" target="_blank"><?php echo basename($fieldValue); ?></a><?php
+		if ( in_array(exif_imagetype($fieldValue), [ IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG ]) ) :
+			?><div class="preview-image mt-2"><img src="<?php echo $fieldValue; ?>" class="img-thumbnail" alt="" /></div><?php
+		endif;
 	endif;
 ?></label>
