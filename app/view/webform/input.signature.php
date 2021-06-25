@@ -2,7 +2,6 @@
 <fusedoc>
 	<description>
 		https://github.com/brinley/jSignature/
-		https://cdnjs.cloudflare.com/ajax/libs/jSignature/2.1.3/jSignature.min.js
 	</description>
 	<io>
 		<in>
@@ -12,6 +11,8 @@
 			<structure name="$fieldConfig">
 				<string name="icon" optional="yes" />
 				<boolean name="required" optional="yes" />
+				<string name="buttonText" comments="button text when no file chosen" />
+				<string name="buttonAltText" comments="button text when has file chosen" />
 			</structure>
 		</in>
 		<out>
@@ -21,5 +22,23 @@
 		</out>
 	</io>
 </fusedoc>
-*/ ?>
-<div class="form-control h-auto">signature<br><br><br></div>
+*/
+$btnText = '';
+?><div class="form-control p-2 position-relative" style="height: 200px;"><?php
+	// psuedo-hidden field to submit
+	// ===> to be updated after ajax upload
+	if ( empty($fieldConfig['readonly']) ) :
+		?><input 
+			type="text" 
+			class="w-0 p-0 op-0 position-absolute"
+			name="data[<?php echo $fieldName; ?>]"
+			value="<?php echo $fieldValue; ?>" 
+			style="bottom: 0;"
+			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
+		/><?php
+	endif;
+	// signature pad
+	?><div class="webform-signature bg-light"></div><?php
+	// readonly
+	?><img src="<?php echo $fieldValue; ?>" class="d-none mx-auto" alt="" /><?php
+?></div>
