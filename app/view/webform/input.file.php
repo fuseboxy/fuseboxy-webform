@@ -35,15 +35,16 @@
 </fusedoc>
 */
 $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['buttonAltText'];
-?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3"><?php
+?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3 position-relative"><?php
 	// psuedo-hidden field to submit
 	// ===> to be updated after ajax upload
 	if ( empty($fieldConfig['readonly']) ) :
 		?><input 
 			type="text" 
-			class="w-0 p-0 op-0 float-right"
+			class="w-0 p-0 op-0 position-absolute"
 			name="data[<?php echo $fieldName; ?>]"
 			value="<?php echo $fieldValue; ?>" 
+			style="bottom: 0;"
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 		/><?php
 	endif;
