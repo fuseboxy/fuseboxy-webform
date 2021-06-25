@@ -24,7 +24,7 @@
 </fusedoc>
 */
 $btnText = '';
-?><div class="form-control p-2 position-relative" style="height: 200px;"><?php
+?><div class="form-control-plaintext bg-light rounded p-2" style="height: 200px;"><?php
 	// psuedo-hidden field to submit
 	// ===> to be updated after ajax upload
 	if ( empty($fieldConfig['readonly']) ) :
@@ -37,8 +37,8 @@ $btnText = '';
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 		/><?php
 	endif;
-	// signature pad
-	?><div class="webform-signature bg-light"></div><?php
+	// signature
+	?><div class="webform-signature"></div><?php
 	// readonly
 	?><img src="<?php echo $fieldValue; ?>" class="d-none mx-auto" alt="" /><?php
 ?></div>
