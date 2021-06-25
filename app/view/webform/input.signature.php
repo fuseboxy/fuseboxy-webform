@@ -38,7 +38,7 @@ $btnText = '';
 		/><?php
 	endif;
 	// signature
-	?><div class="webform-signature"></div><?php
+	?><div class="webform-signature" style="cursor: pointer;"></div><?php
 	// readonly
 	?><img src="<?php echo $fieldValue; ?>" class="d-none mx-auto" alt="" /><?php
 ?></div>
