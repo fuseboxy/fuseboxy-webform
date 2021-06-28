@@ -112,8 +112,8 @@ switch ( $fusebox->action ) :
 	// new or edit form
 	case 'new':
 	case 'edit':
-		F::error('Config [beanID] is invalid', $fusebox->action == 'new' and !empty($webform['beanID']));
-		F::error('Config [beanID] is invalid', $fusebox->action == 'edit' and empty($webform['beanID']));
+		F::error('Config [beanID] is invalid', F::is('*.new')  and !empty($webform['beanID']));
+		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
 		// default step
 		if ( empty($arguments['step']) ) {
 			$arguments['step'] = Webform::firstStep();
