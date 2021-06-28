@@ -408,6 +408,51 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			pre-load data to webform when edit
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<string name="beanType" />
+					<number name="beanID" />
+				</structure>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function load() {
+		// check mode
+		$mode = self::mode();
+		if ( $mode === false ) return false;
+		// do nothing (when new)
+		if ( $mode == 'new' ) return true;
+		// load record from database (when edit)
+		$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
+		if ( $bean === false ) {
+			self::$error = ORM::error();
+			return false;
+		}
+		// validation
+		if ( empty($bean->id) ) {
+			self::$error = 'Record not found (id='.self::$config['beanID'].')';
+			return false;
+		}
+		// put into cache
+		self::data( $bean->export() );
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			determine mode of webform (new or edit)
 		</description>
 		<io>
@@ -692,8 +737,16 @@ class Webform {
 
 	/**
 	<fusedoc>
+		<description>
+			save submitted data into database
+		</description>
 		<io>
 			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<string name="beanType" />
+					<number name="beanID" />
+				</structure>
 				<!-- cache -->
 				<structure name="webform" scope="$_SESSION">
 					<structure name="~token~">
@@ -708,15 +761,21 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function save() {
-		// load data from cache
+		// load cached ata
 		$data = self::data();
 		if ( $data === false ) return false;
-		// create bean with data
+		// put into container
 		$bean = ORM::new(self::$config['beanType'], $data);
 		if ( $bean === false ) {
 			self::$error = ORM::error();
 			return false;
 		}
+		// specify ID to update (when necessary)
+		if ( !empty(self::$config['beanID']) ) $bean->id = self::$config['beanID'];
+		// add more info
+		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
+		else $bean->updated_on = date('Y-m-d H:i:s');
+		$bean->disabled = false;
 		// save to database
 		$id = ORM::save($bean);
 		if ( $id === false ) {

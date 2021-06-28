@@ -98,6 +98,9 @@ switch ( $fusebox->action ) :
 		// clear cache (if any)
 		$cleared = Webform::clear();
 		F::error(Webform::error(), $cleared === false);
+		// pre-load data (when edit)
+		$loaded = Webform::load();
+		F::error(Webform::error(), $loaded === false);
 		// determine new or edit
 		$mode = Webform::mode();
 		F::error(Webform::error(), $mode === false);
