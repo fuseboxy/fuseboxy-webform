@@ -435,10 +435,30 @@ class Webform {
 			move uploaded file from temp to permanent directory
 		</description>
 		<io>
+			<in>
+				<!-- uploaded file -->
+				<file name="~uploadDir~/tmp/~uniqueFilename~" />
+				<!-- parameter -->
+				<string name="$fieldName" />
+			</in>
+			<out>
+				<!-- return value -->
+				<boolean name="~return~" />
+				<!-- re-located file -->
+				<file name="~uploadDir~/~beanType~/~fieldName~/~uniqueFilename~" />
+			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function moveFileToPerm() {
+	public static function moveFileToPerm($fieldName) {
+		// determine source directory
+
+
+		// determine target directory
+
+
+		// create directory (when necessary)
+
 
 	}
 
@@ -799,8 +819,6 @@ class Webform {
 				<string name="$originalName" comments="original filename" />
 			</in>
 			<out>
-				<!-- output file -->
-				<file name="~uploadDir~/~beanType~/~uniqueFilename~.~fileExt~" />
 				<!-- return value -->
 				<structure name="~return~">
 					<boolean name="success" />
@@ -809,6 +827,8 @@ class Webform {
 					<string name="baseUrl" optional="yes" oncondition="when success" />
 					<string name="fileUrl" optional="yes" oncondition="when success" />
 				</structure>
+				<!-- uploaded file -->
+				<file name="~uploadDir~/tmp/~uniqueFilename~.~fileExt~" />
 			</out>
 		</io>
 	</fusedoc>
@@ -834,13 +854,13 @@ class Webform {
 			self::$error = implode("\n", $err);
 			return false;
 		}
-		// fix config
+		// determine target directory
 		$uploadDir  = str_replace('\\', '/', F::config('uploadDir'));
 		$uploadDir .= ( substr($uploadDir, -1) == '/' ) ? '' : '/';
-		$uploadDir .= self::$config['beanType'].'/'.$fieldName.'/';
+		$uploadDir .= 'tmp/';
 		$uploadBaseUrl  = str_replace('\\', '/', F::config('uploadUrl'));
 		$uploadBaseUrl .= ( substr($uploadBaseUrl, -1) == '/' ) ? '' : '/';
-		$uploadBaseUrl .= self::$config['beanType'].'/'.$fieldName.'/';
+		$uploadBaseUrl .= 'tmp/';
 		// create directory (when necessary)
 		if ( !file_exists($uploadDir) and !mkdir($uploadDir, 0766, true) ) {
 			self::$error = error_get_last()['message'];
@@ -934,6 +954,7 @@ class Webform {
 				<structure name="$config" scope="self">
 					<string name="beanType" />
 					<string name="layoutPath" comments="can be false but cannot be null" />
+					<number name="beanID" />
 					<structure name="fieldConfig">
 						<structure name="~fieldName~" />
 					</structure>
@@ -1004,6 +1025,14 @@ class Webform {
 		} elseif ( !empty(self::$config['notification']) and !class_exists('Util') ) {
 			self::$error = 'Class [Util] is required';
 			return false;
+		}
+		// check bean ID
+		if ( !empty(self::$config['beanID']) ) {
+			$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
+			if ( empty($bean->id) ) {
+				self::$error = 'Webform record not found (id='.self::$config['beanID'].')';
+				return false;
+			}
 		}
 		// check field config : any missing
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
