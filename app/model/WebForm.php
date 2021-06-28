@@ -624,6 +624,9 @@ class Webform {
 	public static function render($step) {
 		// validation
 		if ( !self::stepExists($step) ) return false;
+		// determine mode
+		$mode = self::mode();
+		if ( $mode === false ) return false;
 		// exit point
 		$prevStep = self::prevStep($step);
 		$nextStep = self::nextStep($step);

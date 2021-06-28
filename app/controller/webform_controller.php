@@ -98,28 +98,30 @@ switch ( $fusebox->action ) :
 		// clear cache (if any)
 		$cleared = Webform::clear();
 		F::error(Webform::error(), $cleared === false);
-		// go to first step
-		$firstStep = Webform::firstStep();
-		F::error(Webform::error(), $firstStep === false);
-		// redirect
-		F::redirect("{$fusebox->controller}.new&step={$firstStep}");
+		// determine new or edit
+		$mode = Webform::mode();
+		F::error(Webform::error(), $mode === false);
+		// redirect to form
+		F::redirect("{$fusebox->controller}.{$mode}");
 		break;
 
 
-	// submit new form
+	// new or edit form
 	case 'new':
-		F::error('Argument [step] is required', empty($arguments['step']));
+	case 'edit':
+		F::error('Config [beanID] is invalid', $fusebox->action == 'new' and !empty($webform['beanID']));
+		F::error('Config [beanID] is invalid', $fusebox->action == 'edit' and empty($webform['beanID']));
+		// default step
+		if ( empty($arguments['step']) ) {
+			$arguments['step'] = Webform::firstStep();
+			F::error(Webform::error(), $arguments['step'] === false);
+		}
 		// display form
 		$layout['content'] = Webform::render($arguments['step']);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
 		else echo $layout['content'];
-		break;
-
-
-	// edit submitted form
-	case 'edit':
 		break;
 
 
@@ -144,12 +146,15 @@ if ( isset($arguments['data']) ) {
 		$cached = Webform::data($arguments['data']);
 		F::error(Webform::error(), $cached === false);
 }
+		// determine new or edit
+		$mode = Webform::mode();
+		F::error(Webform::error(), $mode === false);
 		// return to last step (when necessary)
-		F::redirect("{$fusebox->controller}&step={$arguments['step']}", isset($_SESSION['flash']));
+		F::redirect("{$fusebox->controller}.{$mode}&step={$arguments['step']}", isset($_SESSION['flash']));
 		// go to next step
 		$nextStep = Webform::nextStep($arguments['step']);
 		F::error(Webform::error(), $nextStep === false);
-		F::redirect("{$fusebox->controller}.new&step={$nextStep}");
+		F::redirect("{$fusebox->controller}.{$mode}&step={$nextStep}");
 		break;
 
 
