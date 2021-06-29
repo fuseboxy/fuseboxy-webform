@@ -2,6 +2,7 @@
 class Webform {
 
 
+	private static $mode;
 	// properties : webform config
 	public static $config;
 	// properties : library for corresponding methods
@@ -284,16 +285,18 @@ class Webform {
 							<string name="label-inline" optional="yes" comments="derived from field name" />
 							<string name="placeholder" optional="yes" comments="derived from field name" />
 						</structure>
+						<!-- default for [format=file|image|signature] only -->
+						<string name="filesize" default="10MB" />
+						<list name="filetype" delim="," default="gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
+						<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
+						<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
+						<string name="buttonText" default="Choose File" />
+						<string name="buttonAltText" default="Choose Another File" />
+						<!-- attribute -->
+						<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 					</structure>
-					<!-- default for [format=file|image|signature] only -->
-					<string name="filesize" default="10MB" />
-					<list name="filetype" delim="," default="gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
-					<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
-					<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
-					<string name="buttonText" default="Choose File" />
-					<string name="buttonAltText" default="Choose Another File" />
-					<!-- attribute -->
-					<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
+					<!-- others -->
+					<string name="saveSnapshot" default="snapshot" />
 				</structure>
 			</out>
 		</io>
@@ -363,6 +366,10 @@ class Webform {
 					self::$config['steps']['confirm'][$fieldNameList] = $fieldWidthList;
 				}
 			}
+		}
+		// default snapshot table
+		if ( isset(self::$config['saveSnapshot']) and self::$config['saveSnapshot'] === true ) {
+			self::$config['saveSnapshot'] = 'snapshot';
 		}
 		// done!
 		return true;
@@ -468,7 +475,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function mode() {
-return 'view';
+//return 'view';
 		return empty(self::$config['beanID']) ? 'new' : 'edit';
 	}
 
@@ -693,6 +700,33 @@ return 'view';
 		include dirname(__DIR__).'/view/webform/form.php';
 		// done!
 		return ob_get_clean();
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			render all steps at once
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="steps">
+						<mixed name="~stepName~" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<string name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function renderAll() {
+
 	}
 
 
