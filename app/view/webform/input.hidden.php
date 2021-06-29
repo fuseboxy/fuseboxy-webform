@@ -14,4 +14,6 @@
 	</io>
 </fusedoc>
 */
-?><input type="hidden" id="<?php echo $fieldID; ?>" name="data[<?php echo $fieldName; ?>]" value="<?php echo htmlspecialchars($fieldValue); ?>" />
+if ( Webform::mode() != 'view' ) :
+	?><input type="hidden" id="<?php echo $fieldID; ?>" name="data[<?php echo $fieldName; ?>]" value="<?php echo htmlspecialchars($fieldValue); ?>" /><?php
+endif;

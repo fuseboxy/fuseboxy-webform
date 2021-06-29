@@ -35,38 +35,57 @@
 </fusedoc>
 */
 $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['buttonAltText'];
-?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3 position-relative"><?php
-	// psuedo-hidden field to submit
-	// ===> to be updated after ajax upload
-	if ( empty($fieldConfig['readonly']) ) :
-		?><input 
-			type="text" 
-			class="w-0 p-0 op-0 position-absolute"
-			name="data[<?php echo $fieldName; ?>]"
-			value="<?php echo $fieldValue; ?>" 
-			style="bottom: 0;"
-			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
-		/><?php
+?><div class="form-control-file"><?php
+	// field
+	if ( Webform::mode() != 'view' ) :
+		?><label for="<?php echo $fieldID; ?>" class="btn btn-light text-left p-3 position-relative"><?php
+			// psuedo-hidden field to submit
+			// ===> to be updated after ajax upload
+			if ( empty($fieldConfig['readonly']) ) :
+				?><input 
+					type="text" 
+					class="w-0 p-0 op-0 position-absolute"
+					name="data[<?php echo $fieldName; ?>]"
+					value="<?php echo $fieldValue; ?>" 
+					style="bottom: 0;"
+					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
+				/><?php
+			endif;
+			// upload button
+			?><button 
+				type="button" 
+				id="<?php echo $fieldID; ?>" 
+				class="btn-webform-upload btn btn-sm btn-primary mr-2"
+				data-upload-handler="<?php echo F::url($xfa['uploadHandler'].'&uploaderID='.$fieldID.'&fieldName='.$fieldName); ?>"
+				data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
+				data-filesize="<?php echo Webform::fileSizeInBytes($fieldConfig['filesize']); ?>"
+				data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
+				data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
+				data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
+				data-button-text="<?php echo $fieldConfig['buttonText']; ?>"
+				data-button-alt-text="<?php echo $fieldConfig['buttonAltText']; ?>"
+			><?php echo $btnText; ?></button><?php
+			// preview link
+			if ( !empty($fieldValue) ) :
+				?><a href="<?php echo $fieldValue; ?>" class="preview-link small" target="_blank"><?php
+					if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
+						?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail mt-2" alt="" /><?php
+					else :
+						echo basename($fieldValue);
+					endif;
+				?></a><?php
+			endif;
+		?></label><?php
+	// readonly
+	else :
+		?><div class="bg-light <?php echo empty($fieldValue) ? 'p-4' : 'p-3'; ?>"><?php
+			?><a href="<?php echo $fieldValue; ?>" class="small" target="_blank"><?php
+				if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
+					?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail" alt="" /><?php
+				else :
+					?><strong><?php echo basename($fieldValue); ?></strong><?php
+				endif;
+			?></a><?php
+		?></div><?php
 	endif;
-	// upload button
-	?><button 
-		type="button" 
-		id="<?php echo $fieldID; ?>" 
-		class="btn-webform-upload btn btn-sm btn-primary mr-2"
-		data-upload-handler="<?php echo F::url($xfa['uploadHandler'].'&uploaderID='.$fieldID.'&fieldName='.$fieldName); ?>"
-		data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
-		data-filesize="<?php echo Webform::fileSizeInBytes($fieldConfig['filesize']); ?>"
-		data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
-		data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
-		data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
-		data-button-text="<?php echo $fieldConfig['buttonText']; ?>"
-		data-button-alt-text="<?php echo $fieldConfig['buttonAltText']; ?>"
-	><?php echo $btnText; ?></button><?php
-	// preview link & image
-	if ( !empty($fieldValue) ) :
-		?><a href="<?php echo $fieldValue; ?>" class="preview-link ml-2 small" target="_blank"><?php echo basename($fieldValue); ?></a><?php
-		if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
-			?><div class="preview-image mt-2"><img src="<?php echo $fieldValue; ?>" class="img-thumbnail" alt="" /></div><?php
-		endif;
-	endif;
-?></label>
+?></div>

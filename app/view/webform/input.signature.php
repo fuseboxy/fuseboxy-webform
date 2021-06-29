@@ -25,20 +25,24 @@
 */
 $btnText = '';
 ?><div class="form-control-plaintext bg-light rounded p-2" style="height: 200px;"><?php
-	// psuedo-hidden field to submit
-	// ===> to be updated after ajax upload
-	if ( empty($fieldConfig['readonly']) ) :
-		?><input 
-			type="text" 
-			class="w-0 p-0 op-0 position-absolute"
-			name="data[<?php echo $fieldName; ?>]"
-			value="<?php echo $fieldValue; ?>" 
-			style="bottom: 0;"
-			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
-		/><?php
-	endif;
-	// signature
-	?><div class="webform-signature" style="cursor: pointer;"></div><?php
+	// field
+	if ( Webform::mode() != 'view' ) :
+		// psuedo-hidden field to submit
+		// ===> to be updated after ajax upload
+		if ( empty($fieldConfig['readonly']) ) :
+			?><input 
+				type="text" 
+				class="w-0 p-0 op-0 position-absolute"
+				name="data[<?php echo $fieldName; ?>]"
+				value="<?php echo $fieldValue; ?>" 
+				style="bottom: 0;"
+				<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
+			/><?php
+		endif;
+		// signature
+		?><div class="webform-signature" style="cursor: pointer;"></div><?php
 	// readonly
-	?><img src="<?php echo $fieldValue; ?>" class="d-none mx-auto" alt="" /><?php
+	else :
+		?><img src="<?php echo $fieldValue; ?>" class="d-block mx-auto" alt="" /><?php
+	endif;
 ?></div>

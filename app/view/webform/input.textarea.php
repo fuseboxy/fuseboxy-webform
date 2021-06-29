@@ -20,17 +20,22 @@
 	</io>
 </fusedoc>
 */ ?>
-<div class="input-group"><?php
+<div class="input-group input-group-sm"><?php
 	// icon
 	include 'input.icon.php';
 	// field
-	?><textarea
-		id="<?php echo $fieldID; ?>"
-		name="data[<?php echo $fieldName; ?>]"
-		class="form-control form-control-sm <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
-		<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
-		<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
-		<?php if ( !empty($fieldConfig['required']) ) echo 'required'; ?>
-		<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
-	><?php echo htmlspecialchars($fieldValue); ?></textarea><?php
+	if ( Webform::mode() != 'view' ) :
+		?><textarea
+			id="<?php echo $fieldID; ?>"
+			name="data[<?php echo $fieldName; ?>]"
+			class="form-control <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
+			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['required']) ) echo 'required'; ?>
+			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
+		><?php echo htmlspecialchars($fieldValue); ?></textarea><?php
+	// readonly
+	else :
+		?><div class="form-control text-primary"><strong><?php echo nl2br($fieldValue); ?></strong></div><?php
+	endif;
 ?></div>
