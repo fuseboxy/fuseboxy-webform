@@ -19,7 +19,7 @@
 				<!-- settings of each field used in form -->
 				<structure name="fieldConfig">
 					<structure name="~fieldName~">
-						<string name="format" default="text" comments="text|textarea|checkbox|radio|date|file|image|signature|captcha|hidden|output" />
+						<string name="format" default="text" comments="text|textarea|checkbox|radio|date|file|image|signature|hidden|output" />
 						<string name="label" optional="yes" />
 						<string name="inline-label" optional="yes" />
 						<string name="placeholder" optional="yes" />
@@ -62,7 +62,8 @@
 					<string name="body" />
 				</structure>
 				<!-- settings for log -->
-				<boolean name="writeLog" optional="yes" comments="simply true to log all actions" />
+				<boolean name="writeLog" optional="yes" default="false" comments="simply true to log all actions" />
+				<boolean name="saveSnapshot" optional="yes" default="false" comments="default save to {snapshot} table when true; specify table table to save to other" />
 			</structure>
 			<structure name="Webform::$libPath">
 				<string name="uploadFile" />
@@ -125,6 +126,12 @@ switch ( $fusebox->action ) :
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
 		else echo $layout['content'];
+		break;
+
+
+	// view submitted form
+	case 'view':
+
 		break;
 
 
