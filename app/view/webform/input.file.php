@@ -35,7 +35,7 @@
 </fusedoc>
 */
 $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['buttonAltText'];
-?><div class="form-control-file"><?php
+?><div class="webform-input-file"><?php
 	// field
 	if ( Webform::mode() != 'view' ) :
 		?><label for="<?php echo $fieldID; ?>" class="btn btn-light text-left p-3 position-relative"><?php
@@ -55,7 +55,7 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 			?><button 
 				type="button" 
 				id="<?php echo $fieldID; ?>" 
-				class="btn-webform-upload btn btn-sm btn-primary mr-2"
+				class="btn-upload btn btn-sm btn-primary mr-2"
 				data-upload-handler="<?php echo F::url($xfa['uploadHandler'].'&uploaderID='.$fieldID.'&fieldName='.$fieldName); ?>"
 				data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
 				data-filesize="<?php echo Webform::fileSizeInBytes($fieldConfig['filesize']); ?>"

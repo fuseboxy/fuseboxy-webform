@@ -19,7 +19,7 @@
 	</io>
 </fusedoc>
 */ ?>
-<div class="input-group"><?php
+<div class="webform-input-text input-group"><?php
 	// icon
 	include 'input.icon.php';
 	// field

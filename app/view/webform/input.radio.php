@@ -14,19 +14,21 @@
 		<out />
 	</io>
 </fusedoc>
-*/
-$optIndex = 0;
-foreach ( $fieldConfig['options'] as $optValue => $optText ) :
-	if ( is_array($optText) ) :
-		$optGroupLabel = $optValue;
-		$optGroupItems = $optText;
-		?><small><strong><?php echo $optGroupLabel; ?></strong></small><?php
-		foreach ( $optGroupItems as $optValue => $optText ) :
+*/ ?>
+<div class="webform-input-radio"><?php
+	$optIndex = 0;
+	foreach ( $fieldConfig['options'] as $optValue => $optText ) :
+		if ( is_array($optText) ) :
+			$optGroupLabel = $optValue;
+			$optGroupItems = $optText;
+			?><small><strong><?php echo $optGroupLabel; ?></strong></small><?php
+			foreach ( $optGroupItems as $optValue => $optText ) :
+				include 'input.radio.item.php';
+				$optIndex++;
+			endforeach;
+		else :
 			include 'input.radio.item.php';
 			$optIndex++;
-		endforeach;
-	else :
-		include 'input.radio.item.php';
-		$optIndex++;
-	endif;
-endforeach;
+		endif;
+	endforeach;
+?></div>

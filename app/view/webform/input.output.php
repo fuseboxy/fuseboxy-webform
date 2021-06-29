@@ -12,9 +12,9 @@
 		<out />
 	</io>
 </fusedoc>
-*/
-?><div 
+*/ ?>
+<div 
 	id="<?php echo $fieldID; ?>"
-	<?php if ( !empty($fieldConfig['class']) ) : ?>class="<?php echo $fieldConfig['class']; ?>"<?php endif; ?>
+	class="webform-input-output <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 	<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 ><?php echo $fieldValue; ?></div>

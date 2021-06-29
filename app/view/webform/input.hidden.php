@@ -15,5 +15,10 @@
 </fusedoc>
 */
 if ( Webform::mode() != 'view' ) :
-	?><input type="hidden" id="<?php echo $fieldID; ?>" name="data[<?php echo $fieldName; ?>]" value="<?php echo htmlspecialchars($fieldValue); ?>" /><?php
+	?><input 
+		type="hidden"
+		id="<?php echo $fieldID; ?>"
+		name="data[<?php echo $fieldName; ?>]"
+		value="<?php echo htmlspecialchars($fieldValue); ?>"
+	/><?php
 endif;

@@ -1,1 +1,1 @@
-<div class="form-control-plaintext">captcha</div>
+<div id="webform-form-captcha" class="text-center"><h1>[captcha]</h1></div>

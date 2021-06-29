@@ -5,6 +5,10 @@
 			<structure name="$config" scope="Webform">
 				<string name="beanType" />
 			</structure>
+			<structure name="$xfa">
+				<string name="submit" optional="yes" />
+			</structure>
+			<class name="Captcha" />
 		</in>
 		<out />
 	</io>

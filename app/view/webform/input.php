@@ -17,7 +17,7 @@
 	</io>
 </fusedoc>
 */ ?>
-<div class="form-group <?php echo $fieldWidth; ?>"><?php
+<div class="webform-input form-group <?php echo $fieldWidth; ?>"><?php
 	// label (when necessary)
 	if ( !empty($fieldConfig['label']) ) :
 		?><label for="<?php echo $fieldID; ?>"><?php
