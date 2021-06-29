@@ -43,7 +43,8 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 	$isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' );
 	// output : direct output
 	if ( $isDirectOutput ) :
-		?><div><?php echo substr($fieldNameList, 1); ?></div><?php
+		$output = substr($fieldNameList, 1);
+		echo strlen($output) ? "<div>{$output}</div>" : '';
 	// output : heading
 	elseif ( $isHeading ) :
 		$size = 'h'.( strlen($fieldNameList) - strlen(ltrim($fieldNameList, '#')) );
