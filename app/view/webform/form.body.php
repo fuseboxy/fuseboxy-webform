@@ -38,10 +38,14 @@
 </fusedoc>
 */
 foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
+	$isDirectOutput = ( strlen($fieldNameList) and $fieldNameList[0] === '~' );
 	$isHeading = ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) );
-	$isLine = ( !empty($fieldNameList) and trim($fieldNameList, '-') == '' );
+	$isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' );
+	// output : direct output
+	if ( $isDirectOutput ) :
+		?><div><?php echo substr($fieldNameList, 1); ?></div><?php
 	// output : heading
-	if ( $isHeading ) :
+	elseif ( $isHeading ) :
 		$size = 'h'.( strlen($fieldNameList) - strlen(ltrim($fieldNameList, '#')) );
 		?><div class="<?php echo $size; ?>"><?php echo trim(ltrim($fieldNameList, '#')); ?></div><?php
 	// output : line

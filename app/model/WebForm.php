@@ -1099,9 +1099,10 @@ class Webform {
 		// check field config : any missing
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
+				$isDirectOutput = ( strlen($fieldNameList) and $fieldNameList[0] === '~' );
 				$isHeading = ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) );
-				$isLine = ( !empty($fieldNameList) and trim($fieldNameList, '-') == '' );
-				if ( !$isHeading and !$isLine ) {
+				$isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' );
+				if ( !$isDirectOutput and !$isHeading and !$isLine ) {
 					$fieldNameList = explode('|', $fieldNameList);
 					foreach ( $fieldNameList as $fieldName ) {
 						if ( !isset(self::$config['fieldConfig'][$fieldName]) ) {
