@@ -1,1 +1,41 @@
-<div class="form-control">date</div>
+<?php /*
+<fusedoc>
+	<io>
+		<in>
+			<string name="$fieldID" />
+			<string name="$fieldName" />
+			<string name="$fieldValue" />
+			<structure name="$fieldConfig">
+				<string name="placeholder" optional="yes" />
+				<boolean name="required" optional="yes" />
+				<boolean name="readonly" optional="yes" />
+			</structure>
+		</in>
+		<out>
+			<structure name="data" scope="form" optional="yes">
+				<string name="~fieldName~" />
+			</structure>
+		</out>
+	</io>
+</fusedoc>
+*/ ?>
+<div class="input-group"><?php
+	// icon
+	include 'input.icon.php';
+	// field
+	?><input 
+		type="text"
+		id="<?php echo $fieldID; ?>"
+		name="data[<?php echo $fieldName; ?>]"
+		value="<?php echo htmlspecialchars($fieldValue); ?>"
+		class="form-control datepicker br-0 <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
+		<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
+		<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
+		<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
+		<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
+	/><?php
+	// calendar icon
+	?><div class="input-group-append">
+		<span class="input-group-text bg-transparent px-2"><i class="far fa-calendar-alt op-30"></i></span>
+	</div>
+</div>
