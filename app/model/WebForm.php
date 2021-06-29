@@ -419,8 +419,6 @@ class Webform {
 		</description>
 		<io>
 			<in>
-				<!-- property -->
-				<string name="$mode" scope="self" comments="view|new|edit" />
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<string name="beanType" />
@@ -434,21 +432,18 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function load() {
-		// do nothing (when new)
-		if ( self::$mode == 'new' ) return true;
-		// load record from database (when edit or view)
+		// simply quit when no bean specified
+		if ( empty(self::$config['beanID']) ) return true;
+		// load record from database
 		$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
 		if ( $bean === false ) {
 			self::$error = ORM::error();
 			return false;
 		}
-		// validation
-		if ( empty($bean->id) ) {
-			self::$error = 'Record not found (id='.self::$config['beanID'].')';
-			return false;
+		// put into cache (when necessary)
+		if ( !empty($bean->id) ) {
+			self::data( $bean->export() );
 		}
-		// put into cache
-		self::data($bean->export());
 		// done!
 		return true;
 	}
@@ -1154,7 +1149,7 @@ class Webform {
 		if ( !empty(self::$config['beanID']) ) {
 			$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
 			if ( empty($bean->id) ) {
-				self::$error = 'Webform record not found (id='.self::$config['beanID'].')';
+				self::$error = 'Record not found (id='.self::$config['beanID'].')';
 				return false;
 			}
 		}
