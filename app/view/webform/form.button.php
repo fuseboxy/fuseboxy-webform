@@ -35,7 +35,7 @@
 			if ( isset($xfa['back']) ) :
 				?><a 
 					href="<?php echo F::url($xfa['back']); ?>"
-					class="btn btn-light b-1 float-left"
+					class="btn btn-light float-left"
 				><i class="fa fa-arrow-left"></i> Back</a><?php
 			endif;
 			// next button

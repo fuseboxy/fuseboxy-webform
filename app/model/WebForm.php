@@ -468,6 +468,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function mode() {
+return 'view';
 		return empty(self::$config['beanID']) ? 'new' : 'edit';
 	}
 
@@ -719,12 +720,17 @@ class Webform {
 	private static function sanitize($data) {
 		// go through each item
 		foreach ( $data as $key => $val ) {
-			// trim spaces
-			$val = trim($val);
-			// remove tab
-			$val = str_replace("\t", ' ', $val);
-			// convert html tag (make it visible but harmless)
-			$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
+			if ( is_array($val) ) {
+				// clean-up recursively
+				$val = self::sanitize($val);
+			} else {
+				// trim spaces
+				$val = trim($val);
+				// remove tab
+				$val = str_replace("\t", ' ', $val);
+				// convert html tag (make it visible but harmless)
+				$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
+			}
 			// put into result
 			$data[$key] = $val;
 		}
@@ -1034,7 +1040,6 @@ class Webform {
 					<string name="uploadUrl" />
 				</structure>
 				<!-- class -->
-				<class name="Captcha" />
 				<class name="Log" />
 				<class name="Util" />
 			</in>
@@ -1047,12 +1052,11 @@ class Webform {
 	public static function validateConfig() {
 		$fixed = self::fixConfig();
 		if ( $fixed === false ) return false;
-		// has file/captcha field?
-		$hasFileField = $hasCaptchaField = false;
+		// has file field?
+		$hasFileField = false;
 		if ( isset(self::$config['fieldConfig']) ) {
 			foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 				if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) $hasFileField = true;
-				if ( isset($cfg['format']) and $cfg['format'] == 'captcha' ) $hasCaptchaField = true;
 			}
 		}
 		// check bean type
@@ -1078,9 +1082,6 @@ class Webform {
 			self::$error = 'Fusebox config [uploadUrl] is required';
 			return false;
 		// check component
-		} elseif ( $hasCaptchaField and !class_exists('Captcha') ) {
-			self::$error = 'Class [Captcha] is required';
-			return false;
 		} elseif ( !empty(self::$config['writeLog']) and !class_exists('Log') ) {
 			self::$error = 'Class [Log] is required';
 			return false;
