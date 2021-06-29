@@ -801,6 +801,9 @@ class Webform {
 	<fusedoc>
 		<description>
 			save submitted data into database
+			===> send notification
+			===> take snapshot
+			===> write log
 		</description>
 		<io>
 			<in>
@@ -826,6 +829,9 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function save() {
+		// validate all data before save
+		$validated = self::validateAll();
+		if ( $validated === false ) return false;
 		// create empty container or load from database
 		if ( empty(self::$config['beanID']) ) $bean = ORM::new(self::$config['beanType']);
 		else $bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
@@ -846,6 +852,11 @@ class Webform {
 		if ( $id === false ) {
 			self::$error = 'Error occurred while saving ['.self::$beanType.'] record - '.ORM::error();
 			return false;
+		}
+		// send notification (when necessary)
+		if ( !empty(self::$config['notification']) ) {
+			$notified = self::notify();
+			if ( $notified === false ) return false;
 		}
 		// take snapshot (when necessary)
 		if ( !empty(self::$config['saveSnapshot']) ) {

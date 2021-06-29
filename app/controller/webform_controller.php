@@ -189,17 +189,9 @@ switch ( $fusebox->action ) :
 
 	// save submitted data
 	case 'save':
-		// validate all data before save
-		$validated = Webform::validateAll();
-		if ( $validated === false ) return false;
 		// commit to save
 		$saved = Webform::save();
 		F::error(Webform::error(), $saved === false);
-		// send notification (when necessary)
-		if ( !empty(Webform::$config['notification']) ) {
-			$notified = Webform::notify();
-			if ( $notified === false ) return false;
-		}
 		// clear cache
 		$cleared = Webform::clear();
 		F::error(Webform::error(), $cleared === false);
