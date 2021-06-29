@@ -2,6 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
+			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
@@ -14,7 +15,7 @@
 	</io>
 </fusedoc>
 */
-if ( Webform::mode() != 'view' ) :
+if ( !empty($editable) ) :
 	?><input 
 		type="hidden"
 		id="<?php echo $fieldID; ?>"

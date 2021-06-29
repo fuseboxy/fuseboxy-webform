@@ -5,6 +5,7 @@
 	</description>
 	<io>
 		<in>
+			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
@@ -26,7 +27,7 @@
 $btnText = '';
 ?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2"><?php
 	// field
-	if ( Webform::mode() != 'view' ) :
+	if ( !empty($editable) ) :
 		// psuedo-hidden field to submit
 		// ===> to be updated after ajax upload
 		if ( empty($fieldConfig['readonly']) ) :

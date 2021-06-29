@@ -2,6 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
+			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<list name="$fieldValue" delim="|">
@@ -31,7 +32,7 @@ $checkboxID = $fieldID.'-'.$optIndex;
 $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $fieldValue));
 ?><div class="form-check"><?php
 	// field
-	if ( Webform::mode() != 'view' ) :
+	if ( !empty($editable) ) :
 		?><input
 			type="checkbox"
 			id="<?php echo $checkboxID; ?>"

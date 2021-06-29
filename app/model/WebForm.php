@@ -2,15 +2,15 @@
 class Webform {
 
 
-	private static $mode;
-	// properties : webform config
+	// property : webform config
 	public static $config;
-	// properties : library for corresponding methods
+	// property : webform working mode
+	private static $mode = 'view';
+	// property : library for corresponding methods
 	public static $libPath = array(
 		'uploadFile'     => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
 		'uploadProgress' => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/uploadProgress.php',
 	);
-
 
 
 
@@ -419,6 +419,8 @@ class Webform {
 		</description>
 		<io>
 			<in>
+				<!-- property -->
+				<string name="$mode" scope="self" comments="view|new|edit" />
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<string name="beanType" />
@@ -432,12 +434,9 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function load() {
-		// check mode
-		$mode = self::mode();
-		if ( $mode === false ) return false;
 		// do nothing (when new)
-		if ( $mode == 'new' ) return true;
-		// load record from database (when edit)
+		if ( self::$mode == 'new' ) return true;
+		// load record from database (when edit or view)
 		$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
 		if ( $bean === false ) {
 			self::$error = ORM::error();
@@ -449,7 +448,7 @@ class Webform {
 			return false;
 		}
 		// put into cache
-		self::data( $bean->export() );
+		self::data($bean->export());
 		// done!
 		return true;
 	}
@@ -460,23 +459,29 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			determine mode of webform (new or edit)
+			getter & setter of webform working mode
+			determine whether webform is editable
 		</description>
 		<io>
 			<in>
-				<number name="$config" scope="self">
-					<number name="beanID" optional="yes" />
-				</number>
+				<string name="$val" optional="yes" />
 			</in>
 			<out>
-				<string name="~return~" comments="new|edit" />
+				<!-- getter -->
+				<string name="~return~" />
+				<!-- setter -->
+				<boolean name="~return~" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function mode() {
-//return 'view';
-		return empty(self::$config['beanID']) ? 'new' : 'edit';
+	public static function mode($val=null) {
+		// getter
+		if ( empty($val) ) return self::$mode;
+		// setter
+		self::$mode == strtolower(trim($val));
+		// done!
+		return true;
 	}
 
 
@@ -678,11 +683,9 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function render($step) {
+		$editable = in_array(self::$mode, ['new','edit']);
 		// validation
 		if ( !self::stepExists($step) ) return false;
-		// determine mode
-		$mode = self::mode();
-		if ( $mode === false ) return false;
 		// exit point
 		$prevStep = self::prevStep($step);
 		$nextStep = self::nextStep($step);
@@ -690,7 +693,7 @@ class Webform {
 		if ( $nextStep !== false ) $xfa['next'] = F::command('controller').'.validate&step='.$step;
 		else $xfa['submit'] = F::command('controller').'.save';
 		// exit point (for ajax upload)
-		if ( $mode != 'view' ) {
+		if ( $editable ) {
 			$xfa['uploadHandler'] = F::command('controller').'.upload';
 			$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
 		}
@@ -734,11 +737,9 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function renderAll() {
-		// determine mode
-		$mode = self::mode();
-		if ( $mode === false ) return false;
+		$editable = in_array(self::$mode, ['new','edit']);
 		// exit point (for ajax upload)
-		if ( $mode != 'view' ) {
+		if ( $editable ) {
 			$xfa['uploadHandler'] = F::command('controller').'.upload';
 			$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
 		}

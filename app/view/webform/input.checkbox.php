@@ -2,6 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
+			<boolean name="$editable" />
 			<string name="$fieldName" />
 			<structure name="$fieldConfig">
 				<structure name="options">
@@ -24,7 +25,7 @@
 	// empty hidden field (when necessary)
 	// ===> avoid nothing submitted when no checkbox selected
 	// ===> for the scenario which user deselect all checkboxes and submit the change
-	if ( Webform::mode() != 'view' ) :
+	if ( !empty($editable) ) :
 		?><input type="hidden" name="data[<?php echo $fieldName; ?>]" value="" /><?php
 	endif;
 	// display

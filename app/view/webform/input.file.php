@@ -5,6 +5,7 @@
 	</description>
 	<io>
 		<in>
+			<boolean name="$editable" />
 			<structure name="$xfa">
 				<string name="uploadHandler" />
 				<string name="uploadProgress" />
@@ -37,7 +38,7 @@
 $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['buttonAltText'];
 ?><div class="webform-input-file"><?php
 	// field
-	if ( Webform::mode() != 'view' ) :
+	if ( !empty($editable) ) :
 		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3 position-relative"><?php
 			// psuedo-hidden field to submit
 			// ===> to be updated after ajax upload
