@@ -296,7 +296,7 @@ class Webform {
 						<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 					</structure>
 					<!-- others -->
-					<string name="saveSnapshot" default="snapshot" />
+					<string name="snapshot" default="snapshot" comments="table to save snapshot; no snapshot to take when false" />
 				</structure>
 			</out>
 		</io>
@@ -368,8 +368,8 @@ class Webform {
 			}
 		}
 		// default snapshot table
-		if ( isset(self::$config['saveSnapshot']) and self::$config['saveSnapshot'] === true ) {
-			self::$config['saveSnapshot'] = 'snapshot';
+		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
+			self::$config['snapshot'] = 'snapshot';
 		}
 		// done!
 		return true;
@@ -812,7 +812,7 @@ class Webform {
 					<string name="beanType" />
 					<number name="beanID" />
 					<boolean name="writeLog" optional="yes" />
-					<string name="saveSnapshot" optional="yes" comments="table name for snapshot" />
+					<string name="snapshot" optional="yes" comments="table name for snapshot" />
 					<structure name="notification" optional="yes" />
 				</structure>
 				<!-- cache -->
@@ -859,8 +859,8 @@ class Webform {
 			if ( $notified === false ) return false;
 		}
 		// take snapshot (when necessary)
-		if ( !empty(self::$config['saveSnapshot']) ) {
-			$snapshotBean = ORM::new(self::$config['saveSnapshot'], [
+		if ( !empty(self::$config['snapshot']) ) {
+			$snapshotBean = ORM::new(self::$config['snapshot'], [
 				'datetime'    => date('Y-m-d H:i:s'),
 				'entity_type' => self::$config['beanType'],
 				'entity_id'   => $id,
