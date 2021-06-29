@@ -841,7 +841,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function token() {
-		return self::$config['beanType'].'::'.self::$config['beanID'];
+		return self::$config['beanType'].':'.self::$config['beanID'];
 	}
 
 
