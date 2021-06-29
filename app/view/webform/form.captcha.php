@@ -10,6 +10,4 @@
 	</io>
 </fusedoc>
 */ ?>
-<div id="webform-form-captcha" class="text-center mt-5"><?php
-	if ( isset($xfa['submit']) and class_exists('Captcha') ) echo Captcha::field();
-?></div>
+<div id="webform-form-captcha" class="text-center mt-5"><?php echo Captcha::field(); ?></div>

@@ -2,9 +2,6 @@
 <fusedoc>
 	<io>
 		<in>
-			<structure name="$fieldLayout">
-				<list name="~fieldNameList~" value="~fieldWidthList~" delim="|" comments="use bootstrap grid layout for width" />
-			</structure>
 			<structure name="$fieldConfigAll">
 				<structure name="~fieldName~">
 					<string name="format" default="text" comments="output|hidden|text|url|textarea|checkbox|radio|file|image|signature|captcha" />
@@ -28,6 +25,9 @@
 					<!-- help text -->
 					<string name="help" optional="yes" comments="help text show after input field" />
 				</structure>
+			</structure>
+			<structure name="$fieldLayout">
+				<list name="~fieldNameList~" value="~fieldWidthList~" delim="|" comments="use bootstrap grid layout for width" />
 			</structure>
 			<structure name="data" scope="$arguments" comments="form data">
 				<mixed name="~fieldName~" />

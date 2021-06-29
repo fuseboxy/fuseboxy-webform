@@ -662,7 +662,10 @@ class Webform {
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<structure name="steps">
-						<mixed name="~stepName~" />
+						<structure name="~stepName~" />
+					</structure>
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
 					</structure>
 				</structure>
 				<!-- parameter -->
@@ -687,8 +690,10 @@ class Webform {
 		if ( $nextStep !== false ) $xfa['next'] = F::command('controller').'.validate&step='.$step;
 		else $xfa['submit'] = F::command('controller').'.save';
 		// exit point (for ajax upload)
-		$xfa['uploadHandler'] = F::command('controller').'.upload';
-		$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
+		if ( $mode != 'view' ) {
+			$xfa['uploadHandler'] = F::command('controller').'.upload';
+			$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
+		}
 		// prepare variables
 		$fieldLayout = self::$config['steps'][$step];
 		$fieldConfigAll = self::$config['fieldConfig'];
@@ -715,7 +720,10 @@ class Webform {
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<structure name="steps">
-						<mixed name="~stepName~" />
+						<structure name="~stepName~" />
+					</structure>
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
 					</structure>
 				</structure>
 			</in>
@@ -726,7 +734,25 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function renderAll() {
-
+		// determine mode
+		$mode = self::mode();
+		if ( $mode === false ) return false;
+		// exit point (for ajax upload)
+		if ( $mode != 'view' ) {
+			$xfa['uploadHandler'] = F::command('controller').'.upload';
+			$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
+		}
+		// prepare variables
+		$fieldLayoutAll = self::$config['steps'];
+		$fieldConfigAll = self::$config['fieldConfig'];
+		// load data from cache
+		$arguments['data'] = self::data();
+		if ( $arguments['data'] === false ) return false;
+		// display
+		ob_start();
+		include dirname(__DIR__).'/view/webform/form.php';
+		// done!
+		return ob_get_clean();
 	}
 
 
