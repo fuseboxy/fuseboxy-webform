@@ -30,7 +30,7 @@
 if ( isset($fieldLayoutAll) ) foreach ( $fieldLayoutAll as $fieldLayout ) include 'form.body.php';
 elseif ( isset($fieldLayout) ) include 'form.body.php';
 // captcha
-if ( ( isset($xfa['submit']) or isset($xfa['edit']) ) and class_exists('Captcha') ) :
+if ( ( isset($xfa['submit']) or isset($xfa['update']) ) and class_exists('Captcha') ) :
 	include 'form.captcha.php';
 endif;
 // button
