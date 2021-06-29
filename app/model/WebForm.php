@@ -808,6 +808,9 @@ class Webform {
 				<structure name="$config" scope="self">
 					<string name="beanType" />
 					<number name="beanID" />
+					<boolean name="writeLog" optional="yes" />
+					<string name="saveSnapshot" optional="yes" comments="table name for snapshot" />
+					<structure name="notification" optional="yes" />
 				</structure>
 				<!-- cache -->
 				<structure name="webform" scope="$_SESSION">
@@ -823,17 +826,17 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function save() {
-		// load cached ata
-		$data = self::data();
-		if ( $data === false ) return false;
-		// put into container
-		$bean = ORM::new(self::$config['beanType'], $data);
+		// create empty container or load from database
+		if ( empty(self::$config['beanID']) ) $bean = ORM::new(self::$config['beanType']);
+		else $bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
 		if ( $bean === false ) {
 			self::$error = ORM::error();
 			return false;
 		}
-		// specify ID to update (when necessary)
-		if ( !empty(self::$config['beanID']) ) $bean->id = self::$config['beanID'];
+		// put form data to container
+		$data = self::data();
+		if ( $data === false ) return false;
+		$bean->import($data);
 		// add more info
 		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
 		else $bean->updated_on = date('Y-m-d H:i:s');
@@ -841,8 +844,46 @@ class Webform {
 		// save to database
 		$id = ORM::save($bean);
 		if ( $id === false ) {
-			self::$error = ORM::error();
+			self::$error = 'Error occurred while saving ['.self::$beanType.'] record - '.ORM::error();
 			return false;
+		}
+		// take snapshot (when necessary)
+		if ( !empty(self::$config['saveSnapshot']) ) {
+			$snapshotBean = ORM::new(self::$config['saveSnapshot'], [
+				'datetime'    => date('Y-m-d H:i:s'),
+				'entity_type' => self::$config['beanType'],
+				'entity_id'   => $id,
+				'snapshot'    => call_user_func(function(){
+					$original = self::$mode;
+					self::$mode = 'view';
+					$output = self::renderAll();
+					self::$mode = $original;
+					return $output;
+				}),
+			]);
+			if ( $snapshotBean === false ) {
+				self::$error = ORM::error();
+				return false;
+			}
+			$snapshotID = ORM::save($snapshotBean);
+			if ( $snapshotID === false ) {
+				self::$error = 'Error occurred while while saving snapshot - '.ORM::error();
+				return false;
+			}
+		}
+		// write log (when necessary)
+		if ( !empty(self::$config['writeLog']) ) {
+			$logged = Log::write([
+				'action'      => empty(self::$config['beanID']) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM',
+				'user'        => Auth::actualUser('username'),
+				'sim_user'    => Sim::user() ? Sim::user('username') : null,
+				'entity_type' => self::$config['beanType'],
+				'entity_id'   => $id,
+			]);
+			if ( $logged === false ) {
+				self::$error = Log::error();
+				return false;
+			}
 		}
 		// done!
 		return $id;
