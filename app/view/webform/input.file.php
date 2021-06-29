@@ -38,7 +38,7 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 ?><div class="webform-input-file"><?php
 	// field
 	if ( Webform::mode() != 'view' ) :
-		?><label for="<?php echo $fieldID; ?>" class="btn btn-light text-left p-3 position-relative"><?php
+		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3 position-relative"><?php
 			// psuedo-hidden field to submit
 			// ===> to be updated after ajax upload
 			if ( empty($fieldConfig['readonly']) ) :
