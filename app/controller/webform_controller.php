@@ -110,17 +110,30 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// new or edit form
+	// submit new form
 	case 'new':
-	case 'edit':
 		F::error('Config [beanID] is invalid', F::is('*.new')  and !empty($webform['beanID']));
+		// default step
+		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
+		F::error(Webform::error(), $arguments['step'] === false);
+		// display form
+		Webform::mode('new');
+		$layout['content'] = Webform::render($arguments['step']);
+		F::error(Webform::error(), $layout['content'] === false);
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
+		break;
+
+
+	// edit submitted form
+	case 'edit':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
 		// default step
-		if ( empty($arguments['step']) ) {
-			$arguments['step'] = Webform::firstStep();
-			F::error(Webform::error(), $arguments['step'] === false);
-		}
+		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
+		F::error(Webform::error(), $arguments['step'] === false);
 		// display form
+		Webform::mode('edit');
 		$layout['content'] = Webform::render($arguments['step']);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
@@ -131,7 +144,14 @@ switch ( $fusebox->action ) :
 
 	// view submitted form
 	case 'view':
-
+		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
+		// display form
+		Webform::mode('view');
+		$layout['content'] = Webform::renderAll();
+		F::error(Webform::error(), $layout['content'] === false);
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
 		break;
 
 
@@ -147,15 +167,14 @@ switch ( $fusebox->action ) :
 	// check submitted data of specific step
 	case 'validate':
 		F::error('Argument [step] is required', empty($arguments['step']));
-//		F::error('No data submitted', empty($arguments['data']));
-		// validate
-if ( isset($arguments['data']) ) {
-		$validated = Webform::validate($arguments['data']);
-		if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
-		// retain data
-		$cached = Webform::data($arguments['data']);
-		F::error(Webform::error(), $cached === false);
-}
+		// validate & retain data
+		if ( isset($arguments['data']) ) {
+			$validated = Webform::validate($arguments['data']);
+			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
+			// retain data
+			$cached = Webform::data($arguments['data']);
+			F::error(Webform::error(), $cached === false);
+		}
 		// determine new or edit
 		$mode = Webform::mode();
 		F::error(Webform::error(), $mode === false);
