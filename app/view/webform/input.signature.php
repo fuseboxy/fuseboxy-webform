@@ -24,7 +24,7 @@
 </fusedoc>
 */
 $btnText = '';
-?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2" style="height: 200px;"><?php
+?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2"><?php
 	// field
 	if ( Webform::mode() != 'view' ) :
 		// psuedo-hidden field to submit
@@ -40,7 +40,7 @@ $btnText = '';
 			/><?php
 		endif;
 		// signature
-		?><div class="signature-pad" style="cursor: pointer;"></div><?php
+		?><div class="signature-pad"></div><?php
 	// readonly
 	else :
 		?><img src="<?php echo $fieldValue; ?>" class="d-block mx-auto" alt="" /><?php
