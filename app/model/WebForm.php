@@ -489,16 +489,21 @@ class Webform {
 		</description>
 		<io>
 			<in>
+				<!-- framework config -->
+				<structure name="config" scope="$fusebox">
+					<string name="uploadDir" />
+					<string name="uploadUrl" />
+				</structure>
 				<!-- uploaded file -->
 				<file name="~uploadDir~/tmp/~uniqueFilename~" />
 				<!-- parameter -->
 				<string name="$fieldName" />
 			</in>
 			<out>
-				<!-- return value -->
-				<boolean name="~return~" />
 				<!-- re-located file -->
 				<file name="~uploadDir~/~beanType~/~fieldName~/~uniqueFilename~" />
+				<!-- return value -->
+				<string name="~uploadUrl/~beanType~/~fieldName~/~uniqueFilename~" />
 			</out>
 		</io>
 	</fusedoc>
