@@ -103,8 +103,8 @@ switch ( $fusebox->action ) :
 		$loaded = Webform::load();
 		F::error(Webform::error(), $loaded === false);
 		// go to form
-		F::redirect("{$fusebox->controller}.view", !empty($webform['beanID']));
-		F::redirect("{$fusebox->controller}.new");
+		F::redirect("{$fusebox->controller}.new", empty($webform['beanID']));
+		F::redirect("{$fusebox->controller}.view");
 		break;
 
 
@@ -177,16 +177,17 @@ switch ( $fusebox->action ) :
 	// simply return to specified step (without caching submitted data)
 	case 'back':
 		F::error('Argument [step] is required', empty($arguments['step']));
-		$mode = Webform::mode();
-		F::error(Webform::error(), $mode === false);
-		F::redirect("{$fusebox->controller}.{$mode}&step={$arguments['step']}");
+		$mode = empty($webform['beanID']) ? 'new' : 'edit';
+		F::redirect("{$fusebox->controller}.new&step={$arguments['step']}", empty($webform['beanID']));
+		F::redirect("{$fusebox->controller}.edit&step={$arguments['step']}");
 		break;
 
 
 	// check submitted data of specific step
 	case 'validate':
 		F::error('Argument [step] is required', empty($arguments['step']));
-		// validate & retain data
+		// validate & retain data (when necessary)
+		$validated = true;
 		if ( isset($arguments['data']) ) {
 			$validated = Webform::validate($arguments['data']);
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
@@ -194,15 +195,14 @@ switch ( $fusebox->action ) :
 			$cached = Webform::data($arguments['data']);
 			F::error(Webform::error(), $cached === false);
 		}
-		// determine new or edit
-		$mode = Webform::mode();
-		F::error(Webform::error(), $mode === false);
 		// return to last step (when necessary)
-		F::redirect("{$fusebox->controller}.{$mode}&step={$arguments['step']}", isset($_SESSION['flash']));
+		F::redirect("{$fusebox->controller}.new&step={$arguments['step']}", !$validated and empty($webform['beanID']));
+		F::redirect("{$fusebox->controller}.edit&step={$arguments['step']}", !$validated);
 		// go to next step
 		$nextStep = Webform::nextStep($arguments['step']);
 		F::error(Webform::error(), $nextStep === false);
-		F::redirect("{$fusebox->controller}.{$mode}&step={$nextStep}");
+		F::redirect("{$fusebox->controller}.new&step={$nextStep}", empty($webform['beanID']));
+		F::redirect("{$fusebox->controller}.edit&step={$nextStep}");
 		break;
 
 
