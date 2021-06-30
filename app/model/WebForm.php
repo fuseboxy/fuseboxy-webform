@@ -492,7 +492,7 @@ class Webform {
 					<string name="uploadUrl" />
 				</structure>
 				<!-- uploaded file -->
-				<file name="~uploadDir~/tmp/~uniqueFilename~" />
+				<file name="~uploadDir~/tmp/~sessionID~/~uniqueFilename~" />
 				<!-- parameter -->
 				<string name="$fieldName" />
 			</in>
@@ -993,7 +993,7 @@ class Webform {
 					<string name="fileUrl" optional="yes" oncondition="when success" />
 				</structure>
 				<!-- uploaded file -->
-				<file name="~uploadDir~/tmp/~uniqueFilename~.~fileExt~" />
+				<file name="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.~fileExt~" />
 			</out>
 		</io>
 	</fusedoc>
@@ -1022,10 +1022,10 @@ class Webform {
 		// determine target directory
 		$uploadDir  = str_replace('\\', '/', F::config('uploadDir'));
 		$uploadDir .= ( substr($uploadDir, -1) == '/' ) ? '' : '/';
-		$uploadDir .= 'tmp/';
+		$uploadDir .= 'tmp/'.session_id().'/';
 		$uploadBaseUrl  = str_replace('\\', '/', F::config('uploadUrl'));
 		$uploadBaseUrl .= ( substr($uploadBaseUrl, -1) == '/' ) ? '' : '/';
-		$uploadBaseUrl .= 'tmp/';
+		$uploadBaseUrl .= 'tmp/'.session_id().'/';
 		// create directory (when necessary)
 		if ( !file_exists($uploadDir) and !mkdir($uploadDir, 0766, true) ) {
 			self::$error = error_get_last()['message'];
