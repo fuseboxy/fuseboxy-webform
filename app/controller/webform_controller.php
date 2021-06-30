@@ -156,7 +156,7 @@ switch ( $fusebox->action ) :
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
 		// display form
-		$layout['content'] = Webform::render($arguments['step']);
+		$layout['content'] = Webform::render($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
