@@ -245,7 +245,7 @@ switch ( $fusebox->action ) :
 
 
 	// ajax upload progress
-	case 'upload-proress':
+	case 'upload-progress':
 		require Webform::$libPath['uploadProgress'];
 		break;
 
