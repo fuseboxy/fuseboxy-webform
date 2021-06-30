@@ -79,14 +79,20 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 		?></label><?php
 	// readonly
 	else :
-		?><div class="bg-light rounded <?php echo empty($fieldValue) ? 'p-4' : 'p-3'; ?>"><?php
-			?><a href="<?php echo $fieldValue; ?>" class="small" target="_blank"><?php
-				if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
-					?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail" alt="" /><?php
-				else :
-					?><strong><?php echo basename($fieldValue); ?></strong><?php
-				endif;
-			?></a><?php
+		?><div class="bg-light rounded p-3"><?php
+			// file link or image
+			if ( !empty($fieldValue) ) :
+				?><a href="<?php echo $fieldValue; ?>" class="small" target="_blank"><?php
+					if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
+						?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail" alt="" /><?php
+					else :
+						?><strong><?php echo basename($fieldValue); ?></strong><?php
+					endif;
+				?></a><?php
+			// empty (placeholder to maintain container height)
+			else :
+				?><span>&nbsp;</span><?php
+			endif;
 		?></div><?php
 	endif;
 ?></div>
