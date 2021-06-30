@@ -36,7 +36,9 @@
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
 		><?php echo htmlspecialchars($fieldValue); ?></textarea><?php
 	// readonly
+	elseif ( $fieldValue !== '' ) :
+		?><div class="form-control-plaintext text-primary"><strong><?php echo nl2br($fieldValue); ?></strong></div><?php	// empty
 	else :
-		?><div class="form-control text-primary"><strong><?php echo nl2br($fieldValue); ?></strong></div><?php
+		?><div class="form-control-plaintext text-muted">- - -</div><?php
 	endif;
 ?></div>

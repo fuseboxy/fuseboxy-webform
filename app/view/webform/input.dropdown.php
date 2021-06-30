@@ -60,12 +60,15 @@
 			endforeach;
 		?></select><?php
 	// readonly
-	else :
+	elseif ( $fieldValue !== '' ) :
 		$flatten = array();
 		foreach ( $fieldConfig['options'] as $optValue => $optText ) :
 			if ( is_array($optText) ) $flatten = array_merge($flatten, $optText);
 			else $flatten[$optValue] = $optText;
 		endforeach;
-		?><div class="form-control text-primary"><strong><?php echo isset($flatten[$fieldValue]) ? $flatten[$fieldValue] : $fieldValue; ?></strong></div><?php
+		?><div class="form-control-plaintext text-primary"><strong><?php echo isset($flatten[$fieldValue]) ? $flatten[$fieldValue] : $fieldValue; ?></strong></div><?php
+	// empty
+	else :
+		?><div class="form-control-plaintext text-muted">- - -</div><?php
 	endif;
 ?></div>
