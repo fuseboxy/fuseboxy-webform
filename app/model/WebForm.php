@@ -471,11 +471,8 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function mode($val=null) {
-		// getter
 		if ( empty($val) ) return self::$mode;
-		// setter
-		self::$mode == strtolower(trim($val));
-		// done!
+		self::$mode = strtolower(trim($val));
 		return true;
 	}
 
