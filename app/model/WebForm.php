@@ -482,7 +482,7 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			move uploaded file from temp to permanent directory
+			move (multiple) uploaded files from temp to permanent directory
 		</description>
 		<io>
 			<in>
@@ -491,30 +491,67 @@ class Webform {
 					<string name="uploadDir" />
 					<string name="uploadUrl" />
 				</structure>
-				<!-- uploaded file -->
-				<file name="~uploadDir~/tmp/~sessionID~/~uniqueFilename~" />
-				<!-- parameter -->
-				<string name="$fieldName" />
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<string name="beanType" />
+					<stucture name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" comments="file|image|signature" />
+						</structure>
+					</structure>
+				</structure>
+				<!-- cached form data -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~token~">
+						<mixed name="~fieldName~" />
+					</structure>
+				</structure>
+				<!-- uploaded file in server -->
+				<file path="~uploadDir~/tmp/~sessionID~/~uniqueFilename~" />
+				<!-- uploaded file url -->
+				<string value="~uploadDir~/tmp/~sessionID~/~uniqueFilename~" />
 			</in>
 			<out>
-				<!-- re-located file -->
-				<file name="~uploadDir~/~beanType~/~fieldName~/~uniqueFilename~" />
-				<!-- return value -->
-				<string name="~uploadUrl/~beanType~/~fieldName~/~uniqueFilename~" />
+				<!-- re-located file in server -->
+				<file path="~uploadDir~/~beanType~/~fieldName~/~uniqueFilename~" />
+				<!-- re-located file url (return value) -->
+				<string name="~return~" value="~uploadUrl/~beanType~/~fieldName~/~uniqueFilename~" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function moveFileToPerm($fieldName) {
-		// determine source directory
-
-
-		// determine target directory
-
-
-		// create directory (when necessary)
-
-
+	public static function moveFileToPerm() {
+		// load form data
+		$data = self::data();
+		if ( $data === false ) return false;
+		// go through each field
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			// check format
+			if ( in_array($cfg['format'], ['file','image','signature']) ) {
+				// only move file when in temp directory
+				if ( stripos($data[$fieldName], '/tmp/'.session_id().'/') !== false ) {
+					// determine server location of source file
+					$sourcePath = str_ireplace(F::config('uploadUrl'), F::config('uploadDir'), $data[$fieldName]);
+					// unify slash & ensure trailing slash
+					list($uploadDir, $uploadUrl) = array_map(function($item){
+						$item = str_replace('\\', '/', $item);
+						if ( substr($item, -1) !== '/' ) $item .= '/';
+						return $item;
+					}, array(F::config('uploadDir'), F::config('uploadUrl')));
+					// prepare target location in server
+					$targetPath = $uploadDir.self::$config['beanType'].'/'.$fieldName.'/'.basename($data[$fieldName]);
+					// preprare target url after re-location
+					$targetUrl = $uploadUrl.self::$config['beanType'].'/'.$fieldName.'/'.basename($data[$fieldName]);
+					// commit to move file
+					if ( !rename($sourcePath, $targetPath) ) {
+						self::$error = error_get_last()['message'];
+						return false;
+					}
+				} // if-tmp-directory
+			} // if-format
+		} // foreach-fieldConfig
+		// done!
+		return true;
 	}
 
 
@@ -821,6 +858,10 @@ class Webform {
 		// validate all data before save
 		$validated = self::validateAll();
 		if ( $validated === false ) return false;
+		// move uploaded files to permanent location
+		// ===> form data will be updated accordingly
+		$moved = self::moveFileToPerm();
+		if ( $moved === false ) return false;
 		// create empty container or load from database
 		if ( empty(self::$config['beanID']) ) $bean = ORM::new(self::$config['beanType']);
 		else $bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
