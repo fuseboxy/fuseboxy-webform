@@ -164,8 +164,10 @@ switch ( $fusebox->action ) :
 	case 'view':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
 		Webform::mode('view');
+		// exit point
+		$xfa['edit'] = "{$fusebox->controller}.edit";
 		// display form
-		$layout['content'] = Webform::renderAll();
+		$layout['content'] = Webform::renderAll($xfa);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];

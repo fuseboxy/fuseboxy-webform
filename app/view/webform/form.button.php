@@ -36,9 +36,9 @@
 			// edit button
 			if ( isset($xfa['edit']) ) :
 				?><a 
-					class="btn btn-lg btn-light btn-edit mx-1"
+					class="btn btn-lg btn-dark btn-edit mx-1"
 					href="<?php echo F::url($xfa['edit']); ?>"
-				><i class="fa fa-pencil-alt"></i> Edit</a><?php
+				><i class="fa fa-edit"></i> Edit</a><?php
 			endif;
 		?></div><?php
 	endif;
