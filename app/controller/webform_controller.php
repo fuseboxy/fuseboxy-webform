@@ -99,29 +99,28 @@ switch ( $fusebox->action ) :
 		// clear cache (if any)
 		$cleared = Webform::clear();
 		F::error(Webform::error(), $cleared === false);
-		// pre-load data (when edit)
+		// pre-load data (if any)
 		$loaded = Webform::load();
 		F::error(Webform::error(), $loaded === false);
-		// determine new or edit
-		$mode = Webform::mode();
-		F::error(Webform::error(), $mode === false);
-		// redirect to form
-		F::redirect("{$fusebox->controller}.{$mode}");
+		// go to form
+		F::redirect("{$fusebox->controller}.view", !empty($webform['beanID']));
+		F::redirect("{$fusebox->controller}.new");
 		break;
 
 
 	// submit new form
 	case 'new':
-		F::error('Config [beanID] is invalid', F::is('*.new')  and !empty($webform['beanID']));
+		F::error('Config [beanID] is invalid', !empty($webform['beanID']));
+		// set form mode
 		Webform::mode('new');
 		// default step
 		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
 		F::error(Webform::error(), $arguments['step'] === false);
 		// exit point
-		$prevStep = Webform::prevStep($step);
-		$nextStep = Webform::nextStep($step);
+		$prevStep = Webform::prevStep($arguments['step']);
+		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $prevStep !== false ) $xfa['back'] = "{$fusebox->controller}.back&step={$prevStep}";
-		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$step}";
+		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		else $xfa['submit'] = "{$fusebox->controller}.save";
 		// exit point (for ajax upload)
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
@@ -137,16 +136,17 @@ switch ( $fusebox->action ) :
 
 	// edit submitted form
 	case 'edit':
-		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
+		F::error('Config [beanID] is required', empty($webform['beanID']));
+		// set form mode
 		Webform::mode('edit');
 		// default step
 		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
 		F::error(Webform::error(), $arguments['step'] === false);
 		// exit point
-		$prevStep = Webform::prevStep($step);
-		$nextStep = Webform::nextStep($step);
+		$prevStep = Webform::prevStep($arguments['step']);
+		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $prevStep !== false ) $xfa['back'] = "{$fusebox->controller}.back&step={$prevStep}";
-		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$step}";
+		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		else $xfa['submit'] = "{$fusebox->controller}.save";
 		// exit point (for ajax upload)
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
@@ -163,7 +163,6 @@ switch ( $fusebox->action ) :
 	// view submitted form
 	case 'view':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
-		Webform::mode('view');
 		// exit point
 		$xfa['edit'] = "{$fusebox->controller}.edit";
 		// display form
