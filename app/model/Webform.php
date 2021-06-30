@@ -275,7 +275,7 @@ class Webform {
 					<!-- default steps (when unspecified) -->
 					<structure name="steps">
 						<structure name="default" />
-						<structure name="confirm" />
+						<boolean name="confirm" />
 					</structure>
 					<!-- default field config -->
 					<structure name="fieldConfig">
@@ -355,17 +355,7 @@ class Webform {
 		}
 		// append [confirm] step (when necessary)
 		if ( !isset(self::$config['steps']['confirm']) ) {
-			self::$config['steps']['confirm'] = array();
-		}
-		// set default field-layout of [confirm] step (when necessary)
-		if ( is_array(self::$config['steps']['confirm']) and empty(self::$config['steps']['confirm']) ) {
-			self::$config['steps']['confirm'] = array();
-			foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
-				// copy field-layout of other steps
-				if ( $stepName != 'confirm' ) foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
-					self::$config['steps']['confirm'][$fieldNameList] = $fieldWidthList;
-				}
-			}
+			self::$config['steps']['confirm'] = false;
 		}
 		// default snapshot table
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
@@ -719,6 +709,14 @@ class Webform {
 	*/
 	public static function render($step, $xfa=[]) {
 		$editable = in_array(self::$mode, ['new','edit']);
+		// display all when confirmation
+		if ( $step == 'confirm' ) {
+			$original = self::$mode;
+			self::$mode = 'view';
+			$output = self::renderAll($xfa);
+			self::$mode = $original;
+			return $output;
+		}
 		// validation
 		if ( !self::stepExists($step) ) return false;
 		// prepare variables
