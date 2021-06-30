@@ -118,11 +118,12 @@ switch ( $fusebox->action ) :
 		F::error(Webform::error(), $arguments['step'] === false);
 		// exit point
 		$prevStep = Webform::prevStep($arguments['step']);
+		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.new&step={$prevStep}";
+		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $prevStep !== false ) $xfa['back'] = "{$fusebox->controller}.back&step={$prevStep}";
-		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		else $xfa['submit'] = "{$fusebox->controller}.save";
-		// exit point (for ajax upload)
+		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
 		// display form
@@ -140,15 +141,18 @@ switch ( $fusebox->action ) :
 		// set form mode
 		Webform::mode('edit');
 		// default step
-		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
+		$firstStep = Webform::firstStep();
+		if ( empty($arguments['step']) ) $arguments['step'] = $firstStep;
 		F::error(Webform::error(), $arguments['step'] === false);
-		// exit point
+		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
+		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit&step={$prevStep}";
+		elseif ( $arguments['step'] == $firstStep ) $xfa['back'] = "{$fusebox->controller}.view";
+		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $prevStep !== false ) $xfa['back'] = "{$fusebox->controller}.back&step={$prevStep}";
-		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		else $xfa['submit'] = "{$fusebox->controller}.save";
-		// exit point (for ajax upload)
+		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		else $xfa['update'] = "{$fusebox->controller}.save";
+		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
 		// display form
@@ -171,15 +175,6 @@ switch ( $fusebox->action ) :
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
 		else echo $layout['content'];
-		break;
-
-
-	// simply return to specified step (without caching submitted data)
-	case 'back':
-		F::error('Argument [step] is required', empty($arguments['step']));
-		$mode = empty($webform['beanID']) ? 'new' : 'edit';
-		F::redirect("{$fusebox->controller}.new&step={$arguments['step']}", empty($webform['beanID']));
-		F::redirect("{$fusebox->controller}.edit&step={$arguments['step']}");
 		break;
 
 
