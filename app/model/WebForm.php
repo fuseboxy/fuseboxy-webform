@@ -675,6 +675,7 @@ class Webform {
 				</structure>
 				<!-- parameter -->
 				<string name="$step" />
+				<structure name="$xfa" optional="yes" comments="exit points" />
 			</in>
 			<out>
 				<string name="~return~" comments="form output" />
@@ -682,21 +683,10 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function render($step) {
+	public static function render($step, $xfa=[]) {
 		$editable = in_array(self::$mode, ['new','edit']);
 		// validation
 		if ( !self::stepExists($step) ) return false;
-		// exit point
-		$prevStep = self::prevStep($step);
-		$nextStep = self::nextStep($step);
-		if ( $prevStep !== false ) $xfa['back'] = F::command('controller').'.back&step='.$prevStep;
-		if ( $nextStep !== false ) $xfa['next'] = F::command('controller').'.validate&step='.$step;
-		else $xfa['submit'] = F::command('controller').'.save';
-		// exit point (for ajax upload)
-		if ( $editable ) {
-			$xfa['uploadHandler'] = F::command('controller').'.upload';
-			$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
-		}
 		// prepare variables
 		$fieldLayout = self::$config['steps'][$step];
 		$fieldConfigAll = self::$config['fieldConfig'];
@@ -729,6 +719,8 @@ class Webform {
 						<structure name="~fieldName~" />
 					</structure>
 				</structure>
+				<!-- parameter -->
+				<structure name="$xfa" optional="yes" comments="exit points" />
 			</in>
 			<out>
 				<string name="~return~" />
@@ -736,13 +728,8 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function renderAll() {
+	public static function renderAll($xfa=[]) {
 		$editable = in_array(self::$mode, ['new','edit']);
-		// exit point (for ajax upload)
-		if ( $editable ) {
-			$xfa['uploadHandler'] = F::command('controller').'.upload';
-			$xfa['uploadProgress'] = F::command('controller').'.upload-progress';
-		}
 		// prepare variables
 		$fieldLayoutAll = self::$config['steps'];
 		$fieldConfigAll = self::$config['fieldConfig'];

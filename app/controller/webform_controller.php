@@ -113,12 +113,21 @@ switch ( $fusebox->action ) :
 	// submit new form
 	case 'new':
 		F::error('Config [beanID] is invalid', F::is('*.new')  and !empty($webform['beanID']));
+		Webform::mode('new');
 		// default step
 		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
 		F::error(Webform::error(), $arguments['step'] === false);
+		// exit point
+		$prevStep = Webform::prevStep($step);
+		$nextStep = Webform::nextStep($step);
+		if ( $prevStep !== false ) $xfa['back'] = "{$fusebox->controller}.back&step={$prevStep}";
+		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$step}";
+		else $xfa['submit'] = "{$fusebox->controller}.save";
+		// exit point (for ajax upload)
+		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
+		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
 		// display form
-		Webform::mode('new');
-		$layout['content'] = Webform::render($arguments['step']);
+		$layout['content'] = Webform::render($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -129,11 +138,20 @@ switch ( $fusebox->action ) :
 	// edit submitted form
 	case 'edit':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
+		Webform::mode('edit');
 		// default step
 		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
 		F::error(Webform::error(), $arguments['step'] === false);
+		// exit point
+		$prevStep = Webform::prevStep($step);
+		$nextStep = Webform::nextStep($step);
+		if ( $prevStep !== false ) $xfa['back'] = "{$fusebox->controller}.back&step={$prevStep}";
+		if ( $nextStep !== false ) $xfa['next'] = "{$fusebox->controller}.validate&step={$step}";
+		else $xfa['submit'] = "{$fusebox->controller}.save";
+		// exit point (for ajax upload)
+		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
+		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
 		// display form
-		Webform::mode('edit');
 		$layout['content'] = Webform::render($arguments['step']);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
@@ -145,8 +163,8 @@ switch ( $fusebox->action ) :
 	// view submitted form
 	case 'view':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
-		// display form
 		Webform::mode('view');
+		// display form
 		$layout['content'] = Webform::renderAll();
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
