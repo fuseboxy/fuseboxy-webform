@@ -124,7 +124,7 @@ switch ( $fusebox->action ) :
 		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		else $xfa['submit'] = "{$fusebox->controller}.save";
+		else $xfa['submit'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
@@ -153,7 +153,7 @@ switch ( $fusebox->action ) :
 		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		else $xfa['update'] = "{$fusebox->controller}.save";
+		else $xfa['update'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
@@ -195,9 +195,11 @@ switch ( $fusebox->action ) :
 		// return to last step (when necessary)
 		F::redirect("{$fusebox->controller}.new&step={$arguments['step']}", !$validated and empty($webform['beanID']));
 		F::redirect("{$fusebox->controller}.edit&step={$arguments['step']}", !$validated);
-		// go to next step
+		// go to next step (or save)
+		$lastStep = Webform::lastStep();
+		F::error(Webform::error(), $lastStep === false);
 		$nextStep = Webform::nextStep($arguments['step']);
-		F::error(Webform::error(), $nextStep === false);
+		F::redirect("{$fusebox->controller}.save", $arguments['step'] == $lastStep);
 		F::redirect("{$fusebox->controller}.new&step={$nextStep}", empty($webform['beanID']));
 		F::redirect("{$fusebox->controller}.edit&step={$nextStep}");
 		break;
