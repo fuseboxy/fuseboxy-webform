@@ -970,6 +970,48 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			obtain config of related fields in specific step
+		</description>
+		<io>
+			<in>
+				<string name="step" />
+			</in>
+			<out>
+				<structure name="~return~">
+					<mixed name="~fieldName~" comments="field config" />
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function stepFields($step) {
+		$result = array();
+		// validation
+		if ( self::stepExists($step) === false ) return false;
+		// go through field layout of specific step
+		if ( is_array(self::$config['steps'][$step]) ) {
+			foreach ( self::$config['steps'][$step] as $fieldNameList => $fieldWidthList ) {
+$isDirectOutput = ( strlen($fieldNameList) and $fieldNameList[0] === '~' );
+$isHeading = ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) );
+$isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' );
+				if ( !$isDirectOutput and !$isHeading and !$isLine ) {
+					$fieldNameList = explode('|', $fieldNameList);
+					foreach ( $fieldNameList as $fieldName ) {
+						$result[$fieldName] = isset(self::$config['fieldConfig'][$fieldName]) ? self::$config['fieldConfig'][$fieldName] : array();
+					}
+				}
+			}
+		}
+		// done!
+		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			this is possible that user has opened multiple webforms
 			===> (opened in different browser windows)
 			===> use session to store one set of form data is not safe
@@ -1135,20 +1177,35 @@ class Webform {
 		</description>
 		<io>
 			<in>
+				<string name="$step" />
 				<structure name="$data">
 				</structure>
+				<structure name="&$more" comments="more error info" />
 			</in>
 			<out>
+				<!-- return value -->
 				<boolean name="~return~" />
+				<!-- more error info -->
+				<structure name="$more">
+					<string name="~fieldName~" value="~error~" />
+				</structure>
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function validate($data) {
-		// check required
+	public static function validate($step, $data, &$more=[]) {
+		// go through each field in specific step
+var_dump( self::stepFields($step) );
+die();
+$more['yeah'] = 'foobar!!!';
 		// check format
-		// check fixed value
-		// check custom rule
+
+		// check required (when necessary)
+
+		// check options (when necessary)
+
+		// check maxlength (when necessary)
+
 
 		// done!
 		return true;
