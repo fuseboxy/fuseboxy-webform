@@ -38,21 +38,10 @@
 </fusedoc>
 */
 foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
-	$isDirectOutput = ( strlen($fieldNameList) and $fieldNameList[0] === '~' );
-	$isHeading = ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) );
-	$isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' );
-	// output : direct output
-	if ( $isDirectOutput ) :
-		$output = substr($fieldNameList, 1);
-		echo strlen($output) ? "<div>{$output}</div>" : '';
-	// output : heading
-	elseif ( $isHeading ) :
-		$size = 'h'.( strlen($fieldNameList) - strlen(ltrim($fieldNameList, '#')) );
-		?><div class="<?php echo $size; ?>"><?php echo trim(ltrim($fieldNameList, '#')); ?></div><?php
-	// output : line
-	elseif ( $isLine ) :
-		?><hr /><?php
-	// output : input fields
+	// output & heading & line
+	if ( Webform::stepRowType($fieldNameList) != 'grid' ) :
+		echo Webform::stepRowParse($fieldNameList);
+	// grid layout
 	else :
 		$fieldNameList = explode('|', $fieldNameList);
 		$fieldWidthList = is_array($fieldWidthList) ? $fieldWidthList : array_filter(explode('|', $fieldWidthList));

@@ -991,10 +991,7 @@ class Webform {
 		// go through field layout of specific step
 		if ( is_array(self::$config['steps'][$step]) ) {
 			foreach ( self::$config['steps'][$step] as $fieldNameList => $fieldWidthList ) {
-$isDirectOutput = ( strlen($fieldNameList) and $fieldNameList[0] === '~' );
-$isHeading = ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) );
-$isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' );
-				if ( !$isDirectOutput and !$isHeading and !$isLine ) {
+				if ( self::stepRowType($fieldNameList) == 'grid' ) {
 					$fieldNameList = explode('|', $fieldNameList);
 					foreach ( $fieldNameList as $fieldName ) {
 						$result[$fieldName] = isset(self::$config['fieldConfig'][$fieldName]) ? self::$config['fieldConfig'][$fieldName] : array();
@@ -1004,6 +1001,71 @@ $isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' )
 		}
 		// done!
 		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			parse step row key to specific type
+		</description>
+		<io>
+			<in>
+				<string name="$fieldNameList" />
+			</in>
+			<out>
+				<string name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function stepRowParse($fieldNameList) {
+		$type = self::stepRowType($fieldNameList);
+		if ( $type === false ) return false;
+		$fieldNameList = trim($fieldNameList);
+		// direct output
+		if ( $type == 'output' ) {
+			$output = trim(substr($fieldNameList, 1));
+			return strlen($output) ? ('<div>'.$output.'</div>') : '';
+		// heading
+		} elseif ( $type == 'heading' ) {
+			$size = 'h'.( strlen($fieldNameList) - strlen(ltrim($fieldNameList, '#')) );
+			$text = trim(ltrim($fieldNameList, '#'));
+			return '<div class="'.$size.'">'.$text.'</div>';
+		// line
+		} elseif ( $type == 'line' ) {
+			return '<hr />';
+		}
+		// do nothing
+		return $fieldNameList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check key of step row and determine type
+		</description>
+		<io>
+			<in>
+				<string name="$fieldNameList" />
+			</in>
+			<out>
+				<string name="~return~" comments="output|heading|line|grid" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function stepRowType($fieldNameList) {
+		$fieldNameList = trim($fieldNameList);
+		if ( strlen($fieldNameList) and $fieldNameList[0] === '~' ) return 'output';
+		elseif ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) ) return 'heading';
+		elseif ( trim($fieldNameList, '=-') === '' ) return 'line';
+		return 'grid';
 	}
 
 
@@ -1194,19 +1256,20 @@ $isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' )
 	</fusedoc>
 	*/
 	public static function validate($step, $data, &$more=[]) {
+		$fields = self::stepFields($step);
+		if ( $fields === false ) return false;
 		// go through each field in specific step
-var_dump( self::stepFields($step) );
-die();
-$more['yeah'] = 'foobar!!!';
-		// check format
+		foreach ( $fields as $fieldName => $fieldConfig ) {
+			// check format
 
-		// check required (when necessary)
+			// check required (when necessary)
 
-		// check options (when necessary)
+			// check options (when necessary)
 
-		// check maxlength (when necessary)
+			// check maxlength (when necessary)
 
 
+		}
 		// done!
 		return true;
 	}
@@ -1303,10 +1366,7 @@ $more['yeah'] = 'foobar!!!';
 		// check field config : any missing
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
-				$isDirectOutput = ( strlen($fieldNameList) and $fieldNameList[0] === '~' );
-				$isHeading = ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) );
-				$isLine = ( !empty($fieldNameList) and trim(trim($fieldNameList), '=-') === '' );
-				if ( !$isDirectOutput and !$isHeading and !$isLine ) {
+				if ( self::stepRowType($fieldNameList) == 'grid' ) {
 					$fieldNameList = explode('|', $fieldNameList);
 					foreach ( $fieldNameList as $fieldName ) {
 						if ( !isset(self::$config['fieldConfig'][$fieldName]) ) {

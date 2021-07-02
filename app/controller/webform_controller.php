@@ -186,7 +186,7 @@ switch ( $fusebox->action ) :
 		// validate & retain data (when necessary)
 		$validated = true;
 		if ( isset($arguments['data']) ) {
-			$validated = Webform::validate($arguments['data']);
+			$validated = Webform::validate($arguments['step'], $arguments['data']);
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
 			// retain data
 			$cached = Webform::data($arguments['data']);
