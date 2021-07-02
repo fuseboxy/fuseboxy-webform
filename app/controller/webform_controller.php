@@ -12,9 +12,11 @@
 				<structure name="steps" optional="yes">
 					<structure name="~stepName~">
 						<list name="~fieldNameList~" value="~fieldWidthList~" optional="yes" delim="|" comments="use bootstrap grid layout for width" />
-						<string name="~line~" optional="yes" example="---" comments="any number of dash(-) or equal(=)" />
-						<string name="~heading~" optional="yes" example="## General" comments="number of pound-signs means H1,H2,H3..." />
+						<string name="~line~" optional="yes" comments="any amount of dash(-) or equal(=) signs" example="---" />
+						<string name="~heading~" optional="yes" comments="begins with pound(#) sign(s); number of pound-signs stands for H1,H2,H3..." example="## General" />
+						<string name="~output~" optional="yes" comments="begins with tide(~) sign" example="~<strong>output content directly</strong><br />" />
 					</structure>
+					<boolean name="confirm" optional="yes" default="true" />
 				</structure>
 				<!-- settings of each field used in form -->
 				<structure name="fieldConfig">
