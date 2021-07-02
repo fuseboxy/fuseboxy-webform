@@ -807,14 +807,6 @@ class Webform {
 		// validate all data before save
 		$validated = self::validateAll();
 		if ( $validated === false ) return false;
-		// validate captcha (when necessary)
-		if ( class_exists('Captcha') ) {
-			$validated = Captcha::validate();
-			if ( $validated === false ) {
-				self::$error = Captcha::error();
-				return false;
-			}
-		}
 		// move uploaded files to permanent location
 		// ===> form data will be updated accordingly
 		$moved = self::moveFileToPerm();

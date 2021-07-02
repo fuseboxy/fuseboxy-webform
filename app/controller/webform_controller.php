@@ -183,6 +183,9 @@ switch ( $fusebox->action ) :
 	// check submitted data of specific step
 	case 'validate':
 		F::error('Argument [step] is required', empty($arguments['step']));
+		// obtain last step
+		$lastStep = Webform::lastStep();
+		F::error(Webform::error(), $lastStep === false);
 		// validate & retain data (when necessary)
 		$validated = true;
 		if ( isset($arguments['data']) ) {
@@ -192,24 +195,30 @@ switch ( $fusebox->action ) :
 			$cached = Webform::data($arguments['data']);
 			F::error(Webform::error(), $cached === false);
 		}
-		// return to last step (when necessary)
-		F::redirect("{$fusebox->controller}.new&step={$arguments['step']}", !$validated and empty($webform['beanID']));
-		F::redirect("{$fusebox->controller}.edit&step={$arguments['step']}", !$validated);
-		// go to next step (or save)
-		$lastStep = Webform::lastStep();
-		F::error(Webform::error(), $lastStep === false);
-		$nextStep = Webform::nextStep($arguments['step']);
-		F::redirect("{$fusebox->controller}.save", $arguments['step'] == $lastStep);
-		F::redirect("{$fusebox->controller}.new&step={$nextStep}", empty($webform['beanID']));
-		F::redirect("{$fusebox->controller}.edit&step={$nextStep}");
+		// validate captcha (when last step)
+		if ( $validated and $arguments['step'] == $lastStep and class_exists('Captcha') ) {
+			$validated = Captcha::validate();
+			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Captcha::error()));
+		}
+		// return to current step (when error)
+		$action = empty($webform['beanID']) ? 'new' : 'edit';
+		F::redirect("{$fusebox->controller}.{$action}&step={$arguments['step']}", $validated === false);
+		// go to next step (when not last step)
+		F::redirect("{$fusebox->controller}.{$action}&step={$nextStep}", $arguments['step'] != $lastStep);
+		// go to save (when last step)
+		F::redirect("{$fusebox->controller}.save");
 		break;
 
 
 	// save submitted data
 	case 'save':
+		$lastStep = Webform::lastStep();
+		F::error(Webform::error(), $lastStep === false);
 		// commit to save
 		$saved = Webform::save();
-		F::error(Webform::error(), $saved === false);
+		if ( $saved === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
+		$action = empty($webform['beanID']) ? 'new' : 'edit';
+		F::redirect("{$fusebox->controller}.{$action}&step={$lastStep}", $saved === false);
 		// clear cache
 		$cleared = Webform::clear();
 		F::error(Webform::error(), $cleared === false);
