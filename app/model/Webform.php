@@ -211,12 +211,8 @@ class Webform {
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			// remove unnecessary step
 			// ===> e.g. [confirm=false]
-			if ( $fieldLayout === false ) {
+			if ( empty($fieldLayout) ) {
 				unset(self::$config['steps'][$stepName]);
-			// turn true into empty array
-			// ===> e.g. [confirm=true] >>> [confirm=array()]
-			} elseif ( $fieldLayout === true ) {
-				self::$config['steps'][$stepName] = array();
 			// turn string into array
 			// ===> e.g. [declare='col_1|col_2'] >>> [declare=array('col_1|col_2' => '')]
 			} elseif ( is_string($fieldLayout) ) {
@@ -226,16 +222,9 @@ class Webform {
 			} elseif ( is_array($fieldLayout) ) {
 				self::$config['steps'][$stepName] = array();
 				foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
-					if ( is_numeric($fieldNameList) ) {
-						$fieldNameList = $fieldWidthList;
-						$fieldWidthList = '';
-					}
+					if ( is_numeric($fieldNameList) ) list($fieldNameList, $fieldWidthList) = array($fieldWidthList, '');
 					self::$config['steps'][$stepName][$fieldNameList] = $fieldWidthList;
 				}
-			// invalid format
-			} else {
-				self::$error = "Field layout of step [{$stepName}] is invalid";
-				return false;
 			}
 		}
 		// fix field-config
@@ -714,7 +703,7 @@ class Webform {
 		// when [confirm] is simply true (no field specifed)
 		// ===> display all fields & quit
 		// ===> otherwise, display specified fields
-		if ( $step == 'confirm' and self::$config['steps'][$step] === true ) {
+		if ( $step == 'confirm' and self::$config['steps']['confirm'] === true ) {
 			$original = self::$mode;
 			self::$mode = 'view';
 			$output = self::renderAll($xfa);
@@ -767,6 +756,8 @@ class Webform {
 		// prepare variables
 		$fieldLayoutAll = self::$config['steps'];
 		$fieldConfigAll = self::$config['fieldConfig'];
+		// exclude [confirm] step
+		if ( isset($fieldLayoutAll['confirm']) ) unset($fieldLayoutAll['confirm']);
 		// load data from cache
 		$arguments['data'] = self::data();
 		if ( $arguments['data'] === false ) return false;
@@ -1464,13 +1455,15 @@ class Webform {
 		}
 		// check field config : any missing
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
-			foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
-				if ( self::stepRowType($fieldNameList) == 'grid' ) {
-					$fieldNameList = explode('|', $fieldNameList);
-					foreach ( $fieldNameList as $fieldName ) {
-						if ( !isset(self::$config['fieldConfig'][$fieldName]) ) {
-							self::$error = "Field config for [{$fieldName}] is required";
-							return false;
+			if ( is_array($fieldLayout) ) {
+				foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
+					if ( self::stepRowType($fieldNameList) == 'grid' ) {
+						$fieldNameList = explode('|', $fieldNameList);
+						foreach ( $fieldNameList as $fieldName ) {
+							if ( !isset(self::$config['fieldConfig'][$fieldName]) ) {
+								self::$error = "Field config for [{$fieldName}] is required";
+								return false;
+							}
 						}
 					}
 				}
