@@ -809,7 +809,7 @@ class Webform {
 		if ( $validated === false ) return false;
 		// validate captcha (when necessary)
 		if ( class_exists('Captcha') ) {
-			$validated = Captcha::validated();
+			$validated = Captcha::validate();
 			if ( $validated === false ) {
 				self::$error = Captcha::error();
 				return false;
@@ -1222,7 +1222,7 @@ class Webform {
 				}
 			}
 			// check required
-			if ( !empty($cfg['required']) and trim($fieldValue) === '' ) {
+			if ( !empty($cfg['required']) and empty($fieldValue) and $fieldValue !== 0 ) {
 				$err[$fieldName] = "Field [{$fieldName}] is required";
 			}
 			// check format : email
