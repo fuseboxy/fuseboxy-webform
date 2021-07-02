@@ -1226,6 +1226,19 @@ class Webform {
 		</description>
 		<io>
 			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" comments="email|date" />
+							<boolean name="required" />
+							<structure name="options" />
+							<number name="maxlength" />
+							<number name="minlength" />
+							<number name="max" />
+							<number name="min" />
+						</structure>
+					</structure>
 				<!-- parameter -->
 				<string name="$step" />
 				<structure name="$data">
@@ -1263,9 +1276,18 @@ class Webform {
 			// check options
 			} elseif ( !empty($cfg['options']) and !isset($cfg['options'][$fieldValue]) and $fieldValue !== '' ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
-			// check maxlength
-			} elseif ( !empty($cfg['maxlength']) and strlen($fieldValue) ) {
-				$err[$fieldName] = "Value of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
+			// check length : max
+			} elseif ( !empty($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
+				$err[$fieldName] = "Length of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
+			// check length : min
+			} elseif ( !empty($cfg['minlength']) and strlen($fieldValue) > $cfg['minlength'] ) {
+				$err[$fieldName] = "Length of [{$fieldName}] is too short (min={$cfg['minlength']},now=".strlen($fieldValue).")";
+			// check value : max
+			} elseif ( !empty($cfg['max']) and strlen($fieldValue) > $cfg['max'] ) {
+				$err[$fieldName] = "Value of [{$fieldName}] is too large (max={$cfg['max']},now=".strlen($fieldValue).")";
+			// check value : min
+			} elseif ( !empty($cfg['min']) and strlen($fieldValue) > $cfg['min'] ) {
+				$err[$fieldName] = "Value of [{$fieldName}] is too small (min={$cfg['min']},now=".strlen($fieldValue).")";
 			}
 		}
 		// check if any error
