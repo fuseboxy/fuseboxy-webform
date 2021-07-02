@@ -275,7 +275,7 @@ class Webform {
 					<!-- default steps (when unspecified) -->
 					<structure name="steps">
 						<structure name="default" />
-						<boolean name="confirm" />
+						<boolean name="confirm" default="true" />
 					</structure>
 					<!-- default field config -->
 					<structure name="fieldConfig">
@@ -355,7 +355,7 @@ class Webform {
 		}
 		// append [confirm] step (when necessary)
 		if ( !isset(self::$config['steps']['confirm']) ) {
-			self::$config['steps']['confirm'] = false;
+			self::$config['steps']['confirm'] = true;
 		}
 		// default snapshot table
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
