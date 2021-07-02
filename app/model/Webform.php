@@ -877,7 +877,7 @@ class Webform {
 			self::$error = ORM::error();
 			return false;
 		}
-		// put form data to container
+		// put (updated) form data to container
 		$data = self::data();
 		if ( $data === false ) return false;
 		$bean->import($data);
@@ -1222,27 +1222,16 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			validate all steps
-		</description>
-	</fusedoc>
-	*/
-	public static function validateAll() {
-
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
 			validate data of specific step
 		</description>
 		<io>
 			<in>
+				<!-- parameter -->
 				<string name="$step" />
 				<structure name="$data">
+					<mixed name="~fieldName~" />
 				</structure>
+				<!-- reference -->
 				<structure name="&$err" comments="more error info" />
 			</in>
 			<out>
@@ -1250,7 +1239,7 @@ class Webform {
 				<boolean name="~return~" />
 				<!-- more error info -->
 				<structure name="$more">
-					<string name="~fieldName~" value="~error~" />
+					<string name="~fieldName~" comments="error message" />
 				</structure>
 			</out>
 		</io>
@@ -1282,6 +1271,59 @@ class Webform {
 		// check if any error
 		if ( !empty($err) ) {
 			self::$error = implode(PHP_EOL, $err);
+			return false;
+		}
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			validate all data in cache
+		</description>
+		<io>
+			<in>
+				<!-- parameter -->
+				<structure name="$data">
+					<mixed name="~fieldName~" />
+				</structure>
+				<!-- reference -->
+				<structure name="&$err" comments="more error info" />
+			</in>
+			<out>
+				<!-- return value -->
+				<boolean name="~return~" />
+				<!-- more error info -->
+				<structure name="$more">
+					<structure name="~stepName~">
+						<string name="~fieldName~" comments="error message" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function validateAll(&$err=[]) {
+		$data = self::data();
+		if ( $data === false ) return false;
+		// go through all steps
+		foreach ( array_keys(self::$config['steps']) as $stepName ) {
+			// validate each step
+			$validated = self::validate($stepName, $data, $stepErr);
+			// group error by step
+			if ( $validated === false ) $err[$stepName] = $stepErr;
+		}
+		// check if any error
+		if ( !empty($err) ) {
+			self::$error = '';
+			foreach ( $err as $stepName => $stepErr ) {
+				self::$error .= '<h5>'.$stepName.'</h5>';
+				self::$error .= implode(PHP_EOL, $stepErr);
+			}
 			return false;
 		}
 		// done!
