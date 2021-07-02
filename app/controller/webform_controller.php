@@ -84,12 +84,12 @@
 F::error('Forbidden', F::is('webform.*'));
 // allow component to access and update the config variable
 Webform::$config = &$webform;
+// set default & fix config
+$init = Webform::initConfig();
+F::error(Webform::error(), $init === false);
 // check config
 $valid = Webform::validateConfig();
 F::error(Webform::error(), $valid === false);
-// set default config
-$init = Webform::initConfig();
-F::error(Webform::error(), $init === false);
 
 
 // start!

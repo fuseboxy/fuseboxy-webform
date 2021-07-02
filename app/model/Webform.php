@@ -171,85 +171,7 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			fix field-layout which only specified field-name-list
-			fix field-config which only specified field-name
-		</description>
-		<io>
-			<in>
-				<structure name="$config" scope="self">
-					<structure name="steps">
-						<structure name="~stepName~">
-							<list name="+" value="~fieldNameList~" optional="yes" delim="|" comments="when no key specified, value is field-name-list" />
-						</structure>
-					</structure>
-					<structure name="fieldConfig">
-						<string name="~fieldName~" />
-					</structure>
-				</structure>
-			</in>
-			<out>
-				<!-- fixed config -->
-				<structure name="$config" scope="self">
-					<structure name="steps">
-						<structure name="~stepName~">
-							<list name="~fieldNameList~" value="~empty~" />
-						</structure>
-					</structure>
-					<structure name="fieldConfig">
-						<array name="~fieldName~" value="~empty~" />
-					</structure>
-				</structure>
-				<!-- return value -->
-				<boolean name="~return~" />
-			</out>
-		</io>
-	*/
-	private static function fixConfig() {
-		// fix field-layout of each step
-		// ===> when only field-name-list specified
-		// ===> use field-name-list as key & apply empty field-width-list
-		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
-			// remove unnecessary step
-			// ===> e.g. [confirm=false]
-			if ( empty($fieldLayout) ) {
-				unset(self::$config['steps'][$stepName]);
-			// turn string into array
-			// ===> e.g. [declare='col_1|col_2'] >>> [declare=array('col_1|col_2' => '')]
-			} elseif ( is_string($fieldLayout) ) {
-				self::$config['steps'][$stepName] = array($fieldLayout => '');
-			// go through well-formatted field-layout
-			// ===> make sure field-name-list is key & field-width-list is value
-			} elseif ( is_array($fieldLayout) ) {
-				self::$config['steps'][$stepName] = array();
-				foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
-					if ( is_numeric($fieldNameList) ) list($fieldNameList, $fieldWidthList) = array($fieldWidthList, '');
-					self::$config['steps'][$stepName][$fieldNameList] = $fieldWidthList;
-				}
-			}
-		}
-		// fix field-config
-		// ===> when only field-name specified
-		// ===> use field-name as key & apply empty config
-		$arr = self::$config['fieldConfig'];
-		self::$config['fieldConfig'] = array();
-		foreach ( $arr as $fieldName => $config ) {
-			if ( is_numeric($fieldName) ) {
-				$fieldName = $config;
-				$config = array();
-			}
-			self::$config['fieldConfig'][$fieldName] = $config;
-		}
-		// done!
-		return true;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			set default config
+			set default & fix config config
 		</description>
 		<io>
 			<in>
@@ -292,12 +214,56 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function initConfig() {
-		$fixed = self::fixConfig();
-		if ( $fixed === false ) return false;
 		// beanID : default
 		// ===> zero stands for submitting new form
 		// ===> non-zero stands for editing submitted form
 		if ( empty(self::$config['beanID']) ) self::$config['beanID'] = 0;
+		// set default steps
+		// ===> when none specified
+		// ===> simply use all fields as specified in field-config
+		if ( empty(self::$config['steps']) ) self::$config['steps'] = array('default' => array_keys(self::$config['fieldConfig']));
+		// default having [confirm] step
+		if ( !isset(self::$config['steps']['confirm']) ) self::$config['steps']['confirm'] = true;
+		// fix field-layout of each step
+		// ===> when only field-name-list specified
+		// ===> use field-name-list as key & apply empty field-width-list
+		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
+			// turn string into array
+			// ===> e.g. [ 'declare' => 'col_1|col_2' ]  >>>  [ 'declare' => array('col_1|col_2' => '') ]
+			if ( is_string($fieldLayout) ) {
+				self::$config['steps'][$stepName] = array($fieldLayout => '');
+			// go through well-formatted field-layout
+			// ===> make sure field-name-list is key & field-width-list is value
+			// ===> e.g. [ 'my-step' => array('a|b|c', 'x|y|z' => '6|3|3') ]  >>>  [ 'my-step' => array('a|b|c' => '', 'x|y|z' => '6|3|3') ]
+			} elseif ( is_array($fieldLayout) ) {
+				self::$config['steps'][$stepName] = array();
+				foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
+					if ( is_numeric($fieldNameList) ) list($fieldNameList, $fieldWidthList) = array($fieldWidthList, '');
+					self::$config['steps'][$stepName][$fieldNameList] = $fieldWidthList;
+				}
+			// remove empty step
+			// ===> e.g. [ 'my-step' => array() ]  >>>  (remove)
+			// ===> e.g. [ 'confirm' => false   ]  >>>  (remove)
+			} elseif ( empty($fieldLayout) ) {
+				unset(self::$config['steps'][$stepName]);
+			// invalid format
+			} elseif ( $stepName != 'confirm' ) {
+				self::$error = "Field layout of step [{$stepName}] is invalid";
+				return false;
+			}
+		}
+		// fix field-config
+		// ===> when only field-name specified
+		// ===> use field-name as key & apply empty config
+		$arr = self::$config['fieldConfig'];
+		self::$config['fieldConfig'] = array();
+		foreach ( $arr as $fieldName => $config ) {
+			if ( is_numeric($fieldName) ) {
+				$fieldName = $config;
+				$config = array();
+			}
+			self::$config['fieldConfig'][$fieldName] = $config;
+		}
 		// field config : default
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// format : default
@@ -335,16 +301,6 @@ class Webform {
 				// button alt-text : default
 				if ( empty($cfg['buttonAltText']) ) self::$config['fieldConfig'][$fieldName]['buttonAltText'] = 'Choose Another File';
 			}
-		}
-		// set default steps
-		// ===> when none specified
-		// ===> simply use all fields as specified in field-config
-		if ( empty(self::$config['steps']) ) {
-			self::$config['steps'] = array('default' => array_keys(self::$config['fieldConfig']));
-		}
-		// append [confirm] step (when necessary)
-		if ( !isset(self::$config['steps']['confirm']) ) {
-			self::$config['steps']['confirm'] = true;
 		}
 		// default snapshot table
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
@@ -704,6 +660,8 @@ class Webform {
 		// ===> display all fields & quit
 		// ===> otherwise, display specified fields
 		if ( $step == 'confirm' and self::$config['steps']['confirm'] === true ) {
+//var_dump(self::$config['steps']);
+//die('abc');
 			$original = self::$mode;
 			self::$mode = 'view';
 			$output = self::renderAll($xfa);
@@ -1406,9 +1364,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function validateConfig() {
-		$fixed = self::fixConfig();
-		if ( $fixed === false ) return false;
-		// has file field?
+		// has any file-field?
 		$hasFileField = false;
 		if ( isset(self::$config['fieldConfig']) ) {
 			foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
