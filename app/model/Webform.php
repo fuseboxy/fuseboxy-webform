@@ -708,17 +708,19 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function render($step, $xfa=[]) {
-		$editable = in_array(self::$mode, ['new','edit']);
-		// display all when confirmation
-		if ( $step == 'confirm' ) {
+		$editable = ( in_array(self::$mode, ['new','edit']) and $step != 'confirm' );
+		// validation
+		if ( !self::stepExists($step) ) return false;
+		// when [confirm] is simply true (no field specifed)
+		// ===> display all fields & quit
+		// ===> otherwise, display specified fields
+		if ( $step == 'confirm' and self::$config['steps'][$step] === true ) {
 			$original = self::$mode;
 			self::$mode = 'view';
 			$output = self::renderAll($xfa);
 			self::$mode = $original;
 			return $output;
 		}
-		// validation
-		if ( !self::stepExists($step) ) return false;
 		// prepare variables
 		$fieldLayout = self::$config['steps'][$step];
 		$fieldConfigAll = self::$config['fieldConfig'];
