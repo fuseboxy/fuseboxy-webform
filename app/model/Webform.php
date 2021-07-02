@@ -994,7 +994,8 @@ class Webform {
 				if ( self::stepRowType($fieldNameList) == 'grid' ) {
 					$fieldNameList = explode('|', $fieldNameList);
 					foreach ( $fieldNameList as $fieldName ) {
-						$result[$fieldName] = isset(self::$config['fieldConfig'][$fieldName]) ? self::$config['fieldConfig'][$fieldName] : array();
+						$fieldConfig = isset(self::$config['fieldConfig'][$fieldName]) ? self::$config['fieldConfig'][$fieldName] : array();
+						if ( isset($fieldConfig['format']) and $fieldConfig['format'] != 'output' ) $result[$fieldName] = $fieldConfig;
 					}
 				}
 			}
@@ -1242,7 +1243,7 @@ class Webform {
 				<string name="$step" />
 				<structure name="$data">
 				</structure>
-				<structure name="&$more" comments="more error info" />
+				<structure name="&$err" comments="more error info" />
 			</in>
 			<out>
 				<!-- return value -->
@@ -1255,20 +1256,33 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function validate($step, $data, &$more=[]) {
-		$fields = self::stepFields($step);
-		if ( $fields === false ) return false;
+	public static function validate($step, $data, &$err=[]) {
+		$fieldConfig = self::stepFields($step);
+		if ( $fieldConfig === false ) return false;
 		// go through each field in specific step
-		foreach ( $fields as $fieldName => $fieldConfig ) {
-			// check format
-
-			// check required (when necessary)
-
-			// check options (when necessary)
-
-			// check maxlength (when necessary)
-
-
+		foreach ( $fieldConfig as $fieldName => $cfg ) {
+			$fieldValue = isset($data[$fieldName]) ? $data[$fieldName] : '';
+			// check format : email
+			if ( $cfg['format'] == 'email' and !filter_var($fieldValue, FILTER_VALIDATE_EMAIL) ) {
+				$err[$fieldName] = "Invalid email format in [{$fieldName}] ({$fieldValue})";
+			// check format : date
+			} elseif ( $cfg['format'] == 'date' and DateTime::createFromFormat('Y-m-d', $fieldValue) === false ) {
+				$err[$fieldName] = "Invalid date format in [{$fieldName}] ({$fieldValue})";
+			// check required
+			} elseif ( !empty($cfg['required']) and trim($fieldValue) === '' ) {
+				$err[$fieldName] = "Field [{$fieldName}] is required";
+			// check options
+			} elseif ( !empty($cfg['options']) and !isset($cfg['options'][$fieldValue]) and $fieldValue !== '' ) {
+				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
+			// check maxlength
+			} elseif ( !empty($cfg['maxlength']) and strlen($fieldValue) ) {
+				$err[$fieldName] = "Value of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
+			}
+		}
+		// check if any error
+		if ( !empty($err) ) {
+			self::$error = implode(PHP_EOL, $err);
+			return false;
 		}
 		// done!
 		return true;
