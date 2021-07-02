@@ -1230,7 +1230,7 @@ class Webform {
 				<structure name="$config" scope="self">
 					<structure name="fieldConfig">
 						<structure name="~fieldName~">
-							<string name="format" comments="email|date" />
+							<string name="format" comments="email|date|dropdown|radio|checkbox" />
 							<boolean name="required" />
 							<structure name="options" />
 							<number name="maxlength" />
@@ -1264,32 +1264,53 @@ class Webform {
 		// go through each field in specific step
 		foreach ( $fieldConfig as $fieldName => $cfg ) {
 			$fieldValue = isset($data[$fieldName]) ? $data[$fieldName] : '';
+			// flatten options (when necessary)
+			if ( !empty($cfg['options']) ) {
+				$optionsFlatten = array();
+				foreach ( $cfg['options'] as $optValue => $optText ) {
+					if ( is_array($optText) ) foreach ( $optText as $key => $val ) $optionsFlatten[$key] = $val;
+					else $optionsFlatten[$optValue] = $optText;
+				}
+			}
+			// check required
+			if ( !empty($cfg['required']) and trim($fieldValue) === '' ) {
+				$err[$fieldName] = "Field [{$fieldName}] is required";
+			}
 			// check format : email
 			if ( $cfg['format'] == 'email' and !filter_var($fieldValue, FILTER_VALIDATE_EMAIL) ) {
 				$err[$fieldName] = "Invalid email format in [{$fieldName}] ({$fieldValue})";
+			}
 			// check format : date
-			} elseif ( $cfg['format'] == 'date' and DateTime::createFromFormat('Y-m-d', $fieldValue) === false ) {
+			if ( $cfg['format'] == 'date' and DateTime::createFromFormat('Y-m-d', $fieldValue) === false ) {
 				$err[$fieldName] = "Invalid date format in [{$fieldName}] ({$fieldValue})";
-			// check required
-			} elseif ( !empty($cfg['required']) and trim($fieldValue) === '' ) {
-				$err[$fieldName] = "Field [{$fieldName}] is required";
-			// check options
-			} elseif ( !empty($cfg['options']) and !isset($cfg['options'][$fieldValue]) and $fieldValue !== '' ) {
+			}
+			// check options : checkbox (multiple selection)
+			if ( $cfg['format'] == 'checkbox' and $fieldValue !== '' ) {
+				foreach ( $fieldValue as $selectedItem ) if ( !isset($optionsFlatten[$selectedItem]) ) {
+					$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$selectedItem})";
+				}
+			}
+			// check options : dropdown & radio (single selection)
+			if ( in_array($cfg['format'], ['dropdown','radio']) and $fieldValue !== '' and !isset($optionsFlatten[$fieldValue]) ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
+			}
 			// check length : max
-			} elseif ( !empty($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
+			if ( !empty($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
 				$err[$fieldName] = "Length of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
+			}
 			// check length : min
-			} elseif ( !empty($cfg['minlength']) and strlen($fieldValue) > $cfg['minlength'] ) {
+			if ( !empty($cfg['minlength']) and strlen($fieldValue) > $cfg['minlength'] ) {
 				$err[$fieldName] = "Length of [{$fieldName}] is too short (min={$cfg['minlength']},now=".strlen($fieldValue).")";
+			}
 			// check value : max
-			} elseif ( !empty($cfg['max']) and strlen($fieldValue) > $cfg['max'] ) {
+			if ( !empty($cfg['max']) and strlen($fieldValue) > $cfg['max'] ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is too large (max={$cfg['max']},now=".strlen($fieldValue).")";
+			}
 			// check value : min
-			} elseif ( !empty($cfg['min']) and strlen($fieldValue) > $cfg['min'] ) {
+			if ( !empty($cfg['min']) and strlen($fieldValue) > $cfg['min'] ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is too small (min={$cfg['min']},now=".strlen($fieldValue).")";
 			}
-		}
+		} // foreach-fieldConfig
 		// check if any error
 		if ( !empty($err) ) {
 			self::$error = implode(PHP_EOL, $err);
