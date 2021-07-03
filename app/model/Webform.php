@@ -544,6 +544,7 @@ class Webform {
 			<in>
 				<!-- config -->
 				<structure name="$config" scope="self">
+					<string name="beanType" />
 					<structure name="notification">
 						<string name="fromName" />
 						<string name="from" />
@@ -553,7 +554,10 @@ class Webform {
 						<string name="subject" />
 						<string name="body" />
 					</structure>
+					<boolean name="writeLog" />
 				</structure>
+				<!-- parameter -->
+				<number name="$entityID" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -561,7 +565,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function notify() {
+	public static function notify($entityID) {
 		// get config
 		$cfg = self::$config['notification'];
 		// validate recipient
@@ -607,6 +611,19 @@ class Webform {
 		if ( Util::mail($mail) === false ) {
 			self::$error = Util::error();
 			return false;
+		}
+		// write log
+		if ( !empty(self::$config['writeLog']) ) {
+			$logged = Log::write([
+				'action'      => 'SEND_NOTIFICATION',
+				'entity_type' => self::$config['beanType'],
+				'entity_id'   => $entityID,
+				'remark'      => $mail,
+			]);
+			if ( $logged === false ) {
+				self::$error = Log::error();
+				return false;
+			}
 		}
 		// done!
 		return true;
@@ -860,7 +877,7 @@ class Webform {
 		}
 		// send notification (when necessary)
 		if ( !empty(self::$config['notification']) ) {
-			$notified = self::notify();
+			$notified = self::notify($id);
 			if ( $notified === false ) return false;
 		}
 		// take snapshot (when necessary)
@@ -891,8 +908,6 @@ class Webform {
 		if ( !empty(self::$config['writeLog']) ) {
 			$logged = Log::write([
 				'action'      => empty(self::$config['beanID']) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM',
-				'user'        => Auth::actualUser('username'),
-				'sim_user'    => Sim::user() ? Sim::user('username') : null,
 				'entity_type' => self::$config['beanType'],
 				'entity_id'   => $id,
 			]);
