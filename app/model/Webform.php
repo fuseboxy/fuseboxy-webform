@@ -598,7 +598,7 @@ class Webform {
 		// send to recipient (by email field or custom value)
 		// ===> e.g. [ 'to' => ':email' ]
 		// ===> e.g. [ 'to' => 'foo@bar.com' ]
-		$mail['to'] = $emailField ? $formData[$emailField] : $cfg['to']
+		$mail['to'] = $emailField ? $formData[$emailField] : $cfg['to'];
 		// prepare mapping of mask & data
 		$masks = array();
 		foreach ( $formData as $key => $val ) $masks["[[{$key}]]"] = $val;
