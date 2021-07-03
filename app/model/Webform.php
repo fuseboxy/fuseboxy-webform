@@ -207,6 +207,9 @@ class Webform {
 						<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 					</structure>
 					<!-- others -->
+					<structure name="notification" optional="yes">
+						<string name="to" default=":email" />
+					</structure>
 					<string name="snapshot" default="snapshot" comments="table to save snapshot; no snapshot to take when false" />
 				</structure>
 			</out>
@@ -301,6 +304,10 @@ class Webform {
 				// button alt-text : default
 				if ( empty($cfg['buttonAltText']) ) self::$config['fieldConfig'][$fieldName]['buttonAltText'] = 'Choose Another File';
 			}
+		}
+		// default email field for notification
+		if ( !empty(self::$config['notification']) and empty(self::$config['notification']['to']) ) {
+			self::$config['notification']['to'] = ':email';
 		}
 		// default snapshot table
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
@@ -557,21 +564,40 @@ class Webform {
 	public static function notify() {
 		// get config
 		$cfg = self::$config['notification'];
+		// validate recipient
+		if ( empty($cfg['to']) ) {
+			self::$error = 'Notification recipient not specified';
+			return false;
+		}
+		// load form data
+		$formData = self::data();
+		if ( $formData === false ) return false;
 		// prepare mail
 		$mail = array(
 			'from_name' => !empty($cfg['fromName']) ? $cfg['fromName'] : null,
-			'from'      => !empty($cfg['from'])     ? $cfg['from']     : null,
-			'to'        => !empty($cfg['to'])       ? $cfg['to']       : null,
-			'cc'        => !empty($cfg['cc'])       ? $cfg['cc']       : null,
-			'bcc'       => !empty($cfg['bcc'])      ? $cfg['bcc']      : null,
+			'from'      => !empty($cfg['from']) ? $cfg['from'] : null,
+			'cc'        => !empty($cfg['cc']) ? $cfg['cc'] : null,
+			'bcc'       => !empty($cfg['bcc']) ? $cfg['bcc'] : null,
 			'subject'   => $cfg['subject'],
 			'body'      => $cfg['body'],
 		);
+		// retrieve email field (when necessary)
+		$emailField = ( $cfg['to'][0] == ':' ) ? substr($cfg['to'], 1) : false;
+		// validate email field
+		if ( $emailField and !isset($formData[$emailField]) ) {
+			self::$error = "Email field not found (field={$emailField})";
+			return false;
+		} elseif ( $emailField and empty($formData[$emailField]) ) {
+			self::$error = "Notification recipient not specified (field={$emailField})";
+			return false;
+		}
+		// send to recipient (by email field or custom value)
+		// ===> e.g. [ 'to' => ':email' ]
+		// ===> e.g. [ 'to' => 'foo@bar.com' ]
+		$mail['to'] = $emailField ? $formData[$emailField] : $cfg['to']
 		// prepare mapping of mask & data
-		$data = self::data();
-		if ( $data === false ) return false;
 		$masks = array();
-		foreach ( $data as $key => $val ) $masks["[[{$key}]]"] = $val;
+		foreach ( $formData as $key => $val ) $masks["[[{$key}]]"] = $val;
 		// replace mask in subject & body
 		foreach ( $masks as $key => $val ) {
 			$mail['subject'] = str_ireplace($key, $val, $mail['subject']);
