@@ -52,7 +52,11 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 				/><?php
 				// remove button
-				?><button type="button" class="btn-remove btn btn-sm btn-secondary float-right">&times;</button><?php
+				?><button 
+					type="button"
+					class="btn-remove btn btn-sm btn-secondary float-right"
+					<?php if ( empty($fieldValue) ) : ?>style="display: none;"<?php endif; ?>
+				>&times;</button><?php
 				// upload button
 				?><button 
 					type="button" 

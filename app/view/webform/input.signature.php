@@ -41,7 +41,11 @@ $btnText = '';
 			/><?php
 		endif;
 		// clear button
-		?><button type="button" class="btn-clear btn btn-sm btn-secondary float-right">&times;</button><?php
+		?><button 
+			type="button"
+			class="btn-clear btn btn-sm btn-secondary float-right"
+			<?php if ( empty($fieldValue) ) : ?>style="display: none;"<?php endif; ?>
+		>&times;</button><?php
 		// signature
 		?><div class="signature-pad"></div><?php
 	// readonly
