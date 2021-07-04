@@ -1209,6 +1209,7 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			convert (multiple) fields of signature data to file
 			===> upload to temp directory only
 		</description>
 		<io>
