@@ -40,9 +40,14 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 	// field
 	if ( !empty($editable) ) :
 		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3 position-relative"><?php
-			// psuedo-hidden field to submit
-			// ===> to be updated after ajax upload
 			if ( empty($fieldConfig['readonly']) ) :
+				// remove button
+				?><button 
+					type="button"
+					class="btn-remove btn btn-sm btn-secondary float-right"
+				>&times;</button><?php
+				// psuedo-hidden field to submit
+				// ===> to be updated after ajax upload
 				?><input 
 					type="text" 
 					class="w-0 p-0 op-0 position-absolute"
@@ -51,21 +56,21 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 				/><?php
+				// upload button
+				?><button 
+					type="button" 
+					id="<?php echo $fieldID; ?>" 
+					class="btn-upload btn btn-sm btn-primary mr-2"
+					data-upload-handler="<?php echo F::url($xfa['uploadHandler'].'&uploaderID='.$fieldID.'&fieldName='.$fieldName); ?>"
+					data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
+					data-filesize="<?php echo Webform::fileSizeInBytes($fieldConfig['filesize']); ?>"
+					data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
+					data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
+					data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
+					data-button-text="<?php echo $fieldConfig['buttonText']; ?>"
+					data-button-alt-text="<?php echo $fieldConfig['buttonAltText']; ?>"
+				><?php echo $btnText; ?></button><?php
 			endif;
-			// upload button
-			?><button 
-				type="button" 
-				id="<?php echo $fieldID; ?>" 
-				class="btn-upload btn btn-sm btn-primary mr-2"
-				data-upload-handler="<?php echo F::url($xfa['uploadHandler'].'&uploaderID='.$fieldID.'&fieldName='.$fieldName); ?>"
-				data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
-				data-filesize="<?php echo Webform::fileSizeInBytes($fieldConfig['filesize']); ?>"
-				data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
-				data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
-				data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
-				data-button-text="<?php echo $fieldConfig['buttonText']; ?>"
-				data-button-alt-text="<?php echo $fieldConfig['buttonAltText']; ?>"
-			><?php echo $btnText; ?></button><?php
 			// preview link
 			if ( !empty($fieldValue) ) :
 				?><a href="<?php echo $fieldValue; ?>" class="preview-link small" target="_blank"><?php
