@@ -41,11 +41,6 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 	if ( !empty($editable) ) :
 		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3 position-relative"><?php
 			if ( empty($fieldConfig['readonly']) ) :
-				// remove button
-				?><button 
-					type="button"
-					class="btn-remove btn btn-sm btn-secondary float-right"
-				>&times;</button><?php
 				// psuedo-hidden field to submit
 				// ===> to be updated after ajax upload
 				?><input 
@@ -56,6 +51,8 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 				/><?php
+				// remove button
+				?><button type="button" class="btn-remove btn btn-sm btn-secondary float-right">&times;</button><?php
 				// upload button
 				?><button 
 					type="button" 
