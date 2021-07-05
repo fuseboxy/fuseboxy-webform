@@ -829,9 +829,9 @@ class Webform {
 				<structure name="$config" scope="self">
 					<string name="beanType" />
 					<number name="beanID" />
-					<boolean name="writeLog" optional="yes" />
-					<string name="snapshot" optional="yes" comments="table name for snapshot" />
 					<structure name="notification" optional="yes" />
+					<boolean_or_string name="writeLog" optional="yes" />
+					<string name="snapshot" optional="yes" comments="table name for snapshot" />
 				</structure>
 				<!-- cache -->
 				<structure name="webform" scope="$_SESSION">
@@ -907,9 +907,14 @@ class Webform {
 		// write log (when necessary)
 		if ( !empty(self::$config['writeLog']) ) {
 			$logged = Log::write([
-				'action'      => empty(self::$config['beanID']) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM',
+				'action' => call_user_func(function(){
+					// user-specified action name
+					if ( is_string(self::$config['writeLog']) ) return self::$config['writeLog'];
+					// default action name
+					return empty(self::$config['beanID']) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM';
+				}),
 				'entity_type' => self::$config['beanType'],
-				'entity_id'   => $id,
+				'entity_id' => $id,
 			]);
 			if ( $logged === false ) {
 				self::$error = Log::error();
@@ -1436,7 +1441,7 @@ class Webform {
 						<string name="subject" />
 						<string name="body" />
 					</structure>
-					<boolean name="writeLog" />
+					<boolean_or_string name="writeLog" />
 				</structure>
 				<!-- framework config -->
 				<structure name="config" scope="$fusebox">

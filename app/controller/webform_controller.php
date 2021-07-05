@@ -63,9 +63,9 @@
 					<string name="subject" />
 					<string name="body" />
 				</structure>
-				<!-- settings for log -->
-				<boolean name="writeLog" optional="yes" default="false" comments="simply true to log all actions" />
-				<boolean name="snapshot" optional="yes" default="false" comments="default save to {snapshot} table when true; or specify table name to save" />
+				<!-- other setting -->
+				<boolean_or_string name="writeLog" optional="yes" default="false" comments="simply true to log with default action; or specify action name for log" />
+				<boolean_or_string name="snapshot" optional="yes" default="false" comments="simply true to save to {snapshot} table; or specify table name to save" />
 			</structure>
 			<structure name="Webform::$libPath">
 				<string name="uploadFile" />
