@@ -57,7 +57,7 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 					aria-label="Remove"
 					class="btn-remove close float-right"
 					<?php if ( empty($fieldValue) ) : ?>style="display: none;"<?php endif; ?>
-				><span aria-hidden="true">&times;</span></button><?php
+				>&times;</button><?php
 				// upload button
 				?><button 
 					type="button" 

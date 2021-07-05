@@ -25,7 +25,7 @@
 </fusedoc>
 */
 $btnText = '';
-?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2"><?php
+?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2 position-relative"><?php
 	// field
 	if ( !empty($editable) ) :
 		// psuedo-hidden field to submit
@@ -43,8 +43,8 @@ $btnText = '';
 		// clear button
 		?><button 
 			type="button"
-			class="btn-clear btn btn-sm btn-secondary float-right"
-			<?php if ( empty($fieldValue) ) : ?>style="display: none;"<?php endif; ?>
+			class="btn-clear close position-absolute mr-2"
+			style="right: 0; <?php if ( empty($fieldValue) ) echo 'display: none;'; ?>"
 		>&times;</button><?php
 		// signature
 		?><div class="signature-pad"></div><?php
