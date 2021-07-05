@@ -34,7 +34,7 @@ $btnText = '';
 			?><input 
 				type="text" 
 				class="w-0 p-0 op-0 position-absolute"
-				name="data[<?php echo $fieldName; ?>]"
+				name="data[<?php echo htmlspecialchars($fieldName); ?>]"
 				value="<?php echo $fieldValue; ?>" 
 				style="bottom: 0;"
 				<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
@@ -47,10 +47,18 @@ $btnText = '';
 			style="right: 0; <?php if ( empty($fieldValue) ) echo 'display: none;'; ?>"
 		>&times;</button><?php
 		// signature
-		?><div class="signature-pad"></div><?php
+		?><div 
+			class="signature-pad"
+			<?php if ( !empty($fieldValue) ) : ?>style="display: none;"<?php endif; ?>
+		></div><?php
 	endif;
 	// uploaded signature
 	if ( !empty($fieldValue) ) :
-		?><img src="<?php echo $fieldValue; ?>" class="d-block mx-auto" alt="" /><?php
+		?><img 
+			class="position-absolute"
+			src="<?php echo $fieldValue; ?>"
+			style="left: 50%; top: 50%; transform: translate(-50%, -50%);"
+			alt=""
+		/><?php
 	endif;
 ?></div>

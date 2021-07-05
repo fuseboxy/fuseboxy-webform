@@ -715,8 +715,6 @@ class Webform {
 		// ===> display all fields & quit
 		// ===> otherwise, display specified fields
 		if ( $step == 'confirm' and self::$config['steps']['confirm'] === true ) {
-//var_dump(self::$config['steps']);
-//die('abc');
 			$original = self::$mode;
 			self::$mode = 'view';
 			$output = self::renderAll($xfa);
@@ -791,6 +789,15 @@ class Webform {
 		</description>
 		<io>
 			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" />
+						</structure>
+					</structure>
+				</structure>
+				<!-- parameter -->
 				<structure name="$data" comments="data before cleansing">
 					<mixed name="~fieldName~" />
 				</struture>
@@ -810,12 +817,13 @@ class Webform {
 				// clean-up recursively
 				$val = self::sanitize($val);
 			} else {
-				// trim spaces
-				$val = trim($val);
-				// remove tab
-				$val = str_replace("\t", ' ', $val);
+				// trim space & remove tab
+				$val = str_replace("\t", ' ', trim($val));
 				// convert html tag (make it visible but harmless)
-				$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
+				// ===> except signature field (in order to keep SVG data)
+				if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][$key]['format'] != 'signature' ) {
+					$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
+				}
 			}
 			// put into result
 			$data[$key] = $val;
@@ -1236,12 +1244,6 @@ class Webform {
 					<string name="uploadDir" />
 					<string name="uploadUrl" />
 				</structure>
-				<!-- form data -->
-				<structure name="webform" scope="$_SESSION">
-					<structure name="~beanType~:~beanID~">
-						<string name="~fieldName~" comments="signature data in svg-xml format" />
-					</structure>
-				</structure>
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<structure name="fieldConfig">
@@ -1250,9 +1252,12 @@ class Webform {
 						</structure>
 					</structure>
 				</structure>
-				<!-- parameter -->
-				<string name="$fieldName" />
-				<string name="$canvasData" />
+				<!-- form data -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~beanType~:~beanID~">
+						<string name="~fieldName~" comments="signature data in svg-xml format" />
+					</structure>
+				</structure>
 			</in>
 			<out>
 				<!-- return value -->
@@ -1269,7 +1274,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function uploadSignatureToTemp($fieldName, $canvasData) {
+	public static function uploadSignatureToTemp() {
 		$uploadDir = F::config('uploadDir');
 		$uploadUrl = F::config('uploadUrl');
 		// load form data

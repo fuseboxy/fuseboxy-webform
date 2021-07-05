@@ -46,7 +46,7 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 				?><input 
 					type="text" 
 					class="w-0 p-0 op-0 position-absolute"
-					name="data[<?php echo $fieldName; ?>]"
+					name="data[<?php echo htmlspecialchars($fieldName); ?>]"
 					value="<?php echo $fieldValue; ?>" 
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>

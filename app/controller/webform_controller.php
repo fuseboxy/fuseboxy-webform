@@ -198,12 +198,12 @@ switch ( $fusebox->action ) :
 		if ( isset($arguments['data']) ) {
 			$validated = Webform::validate($arguments['step'], $arguments['data']);
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
-			// convert & upload signature
-			$uploaded = Webform::uploadSignatureToTemp();
-			F::error(Webform::error(), $uploaded === false);
 			// retain data
 			$cached = Webform::data($arguments['data']);
 			F::error(Webform::error(), $cached === false);
+			// convert & upload signature
+			$uploaded = Webform::uploadSignatureToTemp();
+			F::error(Webform::error(), $uploaded === false);
 		}
 		// validate captcha (when last step)
 		if ( $validated and $arguments['step'] == $lastStep and class_exists('Captcha') ) {
