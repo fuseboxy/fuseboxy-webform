@@ -1090,7 +1090,7 @@ class Webform {
 	<fusedoc>
 		<description>
 			perform (ajax) file upload of webform file/image fields
-			upload to temp directory only
+			===> upload to temp directory only
 		</description>
 		<io>
 			<in>
@@ -1129,7 +1129,7 @@ class Webform {
 					<string name="fileUrl" optional="yes" oncondition="when success" />
 				</structure>
 				<!-- uploaded file -->
-				<file name="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.~fileExt~" />
+				<file path="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.~fileExt~" />
 			</out>
 		</io>
 	</fusedoc>
@@ -1177,8 +1177,13 @@ class Webform {
 		// ===> please make sure php {upload_max_filesize} config is larger
 		$uploader->sizeLimit = self::fileSizeInBytes(self::$config['fieldConfig'][$fieldName]['filesize']);
 		// config : assign unique name to avoid overwrite
+		$uuid = Util::uuid();
+		if ( $uuid === false ) {
+			self::$error = Util::error();
+			return false;
+		}
 		$originalName = urldecode($originalName);
-		$uploader->newFileName = pathinfo($originalName, PATHINFO_FILENAME).'_'.date('YmdHis').'_'.uniqid().'.'.pathinfo($originalName, PATHINFO_EXTENSION);
+		$uploader->newFileName = pathinfo($originalName, PATHINFO_FILENAME).'_'.$uuid.'.'.pathinfo($originalName, PATHINFO_EXTENSION);
 		// upload to specific directory
 		$uploader->uploadDir = $uploadDir;
 		$uploaded = $uploader->handleUpload();
@@ -1196,6 +1201,58 @@ class Webform {
 			'filename'   => $uploader->getFileName(),
 			'isWebImage' => $uploader->isWebImage($uploader->uploadDir.$uploader->getFileName()),
 		);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			convert (multiple) fields of signature data to file
+			===> upload to temp directory only
+		</description>
+		<io>
+			<in>
+				<!-- framework -->
+				<structure name="config" scope="$fusebox">
+					<string name="uploadDir" />
+					<string name="uploadUrl" />
+				</structure>
+				<!-- parameter -->
+				<string name="$fieldName" />
+				<string name="$canvasData" />
+			</in>
+			<out>
+				<!-- return value (file url) -->
+				<string name="~return~" value="~uploadUrl~/tmp/~sessionID~/~uniqueFilename~.png" />
+				<!-- uploaded file -->
+				<file path="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.png" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function uploadSignatureToTemp($fieldName, $canvasData) {
+		$uploadDir = F::config('uploadDir');
+		$uploadUrl = F::config('uploadUrl');
+		// validation
+		// ===> simply quit when empty or already uploaded
+		if ( empty($canvasData) or stripos($canvasData, $uploadUrl) === 0 ) return $canvasData;
+		// determine unique file name
+		$uuid = Util::uuid();
+		if ( $uuid === false ) {
+			self::$error = Util::error();
+			return false;
+		}
+		$uniqueFilename = "{$fieldName}_{$uuid}.png";
+		// determine file location
+		$filePath = $uploadDir.( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+		$fileUrl  = $uploadUrl.( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+		// turn signature into file
+
+
+		// done!
+		return $fileUrl;
 	}
 
 
