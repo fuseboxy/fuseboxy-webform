@@ -211,6 +211,7 @@ class Webform {
 						<string name="to" default=":email" />
 					</structure>
 					<string name="snapshot" default="snapshot" comments="table to save snapshot; no snapshot to take when false" />
+					<string name="closed" comments="message to show when form closed" />
 				</structure>
 			</out>
 		</io>
@@ -312,6 +313,12 @@ class Webform {
 		// default snapshot table
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
 			self::$config['snapshot'] = 'snapshot';
+		}
+		// default closed message
+		if ( isset(self::$config['closed']) and self::$config['closed'] === true ) {
+			ob_start();
+			F::alert([ 'type' => 'warning', 'message' => 'Form was closed' ]);
+			self::$config['closed'] = ob_get_clean();
 		}
 		// done!
 		return true;

@@ -66,6 +66,7 @@
 				<!-- other setting -->
 				<boolean_or_string name="writeLog" optional="yes" default="false" comments="simply true to log with default action; or specify action name for log" />
 				<boolean_or_string name="snapshot" optional="yes" default="false" comments="simply true to save to {snapshot} table; or specify table name to save" />
+				<boolean_or_string name="closed" optional="yes" default="false" comments="simply true to close webform with default message; or specify message to show" />
 			</structure>
 			<structure name="Webform::$libPath">
 				<string name="uploadFile" />
@@ -98,6 +99,7 @@ switch ( $fusebox->action ) :
 
 	// init form
 	case 'index':
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		// clear cache (if any)
 		$cleared = Webform::clear();
 		F::error(Webform::error(), $cleared === false);
@@ -112,6 +114,7 @@ switch ( $fusebox->action ) :
 
 	// submit new form
 	case 'new':
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		F::error('Config [beanID] is invalid', !empty($webform['beanID']));
 		// set form mode
 		Webform::mode('new');
@@ -139,6 +142,7 @@ switch ( $fusebox->action ) :
 
 	// edit submitted form
 	case 'edit':
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		F::error('Config [beanID] is required', empty($webform['beanID']));
 		// set form mode
 		Webform::mode('edit');
@@ -170,10 +174,12 @@ switch ( $fusebox->action ) :
 	case 'view':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
 		// exit point
-		$xfa['edit'] = "{$fusebox->controller}.edit";
+		$xfa['edit'] = empty($webform['closed']) ? "{$fusebox->controller}.edit" : false;
 		// display form
 		$layout['content'] = Webform::renderAll($xfa);
 		F::error(Webform::error(), $layout['content'] === false);
+		// prepend message (when necessary)
+		if ( !empty($webform['closed']) ) $layout['content'] = $webform['closed'].$layout['content'];
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
 		else echo $layout['content'];
@@ -182,6 +188,7 @@ switch ( $fusebox->action ) :
 
 	// check submitted data of specific step
 	case 'validate':
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		F::error('Argument [step] is required', empty($arguments['step']));
 		// obtain last step
 		$lastStep = Webform::lastStep();
@@ -213,6 +220,8 @@ switch ( $fusebox->action ) :
 
 	// save submitted data
 	case 'save':
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		// obtain last step
 		$lastStep = Webform::lastStep();
 		F::error(Webform::error(), $lastStep === false);
 		// commit to save
@@ -230,6 +239,7 @@ switch ( $fusebox->action ) :
 
 	// thank you page
 	case 'completed':
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		// display
 		ob_start();
 		include dirname(__DIR__).'/view/webform/completed.php';
@@ -240,8 +250,20 @@ switch ( $fusebox->action ) :
 		break;
 
 
+	// form closed
+	case 'closed':
+		F::error('Form not closed yet', empty($webform['closed']));
+		// display
+		$layout['content'] = $webform['closed'];
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
+		break;
+
+
 	// ajax file upload
 	case 'upload':
+		if ( !empty($webform['closed']) ) die('Forbidden');
 		// validation
 		if     ( empty($arguments['uploaderID'])   ) $err = 'Argument [uploaderID] is required';
 		elseif ( empty($arguments['fieldName'])    ) $err = 'Argument [fieldName] is required';
@@ -260,6 +282,7 @@ switch ( $fusebox->action ) :
 
 	// ajax upload progress
 	case 'upload-progress':
+		if ( !empty($webform['closed']) ) die('Forbidden');
 		require Webform::$libPath['uploadProgress'];
 		break;
 
