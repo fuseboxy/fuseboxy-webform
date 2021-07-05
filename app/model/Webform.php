@@ -489,9 +489,14 @@ class Webform {
 						self::$error = error_get_last()['message'];
 						return false;
 					}
+					// put new url to container
+					$data[$fieldName] = $targetUrl;
 				} // if-tmp-directory
 			} // if-format
 		} // foreach-fieldConfig
+		// update data in cache
+		$cached = self::data($data);
+		if ( $cached === false ) return false;
 		// done!
 		return true;
 	}
@@ -1251,8 +1256,8 @@ class Webform {
 		}
 		$uniqueFilename = "{$fieldName}_{$uuid}.png";
 		// determine file location
-		$filePath = $uploadDir.( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
-		$fileUrl  = $uploadUrl.( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+		$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+		$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
 		// turn signature into file
 
 
