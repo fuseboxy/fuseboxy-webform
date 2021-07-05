@@ -48,8 +48,9 @@ $btnText = '';
 		>&times;</button><?php
 		// signature
 		?><div class="signature-pad"></div><?php
-	// readonly
-	else :
+	endif;
+	// uploaded signature
+	if ( !empty($fieldValue) ) :
 		?><img src="<?php echo $fieldValue; ?>" class="d-block mx-auto" alt="" /><?php
 	endif;
 ?></div>

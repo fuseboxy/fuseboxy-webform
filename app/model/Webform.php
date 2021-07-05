@@ -1236,15 +1236,35 @@ class Webform {
 					<string name="uploadDir" />
 					<string name="uploadUrl" />
 				</structure>
+				<!-- form data -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~beanType~:~beanID~">
+						<string name="~fieldName~" comments="signature data in svg-xml format" />
+					</structure>
+				</structure>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" comments="signature" />
+						</structure>
+					</structure>
+				</structure>
 				<!-- parameter -->
 				<string name="$fieldName" />
 				<string name="$canvasData" />
 			</in>
 			<out>
-				<!-- return value (file url) -->
-				<string name="~return~" value="~uploadUrl~/tmp/~sessionID~/~uniqueFilename~.png" />
+				<!-- return value -->
+				<boolean name="~return~" />
 				<!-- uploaded file -->
-				<file path="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.png" />
+				<file path="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.svg" />
+				<!-- updated form data -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~beanType~:~beanID~">
+						<string name="~fieldName~" value="~uploadUrl~/tmp/~sessionID~/~uniqueFilename~.svg" comments="file url" />
+					</structure>
+				</structure>
 			</out>
 		</io>
 	</fusedoc>
@@ -1252,24 +1272,40 @@ class Webform {
 	public static function uploadSignatureToTemp($fieldName, $canvasData) {
 		$uploadDir = F::config('uploadDir');
 		$uploadUrl = F::config('uploadUrl');
-		// validation
-		// ===> simply quit when empty or already uploaded
-		if ( empty($canvasData) or stripos($canvasData, $uploadUrl) === 0 ) return $canvasData;
-		// determine unique file name
-		$uuid = Util::uuid();
-		if ( $uuid === false ) {
-			self::$error = Util::error();
-			return false;
-		}
-		$uniqueFilename = "{$fieldName}_{$uuid}.png";
-		// determine file location
-		$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
-		$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
-		// turn signature into file
-
-
+		// load form data
+		$formData = self::data();
+		if ( $formData === false ) return false;
+		// go through each signature field
+		foreach ( $formData as $fieldName => $fieldValue ) {
+			if ( self::$config['fieldConfig'][$fieldName]['format'] == 'signature' ) {
+				// simply quit when not signature data
+				// ===> e.g. file url because already uploaded
+				if ( substr($fieldValue, -6) != '</svg>' ) return $fieldValue;
+				// determine unique file name
+				$uuid = Util::uuid();
+				if ( $uuid === false ) {
+					self::$error = Util::error();
+					return false;
+				}
+				$uniqueFilename = "{$fieldName}_{$uuid}.svg";
+				// determine file location
+				$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+				$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+				// turn signature into file
+				$saved = file_put_contents($filePath, $fieldValue);
+				if ( !$saved ) {
+					self::$error = error_get_last()['message'];
+					return false;
+				}
+				// update form data container
+				$formData[$fieldName] = $fileUrl;
+			} // if-signature
+		} // foreach-fieldConfig
+		// update form data
+		$updated = self::data($formData);
+		if ( $updated === false ) return false;
 		// done!
-		return $fileUrl;
+		return true;
 	}
 
 
