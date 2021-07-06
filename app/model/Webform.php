@@ -505,8 +505,8 @@ class Webform {
 		if ( $data === false ) return false;
 		// go through each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// check format
-			if ( in_array($cfg['format'], ['file','image','signature']) ) {
+			// check available & format
+			if ( isset($data[$fieldName]) and in_array($cfg['format'], ['file','image','signature']) ) {
 				// only move file when in temp directory
 				if ( stripos($data[$fieldName], '/tmp/'.session_id().'/') !== false ) {
 					// determine server location of source file
@@ -523,7 +523,7 @@ class Webform {
 					// preprare target url after re-location
 					$targetUrl = $uploadUrl.self::$config['beanType'].'/'.$fieldName.'/'.basename($data[$fieldName]);
 					// create directory (when necessary)
-					if ( !file_exists(dirname($targetDir)) and !mkdir($targetDir, 0766, true) ) {
+					if ( !file_exists($targetDir) and !mkdir($targetDir, 0766, true) ) {
 						self::$error = error_get_last()['message'];
 						return false;
 					}
@@ -535,7 +535,7 @@ class Webform {
 					// put new url to container
 					$data[$fieldName] = $targetUrl;
 				} // if-tmp-directory
-			} // if-format
+			} // if-isset-and-format
 		} // foreach-fieldConfig
 		// update data in cache
 		$cached = self::data($data);
