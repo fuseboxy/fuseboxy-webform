@@ -24,6 +24,36 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			access cached data of specific webform before init config
+		</description>
+		<io>
+			<in>
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~beanType~:~beanID~" />
+				</structure>
+				<!-- parameter -->
+				<string name="beanType" />
+				<number name="beanID" optional="yes" default="0" />
+			</in>
+			<out>
+				<structure name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function cache($beanType, $beanID=null) {
+		$beanID = !empty($beanID) ? $beanID : 0;
+		$token = $beanType.':'.$beanID;
+		return isset($_SESSION['webform'][$token]) ? $_SESSION['webform'][$token] : array();
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			clear cached data of webform
 		</description>
 		<io>
@@ -870,9 +900,6 @@ class Webform {
 		// validate all data before save
 		$validated = self::validateAll();
 		if ( $validated === false ) return false;
-		// convert & upload signature
-		$uploaded = self::uploadSignatureToTemp();
-		if ( $uploaded === false ) return false;
 		// move uploaded files to permanent location
 		// ===> form data will be updated accordingly
 		$moved = self::moveFileToPerm();

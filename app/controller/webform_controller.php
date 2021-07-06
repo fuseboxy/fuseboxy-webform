@@ -201,6 +201,9 @@ switch ( $fusebox->action ) :
 			// retain data
 			$cached = Webform::data($arguments['data']);
 			F::error(Webform::error(), $cached === false);
+			// convert & upload signature
+			$uploaded = Webform::uploadSignatureToTemp();
+			F::error(Webform::error(), $uploaded === false);
 		}
 		// validate captcha (when last step)
 		if ( $validated and $arguments['step'] == $lastStep and class_exists('Captcha') ) {
