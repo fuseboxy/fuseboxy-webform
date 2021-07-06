@@ -46,8 +46,8 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 				?><input 
 					type="text" 
 					class="w-0 p-0 op-0 position-absolute"
-					name="data[<?php echo htmlspecialchars($fieldName); ?>]"
-					value="<?php echo $fieldValue; ?>" 
+					name="data[<?php echo $fieldName; ?>]"
+					value="<?php echo htmlspecialchars($fieldValue); ?>" 
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 				/><?php
@@ -91,7 +91,7 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 			if ( !empty($fieldValue) ) :
 				?><a href="<?php echo $fieldValue; ?>" class="small" target="_blank"><?php
 					if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
-						?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail" alt="" /><?php
+						?><img src="<?php echo htmlspecialchars($fieldValue); ?>" class="img-thumbnail" alt="" /><?php
 					else :
 						?><strong><?php echo basename($fieldValue); ?></strong><?php
 					endif;

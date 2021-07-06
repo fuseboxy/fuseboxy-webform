@@ -34,8 +34,8 @@ $btnText = '';
 			?><input 
 				type="text" 
 				class="w-0 p-0 op-0 position-absolute"
-				name="data[<?php echo htmlspecialchars($fieldName); ?>]"
-				value="<?php echo $fieldValue; ?>" 
+				name="data[<?php echo $fieldName; ?>]"
+				value="<?php echo htmlspecialchars($fieldValue); ?>" 
 				style="bottom: 0;"
 				<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 			/><?php
@@ -56,7 +56,7 @@ $btnText = '';
 	if ( !empty($fieldValue) ) :
 		?><img 
 			class="position-absolute"
-			src="<?php echo $fieldValue; ?>"
+			src="<?php echo htmlspecialchars($fieldValue); ?>"
 			style="left: 50%; top: 50%; transform: translate(-50%, -50%);"
 			alt=""
 		/><?php
