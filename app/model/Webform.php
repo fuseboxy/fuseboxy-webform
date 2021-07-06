@@ -1283,27 +1283,28 @@ class Webform {
 		// go through each signature field
 		foreach ( $formData as $fieldName => $fieldValue ) {
 			if ( self::$config['fieldConfig'][$fieldName]['format'] == 'signature' ) {
-				// simply quit when not signature data
-				// ===> e.g. file url because already uploaded
-				if ( substr($fieldValue, -6) != '</svg>' ) return $fieldValue;
-				// determine unique file name
-				$uuid = Util::uuid();
-				if ( $uuid === false ) {
-					self::$error = Util::error();
-					return false;
-				}
-				$uniqueFilename = "{$fieldName}_{$uuid}.svg";
-				// determine file location
-				$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
-				$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
-				// turn signature into file
-				$saved = file_put_contents($filePath, $fieldValue);
-				if ( !$saved ) {
-					self::$error = error_get_last()['message'];
-					return false;
-				}
-				// update form data container
-				$formData[$fieldName] = $fileUrl;
+				// only proceed when field value is signature data
+				// ===> (skip when empty or file url)
+				if ( substr($fieldValue, -6) == '</svg>' ) {
+					// determine unique file name
+					$uuid = Util::uuid();
+					if ( $uuid === false ) {
+						self::$error = Util::error();
+						return false;
+					}
+					$uniqueFilename = "{$fieldName}_{$uuid}.svg";
+					// determine file location
+					$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+					$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+					// turn signature into file
+					$saved = file_put_contents($filePath, $fieldValue);
+					if ( !$saved ) {
+						self::$error = error_get_last()['message'];
+						return false;
+					}
+					// update form data container
+					$formData[$fieldName] = $fileUrl;
+				} // if-svg
 			} // if-signature
 		} // foreach-fieldConfig
 		// update form data
