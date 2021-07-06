@@ -1329,7 +1329,7 @@ class Webform {
 						self::$error = Util::error();
 						return false;
 					}
-					$uniqueFilename = "{$fieldName}_{$uuid}.svg";
+					$uniqueFilename = uuid().'.svg';
 					// determine file location
 					$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
 					$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
