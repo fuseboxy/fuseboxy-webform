@@ -25,7 +25,7 @@
 </fusedoc>
 */
 $btnText = '';
-?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2 position-relative"><?php
+?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2"><?php
 	// field
 	if ( !empty($editable) ) :
 		// psuedo-hidden field to submit
@@ -52,13 +52,11 @@ $btnText = '';
 			<?php if ( !empty($fieldValue) ) : ?>style="display: none;"<?php endif; ?>
 		></div><?php
 	endif;
-	// uploaded signature
-	if ( !empty($fieldValue) ) :
-		?><img 
-			class="position-absolute"
-			src="<?php echo htmlspecialchars($fieldValue); ?>"
-			style="left: 50%; top: 50%; transform: translate(-50%, -50%);"
-			alt=""
-		/><?php
+	// display signature (not upload yet)
+	if ( !empty($fieldValue) and substr($fieldValue, -6) == '</svg>' ) :
+		?><div class="signature-image"><?php echo $fieldValue; ?></div><?php
+	// display signature (uploaded)
+	elseif ( !empty($fieldValue) ) :
+		?><img class="signature-image" src="<?php echo htmlspecialchars($fieldValue); ?>" alt="" /><?php
 	endif;
 ?></div>
