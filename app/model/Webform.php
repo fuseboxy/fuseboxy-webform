@@ -1319,7 +1319,7 @@ class Webform {
 		if ( $formData === false ) return false;
 		// go through each signature field
 		foreach ( $formData as $fieldName => $fieldValue ) {
-			if ( self::$config['fieldConfig'][$fieldName]['format'] == 'signature' ) {
+			if ( isset(self::$config['fieldConfig'][$fieldName]['format']) and self::$config['fieldConfig'][$fieldName]['format'] == 'signature' ) {
 				// only proceed when field value is signature data
 				// ===> (skip when empty or file url)
 				if ( substr($fieldValue, -6) == '</svg>' ) {
@@ -1329,7 +1329,7 @@ class Webform {
 						self::$error = Util::error();
 						return false;
 					}
-					$uniqueFilename = uuid().'.svg';
+					$uniqueFilename = $uuid.'.svg';
 					// determine file location
 					$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
 					$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
