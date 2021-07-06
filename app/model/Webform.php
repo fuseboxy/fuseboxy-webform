@@ -519,8 +519,14 @@ class Webform {
 					}, array(F::config('uploadDir'), F::config('uploadUrl')));
 					// prepare target location in server
 					$targetPath = $uploadDir.self::$config['beanType'].'/'.$fieldName.'/'.basename($data[$fieldName]);
+					$targetDir = dirname($targetPath);
 					// preprare target url after re-location
 					$targetUrl = $uploadUrl.self::$config['beanType'].'/'.$fieldName.'/'.basename($data[$fieldName]);
+					// create directory (when necessary)
+					if ( !file_exists(dirname($targetDir)) and !mkdir($targetDir, 0766, true) ) {
+						self::$error = error_get_last()['message'];
+						return false;
+					}
 					// commit to move file
 					if ( !rename($sourcePath, $targetPath) ) {
 						self::$error = error_get_last()['message'];
@@ -1327,8 +1333,7 @@ class Webform {
 					$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
 					$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
 					// turn signature into file
-					$saved = file_put_contents($filePath, $fieldValue);
-					if ( !$saved ) {
+					if ( !file_put_contents($filePath, $fieldValue) ) {
 						self::$error = error_get_last()['message'];
 						return false;
 					}
