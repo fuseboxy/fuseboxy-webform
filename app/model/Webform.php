@@ -920,7 +920,8 @@ class Webform {
 		// put (updated) form data to container
 		$data = self::data();
 		if ( $data === false ) return false;
-		$bean->import($data);
+		foreach ( $data as $key => $val ) $bean->{$key} = is_array($val) ? implode('|', $val) : $val;
+		unset($data);
 		// add more info
 		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
 		else $bean->updated_on = date('Y-m-d H:i:s');
@@ -928,7 +929,7 @@ class Webform {
 		// save to database
 		$id = ORM::save($bean);
 		if ( $id === false ) {
-			self::$error = 'Error occurred while saving ['.self::$beanType.'] record - '.ORM::error();
+			self::$error = 'Error occurred while saving ['.self::$config['beanType'].'] record - '.ORM::error();
 			return false;
 		}
 		// send notification (when necessary)
