@@ -6,6 +6,7 @@
 			<structure name="$fieldConfig">
 				<string name="icon" optional="yes" />
 				<string name="inline-label" optional="yes" />
+				<boolean name="required" optional="yes" comments="show asterisk at in-label" />
 			</structure>
 		</in>
 		<out />
@@ -20,6 +21,7 @@ if ( !empty($fieldConfig['icon']) or !empty($fieldConfig['inline-label']) ) :
 			endif;
 			if ( !empty($fieldConfig['inline-label']) ) :
 				?><small><?php echo $fieldConfig['inline-label']; ?></small><?php
+				if ( !empty($fieldConfig['required']) ) echo '<span class="text-danger ml-1">*</span>';
 			endif;
 		?></span>
 	</div><?php
