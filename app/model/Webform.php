@@ -201,7 +201,7 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			set default & fix config config
+			set default & fix config
 		</description>
 		<io>
 			<in>
@@ -227,16 +227,16 @@ class Webform {
 							<string name="label" optional="yes" comments="derived from field name" />
 							<string name="label-inline" optional="yes" comments="derived from field name" />
 							<string name="placeholder" optional="yes" comments="derived from field name" />
+							<!-- default for [format=file|image|signature] only -->
+							<string name="filesize" default="10MB" />
+							<list name="filetype" delim="," default="gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
+							<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
+							<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
+							<string name="buttonText" default="Choose File" />
+							<string name="buttonAltText" default="Choose Another File" />
+							<!-- attribute -->
+							<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 						</structure>
-						<!-- default for [format=file|image|signature] only -->
-						<string name="filesize" default="10MB" />
-						<list name="filetype" delim="," default="gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
-						<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
-						<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
-						<string name="buttonText" default="Choose File" />
-						<string name="buttonAltText" default="Choose Another File" />
-						<!-- attribute -->
-						<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 					</structure>
 					<!-- others -->
 					<structure name="notification" optional="yes">
@@ -293,16 +293,13 @@ class Webform {
 			}
 		}
 		// fix field-config
-		// ===> when only field-name specified
-		// ===> use field-name as key & apply empty config
+		// ===> when only field-name specified, use field-name as key & apply empty config
+		// ===> when false or null, remove field config
 		$arr = self::$config['fieldConfig'];
 		self::$config['fieldConfig'] = array();
 		foreach ( $arr as $fieldName => $config ) {
-			if ( is_numeric($fieldName) ) {
-				$fieldName = $config;
-				$config = array();
-			}
-			self::$config['fieldConfig'][$fieldName] = $config;
+			if ( is_numeric($fieldName) ) list($fieldName, $config) = array($config, []);
+			if ( $config !== false and $config !== null ) self::$config['fieldConfig'][$fieldName] = $config;
 		}
 		// field config : default
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
