@@ -123,6 +123,8 @@ switch ( $fusebox->action ) :
 		// default step
 		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
 		F::error(Webform::error(), $arguments['step'] === false);
+		// go to confirmation (when necessary)
+		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point
 		$prevStep = Webform::prevStep($arguments['step']);
 		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.new&step={$prevStep}";
@@ -152,6 +154,8 @@ switch ( $fusebox->action ) :
 		$firstStep = Webform::firstStep();
 		if ( empty($arguments['step']) ) $arguments['step'] = $firstStep;
 		F::error(Webform::error(), $arguments['step'] === false);
+		// go to confirmation (when necessary)
+		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
 		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit&step={$prevStep}";
@@ -172,9 +176,23 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// confirm
+	// confirmation
 	case 'confirm':
-
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::error('Confirmation is not required', empty($webform['steps']['confirm']));
+		// exit point : back
+		$mode = empty($webform['beanID']) ? 'new' : 'edit';
+		$prevStep = Webform::prevStep($fusebox->action);
+		$xfa['back'] = "{$fusebox->controller}.{$mode}&step={$prevStep}";
+		// exit point : save
+		$btnKey = empty($webform['beanID']) ? 'submit' : 'update';
+		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
+		// display form
+		$layout['content'] = Webform::render('confirm', $xfa);
+		F::error(Webform::error(), $layout['content'] === false);
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
 		break;
 
 
