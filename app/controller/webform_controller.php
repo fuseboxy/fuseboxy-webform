@@ -8,6 +8,8 @@
 				<string name="layoutPath" />
 				<!-- edit submitted form -->
 				<number name="beanID" optional="yes" default="0" comments="zero indicates new record" />
+				<boolean name="allowEdit" optional="true" comments="user can view submitted form but cannot modify" />
+				<boolean name="allowPrint" optional="true" comments="user can print submitted form" />
 				<!-- steps of form -->
 				<structure name="steps" optional="yes">
 					<structure name="~stepName~">
@@ -174,7 +176,8 @@ switch ( $fusebox->action ) :
 	case 'view':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
 		// exit point
-		$xfa['edit'] = empty($webform['closed']) ? "{$fusebox->controller}.edit" : false;
+		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
+		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
 		// display form
 		$layout['content'] = Webform::renderAll($xfa);
 		F::error(Webform::error(), $layout['content'] === false);

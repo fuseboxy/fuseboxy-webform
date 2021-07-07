@@ -213,6 +213,8 @@ class Webform {
 				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<number name="beanID" default="0" />
+					<boolean name="allowEdit" default="true" />
+					<boolean name="allowPrint" default="true" />
 					<!-- default steps (when unspecified) -->
 					<structure name="steps">
 						<structure name="default" />
@@ -252,6 +254,10 @@ class Webform {
 		// ===> zero stands for submitting new form
 		// ===> non-zero stands for editing submitted form
 		if ( empty(self::$config['beanID']) ) self::$config['beanID'] = 0;
+		// allowEdit : default
+		if ( !isset(self::$config['allowEdit']) ) self::$config['allowEdit'] = true;
+		// allowPrint : default
+		if ( !isset(self::$config['allowPrint']) ) self::$config['allowPrint'] = true;
 		// set default steps
 		// ===> when none specified
 		// ===> simply use all fields as specified in field-config
