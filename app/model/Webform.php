@@ -506,28 +506,28 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function moveFileToPerm() {
+		// unify slash & ensure trailing slash
+		$uploadDir = str_replace('\\', '/', F::config('uploadDir'));
+		$uploadUrl = str_replace('\\', '/', F::config('uploadUrl'));
+		if ( substr($uploadDir, -1) != '/' ) $uploadDir .= '/';
+		if ( substr($uploadUrl, -1) != '/' ) $uploadUrl .= '/';
 		// load form data
-		$data = self::data();
-		if ( $data === false ) return false;
+		$formData = self::data();
+		if ( $formData === false ) return false;
 		// go through each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// check available & format
-			if ( isset($data[$fieldName]) and in_array($cfg['format'], ['file','image','signature']) ) {
+			if ( isset($formData[$fieldName]) and in_array($cfg['format'], ['file','image','signature']) ) {
 				// only move file when in temp directory
-				if ( stripos($data[$fieldName], '/tmp/'.session_id().'/') !== false ) {
+				if ( stripos($formData[$fieldName], '/tmp/'.session_id().'/') !== false ) {
 					// determine server location of source file
-					$sourcePath = str_ireplace(F::config('uploadUrl'), F::config('uploadDir'), $data[$fieldName]);
-					// unify slash & ensure trailing slash
-					list($uploadDir, $uploadUrl) = array_map(function($item){
-						$item = str_replace('\\', '/', $item);
-						if ( substr($item, -1) !== '/' ) $item .= '/';
-						return $item;
-					}, array(F::config('uploadDir'), F::config('uploadUrl')));
-					// prepare target location in server
-					$targetPath = $uploadDir.self::$config['beanType'].'/'.$fieldName.'/'.basename($data[$fieldName]);
-					$targetDir = dirname($targetPath);
-					// preprare target url after re-location
-					$targetUrl = $uploadUrl.self::$config['beanType'].'/'.$fieldName.'/'.basename($data[$fieldName]);
+					$sourceUrl  = $formData[$fieldName];
+					$sourcePath = str_ireplace($uploadUrl, $uploadDir, $sourceUrl);
+					$sourceDir  = dirname($sourceDir);
+					// prepare url & server location of destination
+					$targetUrl  = $uploadUrl.self::$config['beanType'].'/'.$fieldName.'/'.basename($sourceUrl);
+					$targetPath = str_ireplace($uploadUrl, $uploadDir, $targetUrl);
+					$targetDir  = dirname($targetPath);
 					// create directory (when necessary)
 					if ( !file_exists($targetDir) and !mkdir($targetDir, 0766, true) ) {
 						self::$error = error_get_last()['message'];
@@ -539,12 +539,12 @@ class Webform {
 						return false;
 					}
 					// put new url to container
-					$data[$fieldName] = $targetUrl;
+					$formData[$fieldName] = $targetUrl;
 				} // if-tmp-directory
 			} // if-isset-and-format
 		} // foreach-fieldConfig
 		// update data in cache
-		$cached = self::data($data);
+		$cached = self::data($formData);
 		if ( $cached === false ) return false;
 		// done!
 		return true;
@@ -1321,15 +1321,20 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function uploadSignatureToTemp() {
-		$uploadDir = F::config('uploadDir');
-		$uploadUrl = F::config('uploadUrl');
+		// unify slash & ensure trailing slash
+		$uploadDir = str_replace('\\', '/', F::config('uploadDir'));
+		$uploadUrl = str_replace('\\', '/', F::config('uploadUrl'));
+		if ( substr($uploadDir, -1) != '/' ) $uploadDir .= '/';
+		if ( substr($uploadUrl, -1) != '/' ) $uploadUrl .= '/';
 		// load form data
 		$formData = self::data();
 		if ( $formData === false ) return false;
-		// go through each signature field
+		// go through each field
 		foreach ( $formData as $fieldName => $fieldValue ) {
+			// check if signature field
 			if ( isset(self::$config['fieldConfig'][$fieldName]['format']) and self::$config['fieldConfig'][$fieldName]['format'] == 'signature' ) {
-				// only proceed when field value is signature data
+				// check field value
+				// ===> only proceed when signature data
 				// ===> (skip when empty or file url)
 				if ( substr($fieldValue, -6) == '</svg>' ) {
 					// determine unique file name
@@ -1340,8 +1345,8 @@ class Webform {
 					}
 					$uniqueFilename = $uuid.'.svg';
 					// determine file location
-					$filePath = $uploadDir.(( substr(str_replace('\\', '/', $uploadDir), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
-					$fileUrl  = $uploadUrl.(( substr(str_replace('\\', '/', $uploadUrl), -1) == '/' ) ? '' : '/' ).'tmp/'.session_id().'/'.$uniqueFilename;
+					$filePath = $uploadDir.'tmp/'.session_id().'/'.$uniqueFilename;
+					$fileUrl  = $uploadUrl.'tmp/'.session_id().'/'.$uniqueFilename;
 					// turn signature into file
 					if ( !file_put_contents($filePath, $fieldValue) ) {
 						self::$error = error_get_last()['message'];
