@@ -5,13 +5,6 @@
 			<structure name="$config" scope="Webform">
 				<string name="beanType" />
 			</structure>
-			<structure name="$xfa">
-				<string name="back" optional="yes" />
-				<string name="next" optional="yes" />
-				<string name="edit" optional="yes" />
-				<string name="submit" optional="yes" />
-				<string name="update" optional="yes" />
-			</structure>
 			<structure name="$fieldLayoutAll" optional="yes" comments="display multiple steps">
 				<structure name="~stepName~">
 					<list name="~fieldNameList~" value="~fieldWidthList~" delim="|" />
@@ -30,11 +23,7 @@
 if ( isset($fieldLayoutAll) ) foreach ( $fieldLayoutAll as $fieldLayout ) include 'form.body.php';
 elseif ( isset($fieldLayout) ) include 'form.body.php';
 // captcha
-if ( ( isset($xfa['submit']) or isset($xfa['update']) ) and class_exists('Captcha') ) :
-	include 'form.captcha.php';
-endif;
+include 'form.captcha.php';
 // button
-if ( isset($xfa['back']) or isset($xfa['next']) or isset($xfa['edit']) or isset($xfa['submit']) or isset($xfa['update']) ) :
-	include 'form.button.php';
-endif;
+include 'form.button.php';
 ?></form>
