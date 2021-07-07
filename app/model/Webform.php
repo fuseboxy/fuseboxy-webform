@@ -516,11 +516,10 @@ class Webform {
 		if ( $formData === false ) return false;
 		// go through each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			$isFileFormat = in_array($cfg['format'], ['file','image','signature']);
-			$isFileAtTemp = ( isset($formData[$fieldName]) and stripos($formData[$fieldName], '/tmp/'.session_id().'/') !== false );
+			$isFileAtTemp = ( in_array($cfg['format'], ['file','image','signature']) and isset($formData[$fieldName]) and stripos($formData[$fieldName], '/tmp/'.session_id().'/') !== false );
 			// check available & format
 			// ===> only move file when in temp directory
-			if ( $isFileFormat and $isFileAtTemp ) {
+			if ( $isFileAtTemp ) {
 					// determine server location of source file
 					$sourceUrl  = $formData[$fieldName];
 					$sourcePath = str_ireplace($uploadUrl, $uploadDir, $sourceUrl);
