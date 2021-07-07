@@ -292,14 +292,16 @@ class Webform {
 				return false;
 			}
 		}
-		// fix field-config
+		// field-config : fix format
 		// ===> when only field-name specified, use field-name as key & apply empty config
 		// ===> when false or null, remove field config
+		// ===> when config is string, use as label
 		$arr = self::$config['fieldConfig'];
 		self::$config['fieldConfig'] = array();
 		foreach ( $arr as $fieldName => $config ) {
 			if ( is_numeric($fieldName) ) list($fieldName, $config) = array($config, []);
-			if ( $config !== false and $config !== null ) self::$config['fieldConfig'][$fieldName] = $config;
+			if ( is_string($config) ) $config = array('label' => $config);
+			if ( $config !== false and $config !== null ) self::$config['fieldConfig'][$fieldName] = is_array($config) ? $config : [];
 		}
 		// field config : default
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
