@@ -1428,10 +1428,10 @@ class Webform {
 			$fieldValue = isset($data[$fieldName]) ? $data[$fieldName] : '';
 			// flatten options (when necessary)
 			if ( !empty($cfg['options']) ) {
-				$optionsFlatten = array();
+				$flattenOptions = array();
 				foreach ( $cfg['options'] as $optValue => $optText ) {
-					if ( is_array($optText) ) foreach ( $optText as $key => $val ) $optionsFlatten[$key] = $val;
-					else $optionsFlatten[$optValue] = $optText;
+					if ( is_array($optText) ) foreach ( $optText as $key => $val ) $flattenOptions[$key] = $val;
+					else $flattenOptions[$optValue] = $optText;
 				}
 			}
 			// check required
@@ -1439,21 +1439,21 @@ class Webform {
 				$err[$fieldName] = "Field [{$fieldName}] is required";
 			}
 			// check format : email
-			if ( $cfg['format'] == 'email' and !filter_var($fieldValue, FILTER_VALIDATE_EMAIL) ) {
+			if ( $cfg['format'] == 'email' and !empty($fieldValue) and !filter_var($fieldValue, FILTER_VALIDATE_EMAIL) ) {
 				$err[$fieldName] = "Invalid email format in [{$fieldName}] ({$fieldValue})";
 			}
 			// check format : date
-			if ( $cfg['format'] == 'date' and DateTime::createFromFormat('Y-m-d', $fieldValue) === false ) {
+			if ( $cfg['format'] == 'date' and !empty($fieldValue) and DateTime::createFromFormat('Y-m-d', $fieldValue) === false ) {
 				$err[$fieldName] = "Invalid date format in [{$fieldName}] ({$fieldValue})";
 			}
 			// check options : checkbox (multiple selection)
 			if ( $cfg['format'] == 'checkbox' and $fieldValue !== '' ) {
-				foreach ( $fieldValue as $selectedItem ) if ( !isset($optionsFlatten[$selectedItem]) ) {
+				foreach ( $fieldValue as $selectedItem ) if ( !isset($flattenOptions[$selectedItem]) ) {
 					$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$selectedItem})";
 				}
 			}
 			// check options : dropdown & radio (single selection)
-			if ( in_array($cfg['format'], ['dropdown','radio']) and $fieldValue !== '' and !isset($optionsFlatten[$fieldValue]) ) {
+			if ( in_array($cfg['format'], ['dropdown','radio']) and $fieldValue !== '' and !isset($flattenOptions[$fieldValue]) ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
 			}
 			// check length : max
