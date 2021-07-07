@@ -8,8 +8,8 @@
 				<string name="layoutPath" />
 				<!-- edit submitted form -->
 				<number name="beanID" optional="yes" default="0" comments="zero indicates new record" />
-				<boolean name="allowEdit" optional="true" comments="user can view submitted form but cannot modify" />
-				<boolean name="allowPrint" optional="true" comments="user can print submitted form" />
+				<boolean name="allowEdit" optional="false" comments="user can view submitted form but cannot modify" />
+				<boolean name="allowPrint" optional="false" comments="user can print submitted form" />
 				<!-- steps of form -->
 				<structure name="steps" optional="yes">
 					<structure name="~stepName~">
@@ -122,7 +122,7 @@ switch ( $fusebox->action ) :
 		F::error(Webform::error(), $arguments['step'] === false);
 		// go to confirmation (when necessary)
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
-		// exit point
+		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
 		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.new&step={$prevStep}";
 		// exit point : next
@@ -269,8 +269,9 @@ switch ( $fusebox->action ) :
 		// get record
 		$bean = ORM::get($webform['beanType'], $webform['beanID']);
 		F::error(ORM::error(), $bean === false);
-		// exit point
+		// exit point : edit
 		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
+		// exit point : print
 		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
 		// display message (when necessary)
 		ob_start();
@@ -278,7 +279,7 @@ switch ( $fusebox->action ) :
 		elseif ( !empty($bean->created_on) ) F::alert([ 'type' => 'info', 'message' => 'Submitted on '.date('Y-m-d H:i', strtotime($bean->created_on)) ]);
 		$layout['content'] = ob_get_clean();
 		// display form
-		$formContent = Webform::renderAll($xfa);
+		$formContent = Webform::renderAll( $xfa ?? [] );
 		F::error(Webform::error(), $formContent === false);
 		$layout['content'] .= $formContent;
 		// layout
