@@ -408,6 +408,9 @@ class Webform {
 				<structure name="$config" scope="self">
 					<string name="beanType" />
 					<number name="beanID" />
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
+					</structure>
 				</structure>
 			</in>
 			<out>
@@ -426,8 +429,15 @@ class Webform {
 			return false;
 		}
 		// put into cache (when necessary)
+		// ===> only require relevant field
 		if ( !empty($bean->id) ) {
-			self::data( $bean->export() );
+			$formData = array();
+			foreach ( $bean->export() as $key => $val ) {
+				if ( isset(self::$config['fieldConfig'][$key]) ) {
+					$formData[$key] = $val;
+				}
+			}
+			self::data($formData);
 		}
 		// done!
 		return true;
