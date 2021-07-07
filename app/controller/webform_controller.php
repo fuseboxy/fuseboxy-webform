@@ -172,6 +172,12 @@ switch ( $fusebox->action ) :
 		break;
 
 
+	// confirm
+	case 'confirm':
+
+		break;
+
+
 	// view submitted form
 	case 'view':
 		F::error('Config [beanID] is invalid', F::is('*.edit') and  empty($webform['beanID']));
