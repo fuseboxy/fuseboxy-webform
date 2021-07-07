@@ -102,12 +102,9 @@ switch ( $fusebox->action ) :
 	// init form
 	case 'index':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		// clear cache (if any)
-		$cleared = Webform::clear();
-		F::error(Webform::error(), $cleared === false);
 		// pre-load data (if any)
-		$loaded = Webform::load();
-		F::error(Webform::error(), $loaded === false);
+		$started = Webform::start();
+		F::error(Webform::error(), $started === false);
 		// go to form
 		F::redirect("{$fusebox->controller}.new", empty($webform['beanID']));
 		F::redirect("{$fusebox->controller}.view");

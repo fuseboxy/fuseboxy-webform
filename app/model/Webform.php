@@ -400,55 +400,6 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			pre-load data to webform when edit
-		</description>
-		<io>
-			<in>
-				<!-- config -->
-				<structure name="$config" scope="self">
-					<string name="beanType" />
-					<number name="beanID" />
-					<structure name="fieldConfig">
-						<structure name="~fieldName~" />
-					</structure>
-				</structure>
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function load() {
-		// simply quit when no bean specified
-		if ( empty(self::$config['beanID']) ) return true;
-		// load record from database
-		$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
-		if ( $bean === false ) {
-			self::$error = ORM::error();
-			return false;
-		}
-		// put into cache (when necessary)
-		// ===> only require relevant field
-		if ( !empty($bean->id) ) {
-			$formData = array();
-			foreach ( $bean->export() as $key => $val ) {
-				if ( isset(self::$config['fieldConfig'][$key]) ) {
-					$formData[$key] = $val;
-				}
-			}
-			self::data($formData);
-		}
-		// done!
-		return true;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
 			getter & setter of webform working mode
 			determine whether webform is editable
 		</description>
@@ -998,6 +949,58 @@ class Webform {
 		}
 		// done!
 		return $id;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			clear cache & pre-load data to webform
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<string name="beanType" />
+					<number name="beanID" />
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function start() {
+		// clear cache (if any)
+		$cleared = self::clear();
+		if ( $cleared === false ) return false;
+		// simply quit when no bean specified
+		if ( empty(self::$config['beanID']) ) return true;
+		// load record from database
+		$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
+		if ( $bean === false ) {
+			self::$error = ORM::error();
+			return false;
+		}
+		// put into cache (when necessary)
+		// ===> only require relevant field
+		if ( !empty($bean->id) ) {
+			$formData = array();
+			foreach ( $bean->export() as $key => $val ) {
+				if ( isset(self::$config['fieldConfig'][$key]) ) {
+					$formData[$key] = $val;
+				}
+			}
+			self::data($formData);
+		}
+		// done!
+		return true;
 	}
 
 
