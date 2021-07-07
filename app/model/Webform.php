@@ -966,6 +966,9 @@ class Webform {
 					<structure name="fieldConfig">
 						<structure name="~fieldName~" />
 					</structure>
+					<structure name="otherData" optional="yes">
+						<mixed name="~otherFieldName~" />
+					</structure>
 				</structure>
 			</in>
 			<out>
@@ -975,28 +978,28 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function start() {
+		$formData = array();
 		// clear cache (if any)
 		$cleared = self::clear();
 		if ( $cleared === false ) return false;
-		// simply quit when no bean specified
-		if ( empty(self::$config['beanID']) ) return true;
-		// load record from database
-		$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
-		if ( $bean === false ) {
-			self::$error = ORM::error();
-			return false;
-		}
-		// put into cache (when necessary)
-		// ===> only require relevant field
-		if ( !empty($bean->id) ) {
-			$formData = array();
-			foreach ( $bean->export() as $key => $val ) {
-				if ( isset(self::$config['fieldConfig'][$key]) ) {
-					$formData[$key] = $val;
-				}
+		// load from database (when necessary)
+		if ( !empty(self::$config['beanID']) ) {
+			$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
+			if ( $bean === false ) {
+				self::$error = ORM::error();
+				return false;
 			}
-			self::data($formData);
 		}
+		// move bean data into container
+		// ===> only need relevant fields
+		// ===> (no need for all fields of own bean)
+		$beanData = !empty($bean->id) ? $bean->export() : [];
+		foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
+		// move other data into container (when necessary)
+		$otherData = !empty(self::$config['otherData']) ? self::$config['otherData'] : [];
+		foreach ( $otherData as $key => $val ) $formData[$key] = $val;
+		// put into cache
+		self::data($formData);
 		// done!
 		return true;
 	}

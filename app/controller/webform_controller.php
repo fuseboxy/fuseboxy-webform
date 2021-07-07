@@ -69,6 +69,10 @@
 				<boolean_or_string name="writeLog" optional="yes" default="false" comments="simply true to log with default action; or specify action name for log" />
 				<boolean_or_string name="snapshot" optional="yes" default="false" comments="simply true to save to {snapshot} table; or specify table name to save" />
 				<boolean_or_string name="closed" optional="yes" default="false" comments="simply true to close webform with default message; or specify message to show" />
+				<!-- advanced -->
+				<structure name="otherData" optional="yes" comments="load other data to webform when start">
+					<mixed name="~otherFieldName~" />
+				</structure>
 			</structure>
 			<structure name="Webform::$libPath">
 				<string name="uploadFile" />
