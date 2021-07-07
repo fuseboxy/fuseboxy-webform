@@ -339,15 +339,19 @@ class Webform {
 				if ( empty($cfg['buttonAltText']) ) self::$config['fieldConfig'][$fieldName]['buttonAltText'] = 'Choose Another File';
 			}
 		}
-		// default email field for notification
-		if ( !empty(self::$config['notification']) and empty(self::$config['notification']['to']) ) {
+		// notification : fix format
+		if ( self::$config['notification'] === true ) {
+			self::$config['notification'] = array();
+		}
+		// notification : default [to] setting
+		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) {
 			self::$config['notification']['to'] = ':email';
 		}
-		// default snapshot table
+		// snapshot : default table name
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
 			self::$config['snapshot'] = 'snapshot';
 		}
-		// default closed message
+		// closed : default message
 		if ( isset(self::$config['closed']) and self::$config['closed'] === true ) {
 			self::$config['closed'] = 'Form was closed';
 		}
@@ -1644,7 +1648,7 @@ class Webform {
 		}
 		// check notification : any missing
 		foreach ( ['from','to','subject','body'] as $item ) {
-			if ( !empty(self::$config['notification']) and empty(self::$config['notification'][$item]) ) {
+			if ( is_array(self::$config['notification']) and empty(self::$config['notification'][$item]) ) {
 				self::$error = "Webform notification config [{$item}] is required";
 				return false;
 			}
