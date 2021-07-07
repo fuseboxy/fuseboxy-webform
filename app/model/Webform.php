@@ -1331,12 +1331,11 @@ class Webform {
 		if ( $formData === false ) return false;
 		// go through each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			$isSignatureField = ( $cfg['format'] == 'signature' );
-			$isSignatureData = ( isset($formData[$fieldName]) and substr($formData[$fieldName], -6) == '</svg>' );
+			$isSignatureData = ( $cfg['format'] == 'signature' and isset($formData[$fieldName]) and substr($formData[$fieldName], -6) == '</svg>' );
 			// check field-format & data-format
 			// ===> only proceed when signature data
 			// ===> (skip when empty or file url)
-			if ( $isSignatureField and $isSignatureData ) {
+			if ( $isSignatureData ) {
 				// determine unique file name
 				$uuid = Util::uuid();
 				if ( $uuid === false ) {
