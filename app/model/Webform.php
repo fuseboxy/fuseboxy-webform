@@ -1330,31 +1330,30 @@ class Webform {
 		$formData = self::data();
 		if ( $formData === false ) return false;
 		// go through each field
-		foreach ( $formData as $fieldName => $fieldValue ) {
-			// check if signature field
-			if ( isset(self::$config['fieldConfig'][$fieldName]['format']) and self::$config['fieldConfig'][$fieldName]['format'] == 'signature' ) {
-				// check field value
-				// ===> only proceed when signature data
-				// ===> (skip when empty or file url)
-				if ( substr($fieldValue, -6) == '</svg>' ) {
-					// determine unique file name
-					$uuid = Util::uuid();
-					if ( $uuid === false ) {
-						self::$error = Util::error();
-						return false;
-					}
-					$uniqueFilename = $uuid.'.svg';
-					// determine file location
-					$filePath = $uploadDir.'tmp/'.session_id().'/'.$uniqueFilename;
-					$fileUrl  = $uploadUrl.'tmp/'.session_id().'/'.$uniqueFilename;
-					// turn signature into file
-					if ( !file_put_contents($filePath, $fieldValue) ) {
-						self::$error = error_get_last()['message'];
-						return false;
-					}
-					// update form data container
-					$formData[$fieldName] = $fileUrl;
-				} // if-svg
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			$isSignatureField = ( $cfg['format'] == 'signature' );
+			$isSignatureData = ( isset($formData[$fieldName]) and substr($formData[$fieldName], -6) == '</svg>' );
+			// check field-format & data-format
+			// ===> only proceed when signature data
+			// ===> (skip when empty or file url)
+			if ( $isSignatureField and $isSignatureData ) {
+				// determine unique file name
+				$uuid = Util::uuid();
+				if ( $uuid === false ) {
+					self::$error = Util::error();
+					return false;
+				}
+				$uniqueFilename = $uuid.'.svg';
+				// determine file location
+				$filePath = $uploadDir.'tmp/'.session_id().'/'.$uniqueFilename;
+				$fileUrl  = $uploadUrl.'tmp/'.session_id().'/'.$uniqueFilename;
+				// turn signature into file
+				if ( !file_put_contents($filePath, $formData[$fieldName]) ) {
+					self::$error = error_get_last()['message'];
+					return false;
+				}
+				// update form data container
+				$formData[$fieldName] = $fileUrl;
 			} // if-signature
 		} // foreach-fieldConfig
 		// update form data
