@@ -257,6 +257,12 @@ switch ( $fusebox->action ) :
 		break;
 
 
+	// print submitted form
+	case 'print':
+		F::error('under construction');
+		break;
+
+
 	// view submitted form
 	case 'view':
 		F::error('Config [beanID] is invalid', empty($webform['beanID']));
