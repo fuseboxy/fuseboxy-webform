@@ -352,9 +352,7 @@ class Webform {
 		}
 		// default closed message
 		if ( isset(self::$config['closed']) and self::$config['closed'] === true ) {
-			ob_start();
-			F::alert([ 'type' => 'warning', 'message' => 'Form was closed' ]);
-			self::$config['closed'] = ob_get_clean();
+			self::$config['closed'] = 'Form was closed';
 		}
 		// done!
 		return true;
