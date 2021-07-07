@@ -193,31 +193,6 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// view submitted form
-	case 'view':
-		F::error('Config [beanID] is invalid', empty($webform['beanID']));
-		// get record
-		$bean = ORM::get($webform['beanType'], $webform['beanID']);
-		F::error(ORM::error(), $bean === false);
-		// exit point
-		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
-		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
-		// display message (when necessary)
-		ob_start();
-		if ( !empty($webform['closed']) ) F::alert([ 'type' => 'warning', 'message' => $webform['closed'] ]);
-		elseif ( !empty($bean->updated_on) ) F::alert([ 'type' => 'info', 'message' => 'Last updated on '.date('Y-m-d H:i', strtotime($bean->updated_on)) ]);
-		elseif ( !empty($bean->created_on) ) F::alert([ 'type' => 'info', 'message' => 'Submitted on '.date('Y-m-d H:i', strtotime($bean->created_on)) ]);
-		$layout['content'] = ob_get_clean();
-		// display form
-		$formContent = Webform::renderAll($xfa);
-		F::error(Webform::error(), $formContent === false);
-		$layout['content'] .= $formContent;
-		// layout
-		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
-		else echo $layout['content'];
-		break;
-
-
 	// check submitted data of specific step
 	case 'validate':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
@@ -282,11 +257,37 @@ switch ( $fusebox->action ) :
 		break;
 
 
+	// view submitted form
+	case 'view':
+		F::error('Config [beanID] is invalid', empty($webform['beanID']));
+		// get record
+		$bean = ORM::get($webform['beanType'], $webform['beanID']);
+		F::error(ORM::error(), $bean === false);
+		// exit point
+		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
+		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
+		// display message (when necessary)
+		ob_start();
+		if ( !empty($bean->updated_on) ) F::alert([ 'type' => 'info', 'message' => 'Last updated on '.date('Y-m-d H:i', strtotime($bean->updated_on)) ]);
+		elseif ( !empty($bean->created_on) ) F::alert([ 'type' => 'info', 'message' => 'Submitted on '.date('Y-m-d H:i', strtotime($bean->created_on)) ]);
+		$layout['content'] = ob_get_clean();
+		// display form
+		$formContent = Webform::renderAll($xfa);
+		F::error(Webform::error(), $formContent === false);
+		$layout['content'] .= $formContent;
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
+		break;
+
+
 	// form closed
 	case 'closed':
 		F::error('Form not closed yet', empty($webform['closed']));
 		// display
-		$layout['content'] = $webform['closed'];
+		ob_start();
+		F::alert([ 'type' => 'warning', 'message' => $webform['closed'] ]);
+		$layout['content'] = ob_get_clean();
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
 		else echo $layout['content'];
