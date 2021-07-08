@@ -238,12 +238,17 @@ class Webform {
 							<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 						</structure>
 					</structure>
-					<!-- others -->
+					<!-- others settings -->
 					<structure name="notification" optional="yes">
 						<string name="to" default=":email" />
 					</structure>
 					<string name="snapshot" default="snapshot" comments="table to save snapshot; no snapshot to take when false" />
 					<string name="closed" comments="message to show when form closed" />
+					<!-- default custom text -->
+					<structure name="customText">
+						<string name="closed" />
+						<string name="completed" />
+					</structure>
 				</structure>
 			</out>
 		</io>
@@ -342,21 +347,18 @@ class Webform {
 			}
 		}
 		// notification : fix format
-		if ( self::$config['notification'] === true ) {
-			self::$config['notification'] = array();
-		}
+		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
 		// notification : default [to] setting
-		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) {
-			self::$config['notification']['to'] = ':email';
-		}
+		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) self::$config['notification']['to'] = ':email';
 		// snapshot : default table name
-		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
-			self::$config['snapshot'] = 'snapshot';
-		}
-		// closed : default message
-		if ( isset(self::$config['closed']) and self::$config['closed'] === true ) {
-			self::$config['closed'] = 'Form was closed';
-		}
+		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) self::$config['snapshot'] = 'snapshot';
+		// opened & closed : default
+		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
+		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
+		// custom text : default message
+		if ( empty(self::$config['customText']) ) self::$config['customText'] = array();
+		if ( empty(self::$config['customText']['closed']) ) self::$config['customText']['closed'] = 'Form was closed.';
+		if ( empty(self::$config['customText']['completed']) ) self::$config['customText']['completed'] = 'Your submission was received.';
 		// done!
 		return true;
 	}
