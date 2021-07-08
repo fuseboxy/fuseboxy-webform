@@ -1364,6 +1364,12 @@ class Webform {
 				// determine file location
 				$filePath = $uploadDir.'tmp/'.session_id().'/'.$uniqueFilename;
 				$fileUrl  = $uploadUrl.'tmp/'.session_id().'/'.$uniqueFilename;
+				$fileDir  = dirname($filePath);
+				// create directory (when necessary)
+				if ( !file_exists($fileDir) and !mkdir($fileDir, 0766, true) ) {
+					self::$error = error_get_last()['message'];
+					return false;
+				}
 				// turn signature into file
 				if ( !file_put_contents($filePath, $formData[$fieldName]) ) {
 					self::$error = error_get_last()['message'];
