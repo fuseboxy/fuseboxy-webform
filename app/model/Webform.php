@@ -901,7 +901,7 @@ class Webform {
 		// save to database
 		$id = ORM::save($bean);
 		if ( $id === false ) {
-			self::$error = 'Error occurred while saving ['.self::$config['beanType'].'] record - '.ORM::error();
+			self::$error = ORM::error();
 			return false;
 		}
 		// send notification (when necessary)
@@ -929,7 +929,7 @@ class Webform {
 			}
 			$snapshotID = ORM::save($snapshotBean);
 			if ( $snapshotID === false ) {
-				self::$error = 'Error occurred while while saving snapshot - '.ORM::error();
+				self::$error = ORM::error();
 				return false;
 			}
 		}
