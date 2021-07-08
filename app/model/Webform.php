@@ -890,10 +890,9 @@ class Webform {
 			return false;
 		}
 		// put (updated) form data to container
-		$data = self::data();
-		if ( $data === false ) return false;
-		foreach ( $data as $key => $val ) $bean->{$key} = is_array($val) ? implode('|', $val) : $val;
-		unset($data);
+		$formData = self::data();
+		if ( $formData === false ) return false;
+		foreach ( $formData as $key => $val ) $bean->{$key} = is_array($val) ? implode('|', $val) : $val;
 		// add more info
 		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
 		else $bean->updated_on = date('Y-m-d H:i:s');
