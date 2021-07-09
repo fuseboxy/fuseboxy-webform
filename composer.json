@@ -1,5 +1,7 @@
 {
 	"name": "fuseboxy/fuseboxy-webform",
+	"description": "Fuseboxy Webform",
 	"license": "MIT",
+	"type": "fuseboxy-module",
 	"require": {}
 }
