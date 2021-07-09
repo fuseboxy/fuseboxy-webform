@@ -77,7 +77,7 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 			if ( !empty($fieldValue) ) :
 				?><a href="<?php echo $fieldValue; ?>" class="preview-link small" target="_blank"><?php
 					if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
-						?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail mt-2" alt="" /><?php
+						?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail d-block mt-2" alt="" /><?php
 					else :
 						echo basename($fieldValue);
 					endif;
