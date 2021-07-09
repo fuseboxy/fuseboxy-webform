@@ -1614,6 +1614,9 @@ class Webform {
 			self::$error = 'Fusebox config [uploadUrl] is required';
 			return false;
 		// check component
+		} elseif ( !empty(F::config('captcha')) and !class_exists('Captcha') ) {
+			self::$error = 'Class [Captcha] is required';
+			return false;
 		} elseif ( !empty(self::$config['writeLog']) and !class_exists('Log') ) {
 			self::$error = 'Class [Log] is required';
 			return false;

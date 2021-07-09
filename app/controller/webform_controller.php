@@ -221,7 +221,7 @@ switch ( $fusebox->action ) :
 			F::error(Webform::error(), $cached === false);
 		}
 		// validate captcha (when last step)
-		if ( $validated and $arguments['step'] == $lastStep and class_exists('Captcha') ) {
+		if ( $validated and $arguments['step'] == $lastStep and !empty(F::config('captcha')) ) {
 			$validated = Captcha::validate();
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Captcha::error()));
 		}

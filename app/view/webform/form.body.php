@@ -4,7 +4,7 @@
 		<in>
 			<structure name="$fieldConfigAll">
 				<structure name="~fieldName~">
-					<string name="format" default="text" comments="output|hidden|text|url|textarea|checkbox|radio|file|image|signature|captcha" />
+					<string name="format" default="text" comments="output|hidden|text|url|textarea|checkbox|radio|file|image|signature" />
 					<string name="label" optional="yes" />
 					<string name="placeholder" optional="yes" />
 					<!-- options -->
