@@ -1,7 +1,7 @@
 <?php
 // capture original output
 ob_start();
-include 'input.file.php';
+include F::appPath('view/webform/input.file.php');
 $output = ob_get_clean();
 
 // change class name

@@ -734,7 +734,7 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
-		include dirname(__DIR__).'/view/webform/form.php';
+		include F::appPath('view/webform/form.php');
 		// done!
 		return ob_get_clean();
 	}
@@ -779,7 +779,7 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
-		include dirname(__DIR__).'/view/webform/form.php';
+		include F::appPath('view/webform/form.php');
 		// done!
 		return ob_get_clean();
 	}

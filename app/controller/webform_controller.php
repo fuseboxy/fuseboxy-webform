@@ -260,7 +260,7 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		// display
 		ob_start();
-		include dirname(__DIR__).'/view/webform/completed.php';
+		include F::appPath('view/webform/completed.php');
 		$layout['content'] = ob_get_clean();
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -273,7 +273,7 @@ switch ( $fusebox->action ) :
 		F::error('Form not closed yet', empty($webform['closed']));
 		// display
 		ob_start();
-		include dirname(__DIR__).'/view/webform/closed.php';
+		include F::appPath('view/webform/closed.php');
 		$layout['content'] = ob_get_clean();
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -334,7 +334,7 @@ switch ( $fusebox->action ) :
 	// ajax upload progress
 	case 'upload-progress':
 		if ( !empty($webform['closed']) ) die('Forbidden');
-		require Webform::$libPath['uploadProgress'];
+		include Webform::$libPath['uploadProgress'];
 		break;
 
 
