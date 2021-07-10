@@ -25,7 +25,7 @@
 </fusedoc>
 */
 $btnText = '';
-?><div class="webform-input-signature form-control-plaintext bg-light rounded p-2"><?php
+?><div class="webform-input-signature form-control-plaintext text-center bg-light rounded p-2"><?php
 	// field
 	if ( !empty($editable) ) :
 		// psuedo-hidden field to submit

@@ -20,10 +20,10 @@
 */ ?>
 <form id="webform-form" method="post" class="<?php echo Webform::$config['beanType']; ?>"><?php
 // display single or multiple steps
-if ( isset($fieldLayoutAll) ) foreach ( $fieldLayoutAll as $fieldLayout ) include 'form.body.php';
-elseif ( isset($fieldLayout) ) include 'form.body.php';
+if ( isset($fieldLayoutAll) ) foreach ( $fieldLayoutAll as $fieldLayout ) include F::appPath('view/webform/form.body.php');
+elseif ( isset($fieldLayout) ) include F::appPath('view/webform/form.body.php');
 // captcha
-include 'form.captcha.php';
+include F::appPath('view/webform/form.captcha.php');
 // button
-include 'form.button.php';
+include F::appPath('view/webform/form.button.php');
 ?></form>

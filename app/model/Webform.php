@@ -238,12 +238,17 @@ class Webform {
 							<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 						</structure>
 					</structure>
-					<!-- others -->
+					<!-- others settings -->
 					<structure name="notification" optional="yes">
 						<string name="to" default=":email" />
 					</structure>
 					<string name="snapshot" default="snapshot" comments="table to save snapshot; no snapshot to take when false" />
 					<string name="closed" comments="message to show when form closed" />
+					<!-- default custom text -->
+					<structure name="customText">
+						<string name="closed" />
+						<string name="completed" />
+					</structure>
 				</structure>
 			</out>
 		</io>
@@ -342,21 +347,18 @@ class Webform {
 			}
 		}
 		// notification : fix format
-		if ( self::$config['notification'] === true ) {
-			self::$config['notification'] = array();
-		}
+		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
 		// notification : default [to] setting
-		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) {
-			self::$config['notification']['to'] = ':email';
-		}
+		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) self::$config['notification']['to'] = ':email';
 		// snapshot : default table name
-		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) {
-			self::$config['snapshot'] = 'snapshot';
-		}
-		// closed : default message
-		if ( isset(self::$config['closed']) and self::$config['closed'] === true ) {
-			self::$config['closed'] = 'Form was closed';
-		}
+		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) self::$config['snapshot'] = 'snapshot';
+		// opened & closed : default
+		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
+		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
+		// custom text : default message
+		if ( empty(self::$config['customText']) ) self::$config['customText'] = array();
+		if ( empty(self::$config['customText']['closed']) ) self::$config['customText']['closed'] = 'Form was closed.';
+		if ( empty(self::$config['customText']['completed']) ) self::$config['customText']['completed'] = 'Your submission was received.';
 		// done!
 		return true;
 	}
@@ -732,7 +734,7 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
-		include dirname(__DIR__).'/view/webform/form.php';
+		include F::appPath('view/webform/form.php');
 		// done!
 		return ob_get_clean();
 	}
@@ -777,7 +779,7 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
-		include dirname(__DIR__).'/view/webform/form.php';
+		include F::appPath('view/webform/form.php');
 		// done!
 		return ob_get_clean();
 	}
@@ -888,10 +890,9 @@ class Webform {
 			return false;
 		}
 		// put (updated) form data to container
-		$data = self::data();
-		if ( $data === false ) return false;
-		foreach ( $data as $key => $val ) $bean->{$key} = is_array($val) ? implode('|', $val) : $val;
-		unset($data);
+		$formData = self::data();
+		if ( $formData === false ) return false;
+		foreach ( $formData as $key => $val ) $bean->{$key} = is_array($val) ? implode('|', $val) : $val;
 		// add more info
 		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
 		else $bean->updated_on = date('Y-m-d H:i:s');
@@ -899,7 +900,7 @@ class Webform {
 		// save to database
 		$id = ORM::save($bean);
 		if ( $id === false ) {
-			self::$error = 'Error occurred while saving ['.self::$config['beanType'].'] record - '.ORM::error();
+			self::$error = ORM::error();
 			return false;
 		}
 		// send notification (when necessary)
@@ -927,7 +928,7 @@ class Webform {
 			}
 			$snapshotID = ORM::save($snapshotBean);
 			if ( $snapshotID === false ) {
-				self::$error = 'Error occurred while while saving snapshot - '.ORM::error();
+				self::$error = ORM::error();
 				return false;
 			}
 		}
@@ -1362,6 +1363,12 @@ class Webform {
 				// determine file location
 				$filePath = $uploadDir.'tmp/'.session_id().'/'.$uniqueFilename;
 				$fileUrl  = $uploadUrl.'tmp/'.session_id().'/'.$uniqueFilename;
+				$fileDir  = dirname($filePath);
+				// create directory (when necessary)
+				if ( !file_exists($fileDir) and !mkdir($fileDir, 0766, true) ) {
+					self::$error = error_get_last()['message'];
+					return false;
+				}
 				// turn signature into file
 				if ( !file_put_contents($filePath, $formData[$fieldName]) ) {
 					self::$error = error_get_last()['message'];
@@ -1607,6 +1614,9 @@ class Webform {
 			self::$error = 'Fusebox config [uploadUrl] is required';
 			return false;
 		// check component
+		} elseif ( !empty(F::config('captcha')) and !class_exists('Captcha') ) {
+			self::$error = 'Class [Captcha] is required';
+			return false;
 		} elseif ( !empty(self::$config['writeLog']) and !class_exists('Log') ) {
 			self::$error = 'Class [Log] is required';
 			return false;

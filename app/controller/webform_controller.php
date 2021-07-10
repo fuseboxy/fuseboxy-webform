@@ -55,8 +55,8 @@
 						<string name="resize" optional="yes" example="800x600|1024w|100h" />
 					</structure>
 				</structure>
-				<!-- settings for email notification -->
-				<structure name="notification" optional="yes" default="false" comments="set to false to send no email">
+				<!-- email notification settings -->
+				<boolean_or_structure name="notification" optional="yes" default="false" comments="set to false to send no email">
 					<string name="fromName" />
 					<string name="from" />
 					<list name="to" delim=";," />
@@ -64,14 +64,21 @@
 					<list name="bcc" delim=";," />
 					<string name="subject" />
 					<string name="body" />
-				</structure>
-				<!-- other setting -->
+				</boolean_or_structure>
+				<!-- other settings -->
 				<boolean_or_string name="writeLog" optional="yes" default="false" comments="simply true to log with default action; or specify action name for log" />
 				<boolean_or_string name="snapshot" optional="yes" default="false" comments="simply true to save to {snapshot} table; or specify table name to save" />
-				<boolean_or_string name="closed" optional="yes" default="false" comments="simply true to close webform with default message; or specify message to show" />
+				<boolean name="opened" optional="yes" default="true" comments="whether the form is opened" />
+				<boolean name="closed" optional="yes" default="false" comments="whether the form is closed" />
 				<!-- advanced -->
 				<structure name="otherData" optional="yes" comments="load other data to webform when start">
 					<mixed name="~otherFieldName~" />
+				</structure>
+				<!-- custom text -->
+				<structure name="customText">
+					<string name="opened" />
+					<string name="closed" />
+					<string name="completed" />
 				</structure>
 			</structure>
 			<structure name="Webform::$libPath">
@@ -214,7 +221,7 @@ switch ( $fusebox->action ) :
 			F::error(Webform::error(), $cached === false);
 		}
 		// validate captcha (when last step)
-		if ( $validated and $arguments['step'] == $lastStep and class_exists('Captcha') ) {
+		if ( $validated and $arguments['step'] == $lastStep and !empty(F::config('captcha')) ) {
 			$validated = Captcha::validate();
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Captcha::error()));
 		}
@@ -253,7 +260,20 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		// display
 		ob_start();
-		include dirname(__DIR__).'/view/webform/completed.php';
+		include F::appPath('view/webform/completed.php');
+		$layout['content'] = ob_get_clean();
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
+		break;
+
+
+	// form closed
+	case 'closed':
+		F::error('Form not closed yet', empty($webform['closed']));
+		// display
+		ob_start();
+		include F::appPath('view/webform/closed.php');
 		$layout['content'] = ob_get_clean();
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -292,19 +312,6 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// form closed
-	case 'closed':
-		F::error('Form not closed yet', empty($webform['closed']));
-		// display
-		ob_start();
-		F::alert([ 'type' => 'warning', 'message' => $webform['closed'] ]);
-		$layout['content'] = ob_get_clean();
-		// layout
-		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
-		else echo $layout['content'];
-		break;
-
-
 	// ajax file upload
 	case 'upload':
 		if ( !empty($webform['closed']) ) die('Forbidden');
@@ -327,7 +334,7 @@ switch ( $fusebox->action ) :
 	// ajax upload progress
 	case 'upload-progress':
 		if ( !empty($webform['closed']) ) die('Forbidden');
-		require Webform::$libPath['uploadProgress'];
+		include Webform::$libPath['uploadProgress'];
 		break;
 
 

@@ -28,7 +28,7 @@
 */ ?>
 <div class="webform-input-dropdown input-group"><?php
 	// icon
-	include 'input.icon.php';
+	include F::appPath('view/webform/input.icon.php');
 	// field
 	if ( !empty($editable) ) :
 		?><select
@@ -50,12 +50,12 @@
 					?><optgroup label="<?php echo $optGroupLabel; ?>"><?php
 						// optgroup-option
 						foreach ( $optGroupItems as $optValue => $optText ) :
-							include 'input.dropdown.item.php';
+							include F::appPath('view/webform/input.dropdown.item.php');
 						endforeach;
 					?></optgroup><?php
 				// option
 				else :
-					include 'input.dropdown.item.php';
+					include F::appPath('view/webform/input.dropdown.item.php');
 				endif;
 			endforeach;
 		?></select><?php

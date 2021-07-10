@@ -11,7 +11,7 @@
 	</io>
 </fusedoc>
 */
-if ( ( isset($xfa['submit']) or isset($xfa['update']) ) and class_exists('Captcha') ) :
+if ( ( isset($xfa['submit']) or isset($xfa['update']) ) and !empty(F::config('captcha')) ) :
 	?><div id="webform-form-captcha" class="text-center mt-5"><?php
 		echo Captcha::field();
 	?></div><?php

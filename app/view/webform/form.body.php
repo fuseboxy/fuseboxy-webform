@@ -4,7 +4,7 @@
 		<in>
 			<structure name="$fieldConfigAll">
 				<structure name="~fieldName~">
-					<string name="format" default="text" comments="output|hidden|text|url|textarea|checkbox|radio|file|image|signature|captcha" />
+					<string name="format" default="text" comments="output|hidden|text|url|textarea|checkbox|radio|file|image|signature" />
 					<string name="label" optional="yes" />
 					<string name="placeholder" optional="yes" />
 					<!-- options -->
@@ -56,7 +56,7 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 				elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
 				else $fieldValue = '';
 				// display field
-				include 'input.php';
+				include F::appPath('view/webform/input.php');
 			endforeach;
 		?></div><!--/.row--><?php
 	endif;

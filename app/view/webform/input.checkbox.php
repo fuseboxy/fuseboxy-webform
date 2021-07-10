@@ -36,11 +36,11 @@
 			$optGroupItems = $optText;
 			?><small><strong><?php echo $optGroupLabel; ?></strong></small><?php
 			foreach ( $optGroupItems as $optValue => $optText ) :
-				include 'input.checkbox.item.php';
+				include F::appPath('view/webform/input.checkbox.item.php');
 				$optIndex++;
 			endforeach;
 		else :
-			include 'input.checkbox.item.php';
+			include F::appPath('view/webform/input.checkbox.item.php');
 			$optIndex++;
 		endif;
 	endforeach;

@@ -23,7 +23,7 @@
 */ ?>
 <div class="webform-input-textarea input-group"><?php
 	// icon
-	include 'input.icon.php';
+	include F::appPath('view/webform/input.icon.php');
 	// field
 	if ( !empty($editable) ) :
 		?><textarea
