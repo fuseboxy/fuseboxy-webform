@@ -112,6 +112,7 @@ switch ( $fusebox->action ) :
 
 	// init form
 	case 'index':
+	case 'start':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		// pre-load data (if any)
 		$started = Webform::start();
