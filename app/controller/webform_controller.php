@@ -168,7 +168,7 @@ switch ( $fusebox->action ) :
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
 		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit&step={$prevStep}";
-		elseif ( $arguments['step'] == $firstStep ) $xfa['back'] = $fusebox->controller;
+		elseif ( $arguments['step'] == $firstStep ) $xfa['back'] = "{$fusebox->controller}.start";
 		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
