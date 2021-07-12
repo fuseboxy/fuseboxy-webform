@@ -229,8 +229,24 @@ switch ( $fusebox->action ) :
 		// return to current step (when error)
 		$action = empty($webform['beanID']) ? 'new' : 'edit';
 		F::redirect("{$fusebox->controller}.{$action}&step={$arguments['step']}", $validated === false);
-		// go to next step (when not last step)
+		// go to next step (thru an intermediate action)
+		F::redirect("{$fusebox->controller}.nextStep&step={$arguments['step']}", $arguments['step'] != $lastStep);
+		break;
+
+
+	// intermediate action before going to next step
+	// ===> for the scenario which developer refer to data-in-progress to determine steps conditionally
+	// ===> make sure submitted data cached into session before actual next-step determined
+	case 'nextStep':
+		F::error('Argument [step] is required', empty($arguments['step']));
+		// determine action
+		$action = empty($webform['beanID']) ? 'new' : 'edit';
+		// obtain last step
+		$lastStep = Webform::lastStep();
+		F::error(Webform::error(), $lastStep === false);
+		// obtain next step
 		$nextStep = Webform::nextStep($arguments['step']);
+		// go to next step (when not last step)
 		F::redirect("{$fusebox->controller}.{$action}&step={$nextStep}", $arguments['step'] != $lastStep);
 		// go to save (when last step)
 		F::redirect("{$fusebox->controller}.save");
