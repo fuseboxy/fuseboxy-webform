@@ -625,6 +625,7 @@ class Webform {
 		foreach ( $formData as $key => $val ) $masks["[[{$key}]]"] = $val;
 		// replace mask in subject & body
 		foreach ( $masks as $key => $val ) {
+			if ( is_array($val) ) $val = implode('|', $val);  // checkbox value
 			$mail['subject'] = str_ireplace($key, $val, $mail['subject']);
 			$mail['body']    = str_ireplace($key, $val, $mail['body']);
 		}
