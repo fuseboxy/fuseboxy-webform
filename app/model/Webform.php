@@ -310,6 +310,12 @@ class Webform {
 			if ( is_string($config) ) $config = array('label' => $config);
 			if ( $config !== false and $config !== null ) self::$config['fieldConfig'][$fieldName] = is_array($config) ? $config : [];
 		}
+		// field config : remove [options] when false
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			if ( isset($cfg['options']) and $cfg['options'] === false ) {
+				unset(self::$config['fieldConfig'][$fieldName]['options']);
+			}
+		}
 		// field config : default
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// format : default
@@ -1658,7 +1664,7 @@ class Webform {
 			if ( isset($cfg['format']) and in_array($cfg['format'], ['checkbox','radio']) and !isset($cfg['options']) ) {
 				self::$error = "Options for [{$fieldName}] is required";
 				return false;
-			} elseif ( isset($cfg['options']) and !is_array($cfg['options']) ) {
+			} elseif ( isset($cfg['options']) and $cfg['options'] !== false and !is_array($cfg['options']) ) {
 				self::$error = "Options for [{$fieldName}] must be array";
 				return false;
 			}
