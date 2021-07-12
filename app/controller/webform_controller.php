@@ -232,7 +232,7 @@ switch ( $fusebox->action ) :
 		$action = empty($webform['beanID']) ? 'new' : 'edit';
 		F::redirect("{$fusebox->controller}.{$action}&step={$arguments['step']}", $validated === false);
 		// go to next step (thru an intermediate action)
-		F::redirect("{$fusebox->controller}.nextStep&step={$arguments['step']}", $arguments['step'] != $lastStep);
+		F::redirect("{$fusebox->controller}.nextStep&step={$arguments['step']}");
 		break;
 
 
