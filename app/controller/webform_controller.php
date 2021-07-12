@@ -79,6 +79,8 @@
 					<string name="opened" />
 					<string name="closed" />
 					<string name="completed" />
+					<string name="submittedOn" />
+					<string name="lastUpdatedOn" />
 				</structure>
 			</structure>
 			<structure name="Webform::$libPath">

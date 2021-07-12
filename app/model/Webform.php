@@ -248,6 +248,8 @@ class Webform {
 					<structure name="customText">
 						<string name="closed" />
 						<string name="completed" />
+						<string name="submittedOn" />
+						<string name="lastUpdatedOn" />
 					</structure>
 				</structure>
 			</out>
@@ -359,6 +361,8 @@ class Webform {
 		if ( empty(self::$config['customText']) ) self::$config['customText'] = array();
 		if ( empty(self::$config['customText']['closed']) ) self::$config['customText']['closed'] = 'Form was closed.';
 		if ( empty(self::$config['customText']['completed']) ) self::$config['customText']['completed'] = 'Your submission was received.';
+		if ( empty(self::$config['customText']['submittedOn']) ) self::$config['customText']['submittedOn'] = 'Submitted on ';
+		if ( empty(self::$config['customText']['lastUpdatedOn']) ) self::$config['customText']['lastUpdatedOn'] = 'Last updated on ';
 		// done!
 		return true;
 	}
