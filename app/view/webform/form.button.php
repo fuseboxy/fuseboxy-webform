@@ -36,7 +36,7 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						type="submit"
 						class="btn btn-lg btn-primary btn-submit mx-2"
 						formaction="<?php echo F::url($xfa['update']); ?>"
-					><i class="fa fa-download"></i> Update</button><?php
+					><i class="fa fa-file-import"></i> Update</button><?php
 				endif;
 				// edit button
 				if ( !empty($xfa['edit']) ) :
