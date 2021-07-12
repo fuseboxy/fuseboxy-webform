@@ -5,7 +5,6 @@
 			<string name="$fieldID" example="webform-field-first_name" />
 			<string name="$fieldName" example="first_name" />
 			<string name="$fieldValue" />
-			<string name="$fieldWidth" example="col-2" />
 			<structure name="$fieldConfig">
 				<string name="format" />
 				<string name="label" optional="yes" />
@@ -17,7 +16,7 @@
 	</io>
 </fusedoc>
 */ ?>
-<div class="webform-input form-group <?php echo $fieldWidth; ?>"><?php
+<div class="webform-input form-group"><?php
 	// label (when necessary)
 	if ( !empty($fieldConfig['label']) ) :
 		?><label for="<?php echo $fieldID; ?>"><?php
