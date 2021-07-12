@@ -48,17 +48,18 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 		?><div class="form-row"><?php
 			foreach ( $fieldNameList as $i => $fieldName ) :
 				$fieldWidth = isset($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
-				$fieldID = 'webform-input-'.$fieldName;
-				$fieldConfig = $fieldConfigAll[$fieldName];
-				// defined value > submitted value > default
-				if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
-				elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
-				elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
-				else $fieldValue = '';
-				// display field
+				// display column
 				?><div class="<?php echo $fieldWidth; ?>"><?php
+					$fieldID = 'webform-input-'.$fieldName;
+					$fieldConfig = $fieldConfigAll[$fieldName];
+					// defined value > submitted value > default
+					if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
+					elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
+					elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
+					else $fieldValue = '';
+					// display field
 					include F::appPath('view/webform/input.php');
-				?></div><?php
+				?></div><!--/.col--><?php
 			endforeach;
 		?></div><!--/.row--><?php
 	endif;
