@@ -318,8 +318,8 @@ switch ( $fusebox->action ) :
 		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
 		// display message (when necessary)
 		ob_start();
-		if ( !empty($bean->updated_on) ) F::alert([ 'type' => 'info', 'message' => 'Last updated on '.date('Y-m-d H:i', strtotime($bean->updated_on)) ]);
-		elseif ( !empty($bean->created_on) ) F::alert([ 'type' => 'info', 'message' => 'Submitted on '.date('Y-m-d H:i', strtotime($bean->created_on)) ]);
+		if     ( !empty($bean->updated_on) ) F::alert([ 'type' => 'info', 'message' => $webform['customText']['lastUpdatedOn'].date('Y-m-d H:i', strtotime($bean->updated_on)) ]);
+		elseif ( !empty($bean->created_on) ) F::alert([ 'type' => 'info', 'message' => $webform['customText']['submittedOn'].date('Y-m-d H:i', strtotime($bean->created_on)) ]);
 		$layout['content'] = ob_get_clean();
 		// display form
 		$formContent = Webform::renderAll( $xfa ?? [] );
