@@ -49,7 +49,7 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 			foreach ( $fieldNameList as $i => $fieldName ) :
 				$fieldWidth = isset($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
 				// display column
-				?><div class="<?php echo $fieldWidth; ?>"><?php
+				?><div class="webform-col <?php echo $fieldWidth; ?>"><?php
 					$fieldID = 'webform-input-'.$fieldName;
 					$fieldConfig = $fieldConfigAll[$fieldName];
 					// defined value > submitted value > default
