@@ -1645,7 +1645,7 @@ class Webform {
 			if ( is_array($fieldLayout) ) {
 				foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
 					if ( self::stepRowType($fieldNameList) == 'grid' ) {
-						$fieldNameList = explode('|', $fieldNameList);
+						$fieldNameList = explode('|', str_replace(',', '|', $fieldNameList));
 						foreach ( $fieldNameList as $fieldName ) {
 							if ( !empty($fieldName) and !isset(self::$config['fieldConfig'][$fieldName]) ) {
 								self::$error = "Field config for [{$fieldName}] is required";

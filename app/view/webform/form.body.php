@@ -46,24 +46,27 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 		$fieldNameList = explode('|', $fieldNameList);
 		if ( !is_array($fieldWidthList) ) $fieldWidthList = explode('|', $fieldWidthList);
 		?><div class="form-row"><?php
-			foreach ( $fieldNameList as $i => $fieldName ) :
+			foreach ( $fieldNameList as $i => $fieldNameSubList ) :
 				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
 				// display column
 				?><div class="webform-col <?php echo $fieldWidth; ?>"><?php
-					// check whether empty column
-					if ( !empty($fieldName) ) :
-						$fieldID = 'webform-input-'.$fieldName;
-						$fieldConfig = $fieldConfigAll[$fieldName];
-						// defined value > submitted value > default
-						if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
-						elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
-						elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
-						else $fieldValue = '';
-						// display field
-						include F::appPath('view/webform/input.php');
-					endif;
+					$fieldNameSubList = explode(',', $fieldNameSubList);
+					foreach ( $fieldNameSubList as $fieldName ) :
+						// check whether empty field
+						if ( !empty($fieldName) ) :
+							$fieldID = 'webform-input-'.$fieldName;
+							$fieldConfig = $fieldConfigAll[$fieldName];
+							// defined value > submitted value > default
+							if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
+							elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
+							elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
+							else $fieldValue = '';
+							// display field
+							include F::appPath('view/webform/input.php');
+						endif; // if-empty
+					endforeach; // foreach-fieldNameSubList
 				?></div><!--/.col--><?php
-			endforeach;
+			endforeach; // foreach-fieldNameList
 		?></div><!--/.row--><?php
 	endif;
-endforeach;
+endforeach; // foreach-fieldLayout
