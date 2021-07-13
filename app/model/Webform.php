@@ -1243,9 +1243,6 @@ class Webform {
 		require_once $lib;
 		// validation
 		$err = array();
-		if ( !isset(self::$config['fieldConfig'][$fieldName]) ) {
-			$err[] = "Field config for [{$fieldName}] is required";
-		}
 		if ( !in_array(self::$config['fieldConfig'][$fieldName]['format'], ['file','image']) ) {
 			$err[] = "Field [{$fieldName}] must be [format=file|image]";
 		}
@@ -1650,15 +1647,15 @@ class Webform {
 					if ( self::stepRowType($fieldNameList) == 'grid' ) {
 						$fieldNameList = explode('|', $fieldNameList);
 						foreach ( $fieldNameList as $fieldName ) {
-							if ( !isset(self::$config['fieldConfig'][$fieldName]) ) {
+							if ( !empty($fieldName) and !isset(self::$config['fieldConfig'][$fieldName]) ) {
 								self::$error = "Field config for [{$fieldName}] is required";
 								return false;
 							}
-						}
-					}
-				}
-			}
-		}
+						} // foreach-fieldName
+					} // if-stepRowType-grid
+				} // foreach-fieldLayout
+			} // is-fieldLayout
+		} // foreach-step
 		// check field config : options
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			if ( isset($cfg['format']) and in_array($cfg['format'], ['checkbox','radio']) and !isset($cfg['options']) ) {

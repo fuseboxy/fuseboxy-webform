@@ -44,21 +44,24 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 	// grid layout
 	else :
 		$fieldNameList = explode('|', $fieldNameList);
-		$fieldWidthList = is_array($fieldWidthList) ? $fieldWidthList : array_filter(explode('|', $fieldWidthList));
+		if ( !is_array($fieldWidthList) ) $fieldWidthList = explode('|', $fieldWidthList);
 		?><div class="form-row"><?php
 			foreach ( $fieldNameList as $i => $fieldName ) :
-				$fieldWidth = isset($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
+				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
 				// display column
 				?><div class="webform-col <?php echo $fieldWidth; ?>"><?php
-					$fieldID = 'webform-input-'.$fieldName;
-					$fieldConfig = $fieldConfigAll[$fieldName];
-					// defined value > submitted value > default
-					if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
-					elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
-					elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
-					else $fieldValue = '';
-					// display field
-					include F::appPath('view/webform/input.php');
+					// check whether empty column
+					if ( !empty($fieldName) ) :
+						$fieldID = 'webform-input-'.$fieldName;
+						$fieldConfig = $fieldConfigAll[$fieldName];
+						// defined value > submitted value > default
+						if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
+						elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
+						elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
+						else $fieldValue = '';
+						// display field
+						include F::appPath('view/webform/input.php');
+					endif;
 				?></div><!--/.col--><?php
 			endforeach;
 		?></div><!--/.row--><?php
