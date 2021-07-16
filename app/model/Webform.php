@@ -251,8 +251,10 @@ class Webform {
 					</structure>
 					<!-- default custom button -->
 					<structure name="customButton">
-						<string name="icon" />
-						<string name="text" />
+						<structure name="next|back|edit|submit|update|print">
+							<string name="icon" />
+							<string name="text" />
+						</structure>
 					</structure>
 				</structure>
 			</out>
@@ -367,10 +369,22 @@ class Webform {
 		// opened & closed : default
 		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
 		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
-		// custom text : default message
+		// custom message : default
 		if ( empty(self::$config['customMessage']) ) self::$config['customMessage'] = array();
 		if ( empty(self::$config['customMessage']['closed']) ) self::$config['customMessage']['closed'] = 'Form was closed.';
 		if ( empty(self::$config['customMessage']['completed']) ) self::$config['customMessage']['completed'] = 'Your submission was received.';
+		// custom button : default & fix format
+		if ( empty(self::$config['customButton']) ) self::$config['customButton'] = array();
+		foreach ( ['next','back','edit','submit','update','print'] as $key ) {
+			if ( empty(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => ucfirst($key));
+			elseif ( is_string(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => self::$config['customButton'][$key]);
+		}
+		if ( !isset(self::$config['customButton']['next'  ]['icon']) ) self::$config['customButton']['next'  ]['icon'] = 'fa fa-arrow-right ml-2';
+		if ( !isset(self::$config['customButton']['back'  ]['icon']) ) self::$config['customButton']['back'  ]['icon'] = 'fa fa-arrow-left mr-1';
+		if ( !isset(self::$config['customButton']['edit'  ]['icon']) ) self::$config['customButton']['edit'  ]['icon'] = 'fa fa-edit mr-1';
+		if ( !isset(self::$config['customButton']['submit']['icon']) ) self::$config['customButton']['submit']['icon'] = 'fa fa-paper-plane mr-1';
+		if ( !isset(self::$config['customButton']['update']['icon']) ) self::$config['customButton']['update']['icon'] = 'fa fa-file-import mr-1';
+		if ( !isset(self::$config['customButton']['print' ]['icon']) ) self::$config['customButton']['print' ]['icon'] = 'fa fa-print mr-1';
 		// done!
 		return true;
 	}

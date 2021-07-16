@@ -81,7 +81,7 @@
 					<string name="completed" />
 				</structure>
 				<structure name="customButton">
-					<structure name="edit|submit|update">
+					<structure name="next|back|edit|submit|update|print">
 						<string name="icon" />
 						<string name="text" />
 					</structure>

@@ -10,6 +10,16 @@
 				<string name="submit" optional="yes" />
 				<string name="update" optional="yes" />
 			</structure>
+			<structure name="$webform">
+				<structure name="config">
+					<structure name="customButton">
+						<structure name="next|back|edit|submit|update|print">
+							<string name="icon" />
+							<string name="text" />
+						</structure>
+					</structure>
+				</structure>
+			</structure>
 		</in>
 		<out />
 	</io>
@@ -26,24 +36,45 @@ if ( $hasUpperButton or $hasLowerButton ) :
 				if ( !empty($xfa['submit']) ) :
 					?><button 
 						type="submit"
-						class="btn btn-lg btn-primary btn-update mx-2"
+						class="btn btn-lg btn-primary btn-submit mx-2"
 						formaction="<?php echo F::url($xfa['submit']); ?>"
-					><i class="fa fa-paper-plane"></i> Submit</button><?php
+					><?php
+						if ( !empty($webform['config']['customButton']['submit']['icon']) ) :
+							?><i class="<?php echo $webform['config']['customButton']['submit']['icon']; ?>"></i><?php
+						endif;
+						if ( !empty($webform['config']['customButton']['submit']['text']) ) :
+							?><span><?php echo $webform['config']['customButton']['submit']['text']; ?></span><?php
+						endif;
+					?></button><?php
 				endif;
 				// update button
 				if ( !empty($xfa['update']) ) :
 					?><button 
 						type="submit"
-						class="btn btn-lg btn-primary btn-submit mx-2"
+						class="btn btn-lg btn-primary btn-update mx-2"
 						formaction="<?php echo F::url($xfa['update']); ?>"
-					><i class="fa fa-file-import"></i> Update</button><?php
+					><?php
+						if ( !empty($webform['config']['customButton']['update']['icon']) ) :
+							?><i class="<?php echo $webform['config']['customButton']['update']['icon']; ?>"></i><?php
+						endif;
+						if ( !empty($webform['config']['customButton']['update']['text']) ) :
+							?><span><?php echo $webform['config']['customButton']['update']['text']; ?></span><?php
+						endif;
+					?></button><?php
 				endif;
 				// edit button
 				if ( !empty($xfa['edit']) ) :
 					?><a 
 						class="btn btn-lg btn-dark btn-edit mx-2"
 						href="<?php echo F::url($xfa['edit']); ?>"
-					><i class="fa fa-edit"></i> Edit</a><?php
+					><?php
+						if ( !empty($webform['config']['customButton']['edit']['icon']) ) :
+							?><i class="<?php echo $webform['config']['customButton']['edit']['icon']; ?>"></i><?php
+						endif;
+						if ( !empty($webform['config']['customButton']['edit']['text']) ) :
+							?><span><?php echo $webform['config']['customButton']['edit']['text']; ?></span><?php
+						endif;
+					?></a><?php
 				endif;
 				// print button
 				if ( !empty($xfa['print']) ) :
@@ -51,7 +82,14 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						class="btn btn-lg btn-light btn-print border mx-2"
 						href="<?php echo F::url($xfa['print']); ?>"
 						target="_blank"
-					><i class="fa fa-print"></i> Print</a><?php
+					><?php
+						if ( !empty($webform['config']['customButton']['print']['icon']) ) :
+							?><i class="<?php echo $webform['config']['customButton']['print']['icon']; ?>"></i><?php
+						endif;
+						if ( !empty($webform['config']['customButton']['print']['text']) ) :
+							?><span><?php echo $webform['config']['customButton']['print']['text']; ?></span><?php
+						endif;
+					?></a><?php
 				endif;
 			?></div><?php
 		endif;
@@ -67,7 +105,14 @@ if ( $hasUpperButton or $hasLowerButton ) :
 					?><a 
 						class="btn btn-light btn-back float-left"
 						href="<?php echo F::url($xfa['back']); ?>"
-					><i class="fa fa-arrow-left"></i> Back</a><?php
+					><?php
+						if ( !empty($webform['config']['customButton']['back']['icon']) ) :
+							?><i class="<?php echo $webform['config']['customButton']['back']['icon']; ?>"></i><?php
+						endif;
+						if ( !empty($webform['config']['customButton']['back']['text']) ) :
+							?><span><?php echo $webform['config']['customButton']['back']['text']; ?></span><?php
+						endif;
+					?></a><?php
 				endif;
 				// next button
 				if ( !empty($xfa['next']) ) :
@@ -75,7 +120,14 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						type="submit"
 						class="btn btn-primary btn-next float-right"
 						formaction="<?php echo F::url($xfa['next']); ?>"
-					>Next <i class="fa fa-arrow-right ml-1"></i></button><?php
+					><?php
+						if ( !empty($webform['config']['customButton']['next']['text']) ) :
+							?><span><?php echo $webform['config']['customButton']['next']['text']; ?></span><?php
+						endif;
+						if ( !empty($webform['config']['customButton']['next']['icon']) ) :
+							?><i class="<?php echo $webform['config']['customButton']['next']['icon']; ?>"></i><?php
+						endif;
+					?></button><?php
 				endif;
 			?></div><?php
 		endif;
