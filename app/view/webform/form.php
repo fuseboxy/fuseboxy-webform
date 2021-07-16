@@ -13,12 +13,13 @@
 			<structure name="$fieldLayout" optional="yes" comments="display single step">
 				<list name="~fieldNameList~" value="~fieldWidthList~" delim="|" />
 			</structure>
+			<string name="step" scope="$arguments" />
 		</in>
 		<out />
 	</io>
 </fusedoc>
 */ ?>
-<form id="webform-form" method="post" class="<?php echo Webform::$config['beanType']; ?>"><?php
+<form id="webform-form" method="post" class="<?php echo Webform::$config['beanType']; ?>" data-step="<?php echo $arguments['step']; ?>"><?php
 // display single or multiple steps
 if ( isset($fieldLayoutAll) ) foreach ( $fieldLayoutAll as $fieldLayout ) include F::appPath('view/webform/form.body.php');
 elseif ( isset($fieldLayout) ) include F::appPath('view/webform/form.body.php');
