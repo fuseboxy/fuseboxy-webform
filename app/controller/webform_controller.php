@@ -315,9 +315,8 @@ switch ( $fusebox->action ) :
 		// exit point : print
 		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
 		// display form
-		$formContent = Webform::renderAll( $xfa ?? [] );
-		F::error(Webform::error(), $formContent === false);
-		$layout['content'] .= $formContent;
+		$layout['content'] = Webform::renderAll( $xfa ?? [] );
+		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
 		else echo $layout['content'];
