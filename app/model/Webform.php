@@ -244,10 +244,15 @@ class Webform {
 					</structure>
 					<string name="snapshot" default="snapshot" comments="table to save snapshot; no snapshot to take when false" />
 					<string name="closed" comments="message to show when form closed" />
-					<!-- default custom text -->
-					<structure name="customText">
+					<!-- default custom message -->
+					<structure name="customMessage">
 						<string name="closed" />
 						<string name="completed" />
+					</structure>
+					<!-- default custom button -->
+					<structure name="customButton">
+						<string name="icon" />
+						<string name="text" />
 					</structure>
 				</structure>
 			</out>
@@ -363,9 +368,9 @@ class Webform {
 		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
 		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
 		// custom text : default message
-		if ( empty(self::$config['customText']) ) self::$config['customText'] = array();
-		if ( empty(self::$config['customText']['closed']) ) self::$config['customText']['closed'] = 'Form was closed.';
-		if ( empty(self::$config['customText']['completed']) ) self::$config['customText']['completed'] = 'Your submission was received.';
+		if ( empty(self::$config['customMessage']) ) self::$config['customMessage'] = array();
+		if ( empty(self::$config['customMessage']['closed']) ) self::$config['customMessage']['closed'] = 'Form was closed.';
+		if ( empty(self::$config['customMessage']['completed']) ) self::$config['customMessage']['completed'] = 'Your submission was received.';
 		// done!
 		return true;
 	}

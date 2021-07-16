@@ -3,7 +3,7 @@
 	<io>
 		<in>
 			<structure name="$webform">
-				<structure name="customText">
+				<structure name="customMessage">
 					<string name="completed" />
 				</structure>
 			</structure>
@@ -12,6 +12,4 @@
 	</io>
 </fusedoc>
 */ ?>
-<div id="webform-completed"><?php
-F::alert([ 'type' => 'success', 'message' => $webform['customText']['completed'] ]);
-?></div>
+<div id="webform-completed" class="alert alert-success"><?php echo $webform['customMessage']['completed'] ]); ?></div>

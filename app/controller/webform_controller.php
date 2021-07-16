@@ -74,11 +74,17 @@
 				<structure name="otherData" optional="yes" comments="load other data to webform when start">
 					<mixed name="~otherFieldName~" />
 				</structure>
-				<!-- custom text -->
-				<structure name="customText">
+				<!-- customization -->
+				<structure name="customMessage">
 					<string name="opened" />
 					<string name="closed" />
 					<string name="completed" />
+				</structure>
+				<structure name="customButton">
+					<structure name="edit|submit|update">
+						<string name="icon" />
+						<string name="text" />
+					</structure>
 				</structure>
 			</structure>
 			<structure name="Webform::$libPath">
