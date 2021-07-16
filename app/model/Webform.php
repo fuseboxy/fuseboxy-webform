@@ -354,7 +354,8 @@ class Webform {
 				if ( empty($cfg['buttonAltText']) ) self::$config['fieldConfig'][$fieldName]['buttonAltText'] = 'Choose Another File';
 			}
 		}
-		// notification : fix format
+		// notification : default & fix format
+		if ( !isset(self::$config['notification']) ) self::$config['notification'] = false;
 		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
 		// notification : default [to] setting
 		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) self::$config['notification']['to'] = ':email';
