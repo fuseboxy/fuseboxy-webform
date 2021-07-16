@@ -232,8 +232,6 @@ class Webform {
 							<list name="filetype" delim="," default="gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
 							<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
 							<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
-							<string name="buttonText" default="Choose File" />
-							<string name="buttonAltText" default="Choose Another File" />
 							<!-- attribute -->
 							<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 						</structure>
@@ -251,7 +249,7 @@ class Webform {
 					</structure>
 					<!-- default custom button -->
 					<structure name="customButton">
-						<structure name="next|back|edit|submit|update|print">
+						<structure name="next|back|edit|submit|update|print|chooseFile|chooseAnotherFile">
 							<string name="icon" />
 							<string name="text" />
 						</structure>
@@ -353,10 +351,6 @@ class Webform {
 				if ( empty($cfg['filesizeError']) ) self::$config['fieldConfig'][$fieldName]['filesizeError'] = 'File cannot exceed {FILE_SIZE}';
 				// file type error : default
 				if ( empty($cfg['filetypeError']) ) self::$config['fieldConfig'][$fieldName]['filetypeError'] = 'Only file of {FILE_TYPE} is allowed';
-				// button text : default
-				if ( empty($cfg['buttonText']) ) self::$config['fieldConfig'][$fieldName]['buttonText'] = 'Choose File';
-				// button alt-text : default
-				if ( empty($cfg['buttonAltText']) ) self::$config['fieldConfig'][$fieldName]['buttonAltText'] = 'Choose Another File';
 			}
 		}
 		// notification : default & fix format
@@ -375,10 +369,16 @@ class Webform {
 		if ( empty(self::$config['customMessage']['completed']) ) self::$config['customMessage']['completed'] = 'Your submission was received.';
 		// custom button : default & fix format
 		if ( empty(self::$config['customButton']) ) self::$config['customButton'] = array();
-		foreach ( ['next','back','edit','submit','update','print'] as $key ) {
+		foreach ( ['next','back','edit','submit','update','print','chooseFile','chooseAnotherFile'] as $key ) {
 			if ( !isset(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array();
+			// use as button text when only string specified
 			elseif ( is_string(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => self::$config['customButton'][$key]);
-			if ( !isset(self::$config['customButton'][$key]['text']) ) self::$config['customButton'][$key]['text'] = ucfirst($key);
+			// default button text
+			if ( !isset(self::$config['customButton'][$key]['text']) ) self::$config['customButton'][$key]['text'] = call_user_func(function() use ($key){
+				if ( $key == 'chooseAnotherFile' ) return 'Choose AnotherFile';
+				elseif ( $key == 'chooseFile' ) return 'Choose File';
+				return ucfirst($key);
+			});
 		}
 		if ( !isset(self::$config['customButton']['next'  ]['icon']) ) self::$config['customButton']['next'  ]['icon'] = 'fa fa-arrow-right ml-2';
 		if ( !isset(self::$config['customButton']['back'  ]['icon']) ) self::$config['customButton']['back'  ]['icon'] = 'fa fa-arrow-left mr-1';

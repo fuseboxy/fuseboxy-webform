@@ -49,8 +49,6 @@
 						<list name="filetype" optional="yes" delim="," example="pdf,doc,docx" />
 						<string name="filesizeError" optional="yes" comments="error message shown when file size failed; use {FILE_SIZE} as mask" />
 						<string name="filetypeError" optional="yes" comments="error message shown when file type failed; use {FILE_TYPE} as mask" />
-						<string name="buttonText" optional="yes" comments="button text when no file chosen" />
-						<string name="buttonAltText" optional="yes" comments="button text when has file chosen" />
 						<!-- for [format=image] only -->
 						<string name="resize" optional="yes" example="800x600|1024w|100h" />
 					</structure>
@@ -81,7 +79,7 @@
 					<string name="completed" />
 				</structure>
 				<structure name="customButton">
-					<structure name="next|back|edit|submit|update|print">
+					<structure name="next|back|edit|submit|update|print|chooseFile|chooseAnotherFile">
 						<string name="icon" />
 						<string name="text" />
 					</structure>

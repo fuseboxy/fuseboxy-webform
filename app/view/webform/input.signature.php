@@ -12,8 +12,6 @@
 			<structure name="$fieldConfig">
 				<string name="icon" optional="yes" />
 				<boolean name="required" optional="yes" />
-				<string name="buttonText" comments="button text when no file chosen" />
-				<string name="buttonAltText" comments="button text when has file chosen" />
 			</structure>
 		</in>
 		<out>

@@ -21,8 +21,15 @@
 				<list name="filetype" delim="," />
 				<string name="filesizeError" comments="error message shown when file size failed" />
 				<string name="filetypeError" comments="error message shown when file type failed" />
-				<string name="buttonText" comments="button text when no file chosen" />
-				<string name="buttonAltText" comments="button text when has file chosen" />
+			</structure>
+			<structure name="$webform">
+				<structure name="config">
+					<structure name="customButton">
+						<structure name="chooseFile|chooseAnotherFile">
+							<string name="text" />
+						</structure>
+					</structure>
+				</structure>
 			</structure>
 		</in>
 		<out>
@@ -35,7 +42,7 @@
 	</io>
 </fusedoc>
 */
-$btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['buttonAltText'];
+$btnText = $webform['config']['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnotherFile' ]['text'];
 ?><div class="webform-input-file"><?php
 	// field
 	if ( !empty($editable) ) :
@@ -69,8 +76,8 @@ $btnText = empty($fieldValue) ? $fieldConfig['buttonText'] : $fieldConfig['butto
 					data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
 					data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
 					data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
-					data-button-text="<?php echo $fieldConfig['buttonText']; ?>"
-					data-button-alt-text="<?php echo $fieldConfig['buttonAltText']; ?>"
+					data-button-text="<?php echo $webform['config']['customButton']['chooseFile']['text']; ?>"
+					data-button-alt-text="<?php echo $webform['config']['customButton']['chooseAnotherFile']['text']; ?>"
 				><?php echo $btnText; ?></button><?php
 			endif;
 			// preview link
