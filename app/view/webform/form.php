@@ -26,8 +26,14 @@
 	<?php if ( !empty($arguments['step']) ) : ?>data-step="<?php echo $arguments['step']; ?>"<?php endif; ?>
 ><?php
 // display single or multiple steps
-if ( isset($fieldLayoutAll) ) foreach ( $fieldLayoutAll as $fieldLayout ) include F::appPath('view/webform/form.body.php');
-elseif ( isset($fieldLayout) ) include F::appPath('view/webform/form.body.php');
+if ( isset($fieldLayoutAll) ) :
+	foreach ( array_values($fieldLayoutAll) as $i => $fieldLayout ) :
+		if ( $i ) echo '<br /><br />';
+		include F::appPath('view/webform/form.body.php');
+	endforeach;
+elseif ( isset($fieldLayout) ) :
+	include F::appPath('view/webform/form.body.php');
+endif;
 // captcha
 include F::appPath('view/webform/form.captcha.php');
 // button
