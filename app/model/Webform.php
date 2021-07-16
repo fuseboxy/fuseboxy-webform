@@ -376,7 +376,7 @@ class Webform {
 		// custom button : default & fix format
 		if ( empty(self::$config['customButton']) ) self::$config['customButton'] = array();
 		foreach ( ['next','back','edit','submit','update','print'] as $key ) {
-			if ( empty(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => ucfirst($key));
+			if ( !isset(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => ucfirst($key));
 			elseif ( is_string(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => self::$config['customButton'][$key]);
 		}
 		if ( !isset(self::$config['customButton']['next'  ]['icon']) ) self::$config['customButton']['next'  ]['icon'] = 'fa fa-arrow-right ml-2';
