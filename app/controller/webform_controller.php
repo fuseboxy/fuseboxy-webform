@@ -79,8 +79,6 @@
 					<string name="opened" />
 					<string name="closed" />
 					<string name="completed" />
-					<string name="submittedOn" />
-					<string name="lastUpdatedOn" />
 				</structure>
 			</structure>
 			<structure name="Webform::$libPath">
@@ -316,11 +314,6 @@ switch ( $fusebox->action ) :
 		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
 		// exit point : print
 		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
-		// display message (when necessary)
-		ob_start();
-		if     ( !empty($bean->updated_on) ) F::alert([ 'type' => 'info', 'message' => $webform['customText']['lastUpdatedOn'].date('Y-m-d H:i', strtotime($bean->updated_on)) ]);
-		elseif ( !empty($bean->created_on) ) F::alert([ 'type' => 'info', 'message' => $webform['customText']['submittedOn'].date('Y-m-d H:i', strtotime($bean->created_on)) ]);
-		$layout['content'] = ob_get_clean();
 		// display form
 		$formContent = Webform::renderAll( $xfa ?? [] );
 		F::error(Webform::error(), $formContent === false);
