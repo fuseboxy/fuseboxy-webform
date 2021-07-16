@@ -761,6 +761,8 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
+		$arguments['step'] = $step;
+		$webform['config'] = self::$config;
 		include F::appPath('view/webform/form.php');
 		// done!
 		return ob_get_clean();
@@ -806,6 +808,7 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
+		$webform['config'] = self::$config;
 		include F::appPath('view/webform/form.php');
 		// done!
 		return ob_get_clean();
