@@ -280,7 +280,7 @@ class Webform {
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			if ( is_array($fieldLayout) ) {
 				foreach ( $fieldLayout as $i => $stepRow ) {
-					if ( self::stepRowType($stepRow) != 'grid' ) {
+					if ( self::stepRowType($stepRow) != 'fields' ) {
 						self::$config['steps'][$stepName][$i] = $stepRow.str_repeat(' ', $i);
 					}
 				}
@@ -1104,7 +1104,7 @@ class Webform {
 		// go through field layout of specific step
 		if ( is_array(self::$config['steps'][$step]) ) {
 			foreach ( self::$config['steps'][$step] as $fieldNameList => $fieldWidthList ) {
-				if ( self::stepRowType($fieldNameList) == 'grid' ) {
+				if ( self::stepRowType($fieldNameList) == 'fields' ) {
 					$fieldNameList = explode('|', $fieldNameList);
 					foreach ( $fieldNameList as $fieldName ) {
 						$fieldConfig = isset(self::$config['fieldConfig'][$fieldName]) ? self::$config['fieldConfig'][$fieldName] : array();
@@ -1166,20 +1166,20 @@ class Webform {
 		</description>
 		<io>
 			<in>
-				<string name="$fieldNameList" />
+				<string name="$stepRow" />
 			</in>
 			<out>
-				<string name="~return~" comments="output|heading|line|grid" />
+				<string name="~return~" comments="heading|line|output|fields" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function stepRowType($fieldNameList) {
-		$fieldNameList = trim($fieldNameList);
-		if ( strlen($fieldNameList) and $fieldNameList[0] === '~' ) return 'output';
-		elseif ( strlen($fieldNameList) != strlen(ltrim($fieldNameList, '#')) ) return 'heading';
-		elseif ( trim($fieldNameList, '=-') === '' ) return 'line';
-		return 'grid';
+	public static function stepRowType($stepRow) {
+		$stepRow = trim($stepRow);
+		if ( strlen($stepRow) != strlen(ltrim($stepRow, '#')) ) return 'heading';
+		elseif ( strlen($stepRow) and $stepRow[0] === '~' ) return 'output';
+		elseif ( trim($stepRow, '=-') === '' ) return 'line';
+		return 'fields';
 	}
 
 
@@ -1676,7 +1676,7 @@ class Webform {
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			if ( is_array($fieldLayout) ) {
 				foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
-					if ( self::stepRowType($fieldNameList) == 'grid' ) {
+					if ( self::stepRowType($fieldNameList) == 'fields' ) {
 						$fieldNameList = explode('|', str_replace(',', '|', $fieldNameList));
 						foreach ( $fieldNameList as $fieldName ) {
 							if ( !empty($fieldName) and !isset(self::$config['fieldConfig'][$fieldName]) ) {
@@ -1684,7 +1684,7 @@ class Webform {
 								return false;
 							}
 						} // foreach-fieldName
-					} // if-stepRowType-grid
+					} // if-stepRowType-fields
 				} // foreach-fieldLayout
 			} // is-fieldLayout
 		} // foreach-step

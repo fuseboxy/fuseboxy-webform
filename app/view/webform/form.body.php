@@ -39,9 +39,9 @@
 */
 foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 	// output & heading & line
-	if ( Webform::stepRowType($fieldNameList) != 'grid' ) :
+	if ( Webform::stepRowType($fieldNameList) != 'fields' ) :
 		echo Webform::stepRowParse($fieldNameList);
-	// grid layout
+	// field list
 	else :
 		$fieldNameList = explode('|', $fieldNameList);
 		if ( !is_array($fieldWidthList) ) $fieldWidthList = explode('|', $fieldWidthList);
