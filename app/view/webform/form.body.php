@@ -38,7 +38,7 @@
 </fusedoc>
 */
 foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
-	// output & heading & line
+	// heading & line & output
 	if ( Webform::stepRowType($fieldNameList) != 'fields' ) :
 		echo Webform::stepRowParse($fieldNameList);
 	// field list
