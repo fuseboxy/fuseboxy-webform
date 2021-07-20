@@ -12,4 +12,4 @@
 	</io>
 </fusedoc>
 */ ?>
-<div id="webform-closed" class="alert alert-warning"><?php echo $webform['customMessage']['closed'] ]); ?></div>
+<div id="webform-closed" class="alert alert-warning"><?php echo $webform['customMessage']['closed']; ?></div>
