@@ -39,8 +39,8 @@
 */
 foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 	// heading & line & output
-	if ( Webform::stepRowType($fieldNameList) != 'fields' ) :
-		echo Webform::stepRowParse($fieldNameList);
+	if ( Webform::parseStepRow($fieldNameList, true) != 'fields' ) :
+		echo Webform::parseStepRow($fieldNameList);
 	// field list
 	else :
 		$fieldNameList = explode('|', $fieldNameList);
