@@ -712,12 +712,12 @@ class Webform {
 		if ( strlen($stepRow) != strlen(ltrim($stepRow, '#')) ) {
 			$size = 'h'.( strlen($stepRow) - strlen(ltrim($stepRow, '#')) );
 			$text = trim(ltrim($stepRow, '#'));
-			return $getType ? 'heading' : ('<div class="'.$size.'">'.$text.'</div>');
+			return $getType ? 'heading' : "<div class='{$size}'>{$text}</div>";
 		}
 		// output
 		if ( strlen($stepRow) and $stepRow[0] === '~' ) {
 			$output = trim(substr($stepRow, 1));
-			return $getType ? 'output' : ( strlen($output) ? ('<div>'.$output.'</div>') : '' );
+			return $getType ? 'output' : ( strlen($output) ? "<div>{$output}</div>" : '' );
 		}
 		// line
 		if ( trim($stepRow, '=-') === '' ) {
