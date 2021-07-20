@@ -274,6 +274,18 @@ class Webform {
 		if ( empty(self::$config['steps']) ) self::$config['steps'] = array('default' => array_keys(self::$config['fieldConfig']));
 		// default having [confirm] step
 		if ( !isset(self::$config['steps']['confirm']) ) self::$config['steps']['confirm'] = true;
+		// fix [heading|line|output] of each step
+		// ===> append space to make sure it is unique
+		// ===> avoid being overridden after convert to key
+		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
+			if ( is_array($fieldLayout) ) {
+				foreach ( $fieldLayout as $i => $stepRow ) {
+					if ( self::stepRowType($stepRow) != 'grid' ) {
+						self::$config['steps'][$stepName][$i] = $stepRow.str_repeat(' ', $i);
+					}
+				}
+			}
+		}
 		// fix field-layout of each step
 		// ===> when only field-name-list specified
 		// ===> use field-name-list as key & apply empty field-width-list
