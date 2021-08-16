@@ -1664,13 +1664,22 @@ class Webform {
 				} // foreach-fieldLayout
 			} // is-fieldLayout
 		} // foreach-step
-		// check field config : options
+		// go through each field config
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			// check field config : options
 			if ( isset($cfg['format']) and in_array($cfg['format'], ['checkbox','radio']) and !isset($cfg['options']) ) {
 				self::$error = "Options for [{$fieldName}] is required";
 				return false;
 			} elseif ( isset($cfg['options']) and $cfg['options'] !== false and !is_array($cfg['options']) ) {
 				self::$error = "Options for [{$fieldName}] must be array";
+				return false;
+			}
+			// check field config : custom
+			if ( isset($cfg['format']) and $cfg['format'] == 'custom' and !isset($cfg['scriptPath']) ) {
+				self::$error = "Script path for [{$fieldName}] is required";
+				return false;
+			} elseif ( isset($cfg['format']) and $cfg['format'] == 'custom' and !file_exists($cfg['scriptPath']) ) {
+				self::$error = "Script path for [{$fieldName}] not exists ({$cfg['scriptPath']})";
 				return false;
 			}
 		}
