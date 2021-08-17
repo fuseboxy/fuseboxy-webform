@@ -336,7 +336,7 @@ class Webform {
 			// format : default
 			if ( empty($cfg['format']) and isset($cfg['options']) ) {
 				self::$config['fieldConfig'][$fieldName]['format'] = 'dropdown';
-			} elseif ( empty($cfg['format']) ) {
+			} elseif ( empty($cfg['format']) or $cfg['format'] === true ) {
 				self::$config['fieldConfig'][$fieldName]['format'] = 'text';
 			}
 			// label : derived from field name
