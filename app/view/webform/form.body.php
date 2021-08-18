@@ -49,7 +49,7 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 			foreach ( $fieldNameList as $i => $fieldNameSubList ) :
 				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
 				// display column
-				?><div class="webform-col <?php echo $fieldWidth; ?>"><?php
+				?><div class="webform-col webform-col-<?php echo implode('-', $fieldNameList); ?> <?php echo $fieldWidth; ?>"><?php
 					$fieldNameSubList = explode(',', $fieldNameSubList);
 					foreach ( $fieldNameSubList as $fieldName ) :
 						// check whether empty field
