@@ -63,11 +63,17 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 							$fieldID = 'webform-input-'.str_replace('.', '-', $fieldName);
 							$fieldConfig = $fieldConfigAll[$fieldName];
 							$dataFieldName = 'data['.str_replace('.', '][', $fieldName).']';
-							// defined value > submitted value > default
-							if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
-elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
-							elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
-							else $fieldValue = '';
+							// determine value to show in this field
+							// ===> precedence: defined-value > submitted-value > default-value > empty
+							if ( isset($fieldConfig['value']) ) {
+								$fieldValue = $fieldConfig['value'];
+							} elseif ( Webform:getNestedArrayValue($arguments['data'], $fieldName) !== null ) {
+								$fieldValue = Webform:getNestedArrayValue($arguments['data'], $fieldName);
+							} elseif ( isset($fieldConfig['default']) ) {
+								$fieldValue = $fieldConfig['default'];
+							} else {
+								$fieldValue = '';
+							}
 							// display field
 							include F::appPath('view/webform/input.php');
 						endif; // if-empty

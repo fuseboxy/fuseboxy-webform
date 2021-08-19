@@ -201,6 +201,33 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			access nested array value by list delimited by period
+			===> e.g. pass [student.name] to access [student][name] of array
+		</description>
+		<io>
+			<in>
+				<array name="$nestedArray" />
+				<list name="$nestedKey" delim="." />
+			</in>
+			<out>
+				<mixed name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function getNestedArrayValue($nestedArray, $nestedKey) {
+		$path = explode('.', $nestedKey);
+		$result = &$nestedArray;
+		foreach ( $path as $key ) $result = &$result[$key] ?? null;
+		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			set default & fix config
 		</description>
 		<io>
