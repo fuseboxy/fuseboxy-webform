@@ -553,7 +553,7 @@ class Webform {
 					// determine server location of source file
 					$sourceUrl  = $formData[$fieldName];
 					$sourcePath = str_ireplace($uploadUrl, $uploadDir, $sourceUrl);
-					$sourceDir  = dirname($sourceDir);
+					$sourceDir  = dirname($sourcePath);
 					// prepare url & server location of destination
 					$targetUrl  = $uploadUrl.self::$config['beanType'].'/'.$fieldName.'/'.basename($sourceUrl);
 					$targetPath = str_ireplace($uploadUrl, $uploadDir, $targetUrl);
