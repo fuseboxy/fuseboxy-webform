@@ -67,8 +67,8 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 							// ===> precedence: defined-value > submitted-value > default-value > empty
 							if ( isset($fieldConfig['value']) ) {
 								$fieldValue = $fieldConfig['value'];
-							} elseif ( Webform:getNestedArrayValue($arguments['data'], $fieldName) !== null ) {
-								$fieldValue = Webform:getNestedArrayValue($arguments['data'], $fieldName);
+							} elseif ( Webform::getNestedArrayValue($arguments['data'], $fieldName) !== null ) {
+								$fieldValue = Webform::getNestedArrayValue($arguments['data'], $fieldName);
 							} elseif ( isset($fieldConfig['default']) ) {
 								$fieldValue = $fieldConfig['default'];
 							} else {
