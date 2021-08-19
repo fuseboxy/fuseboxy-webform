@@ -13,7 +13,9 @@
 				<!-- steps of form -->
 				<structure name="steps" optional="yes">
 					<structure name="~stepName~">
-						<list name="~fieldNameList~" value="~fieldWidthList~" optional="yes" delim="|" comments="use bootstrap grid layout for width" />
+						<list name="~fieldNameList~" value="~fieldWidthList~" optional="yes" delim="|" comments="use bootstrap grid layout for width">
+							<list name="~fieldNameSubList~" delim="," comments="multiple fields in same column" />
+						</list>
 						<string name="~line~" optional="yes" comments="any amount of dash(-) or equal(=) signs" example="---" />
 						<string name="~heading~" optional="yes" comments="begins with pound(#) sign(s); number of pound-signs stands for H1,H2,H3..." example="## General" />
 						<string name="~output~" optional="yes" comments="begins with tide(~) sign" example="~<strong>output content directly</strong><br />" />
