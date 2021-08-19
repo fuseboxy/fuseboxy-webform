@@ -13,6 +13,7 @@
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<structure name="$fieldConfig">
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
@@ -34,7 +35,7 @@
 		</in>
 		<out>
 			<string name="uploaderID" scope="url" oncondition="xfa.uploaderHandler" />
-			<string name="fieldName" scope="url" oncondition="xfa.uploaderHandler" />
+			<string name="fieldName" scope="url" oncondition="xfa.uploaderHandler" comments="access webform-fieldConfig for server validation" />
 			<structure name="data" scope="form" optional="yes">
 				<string name="~fieldName~" />
 			</structure>
@@ -53,7 +54,7 @@ $btnText = $webform['config']['customButton'][ empty($fieldValue) ? 'chooseFile'
 				?><input 
 					type="text" 
 					class="w-0 p-0 op-0 position-absolute"
-					name="data[<?php echo $fieldName; ?>]"
+					name="<?php echo $dataFieldName; ?>"
 					value="<?php echo htmlspecialchars($fieldValue); ?>" 
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>

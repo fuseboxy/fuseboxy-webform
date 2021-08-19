@@ -5,6 +5,7 @@
 			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<string name="$fieldValue" />
 			<structure name="$fieldConfig">
 				<string name="placeholder" optional="yes" />
@@ -33,7 +34,7 @@
 	if ( !empty($editable) ) :
 		?><select
 			id="<?php echo $fieldID; ?>"
-			name="data[<?php echo $fieldName; ?>]"
+			name="<?php echo $dataFieldName; ?>"
 			class="custom-select <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required'; ?>

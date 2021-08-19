@@ -9,6 +9,7 @@
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<structure name="$fieldConfig">
 				<string name="icon" optional="yes" />
 				<boolean name="required" optional="yes" />
@@ -32,7 +33,7 @@ $btnText = '';
 			?><input 
 				type="text" 
 				class="w-0 p-0 op-0 position-absolute"
-				name="data[<?php echo $fieldName; ?>]"
+				name="<?php echo $dataFieldName; ?>"
 				value="<?php echo htmlspecialchars($fieldValue); ?>" 
 				style="bottom: 0;"
 				<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>

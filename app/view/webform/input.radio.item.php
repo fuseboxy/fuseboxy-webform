@@ -6,6 +6,7 @@
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<structure name="$fieldConfig">
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
@@ -32,7 +33,7 @@ $radioID = $fieldID.'-'.$optIndex;
 			type="radio"
 			id="<?php echo $radioID; ?>"
 			class="form-check-input"
-			name="data[<?php echo $fieldName; ?>]"
+			name="<?php echo $dataFieldName; ?>"
 			value="<?php echo htmlspecialchars($optValue); ?>"
 			<?php if ( $fieldValue == $optValue ) echo 'checked'; ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly'; ?>

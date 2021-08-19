@@ -6,6 +6,7 @@
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 		</in>
 		<out>
 			<structure name="data" scope="form" optional="yes">
@@ -19,7 +20,7 @@ if ( !empty($editable) ) :
 	?><input 
 		type="hidden"
 		id="<?php echo $fieldID; ?>"
-		name="data[<?php echo $fieldName; ?>]"
+		name="<?php echo $dataFieldName; ?>"
 		value="<?php echo htmlspecialchars($fieldValue); ?>"
 	/><?php
 endif;

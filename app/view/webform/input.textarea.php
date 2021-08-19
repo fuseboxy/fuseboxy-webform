@@ -6,6 +6,7 @@
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<structure name="$fieldConfig">
 				<string name="icon" optional="yes" />
 				<string name="placeholder" optional="yes" />
@@ -28,7 +29,7 @@
 	if ( !empty($editable) ) :
 		?><textarea
 			id="<?php echo $fieldID; ?>"
-			name="data[<?php echo $fieldName; ?>]"
+			name="<?php echo $dataFieldName; ?>"
 			class="form-control <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>

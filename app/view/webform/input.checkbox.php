@@ -4,6 +4,7 @@
 		<in>
 			<boolean name="$editable" />
 			<string name="$fieldName" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<structure name="$fieldConfig">
 				<structure name="options">
 					<structure name="~optGroup~" optional="yes">
@@ -26,7 +27,7 @@
 	// ===> avoid nothing submitted when no checkbox selected
 	// ===> for the scenario which user deselect all checkboxes and submit the change
 	if ( !empty($editable) ) :
-		?><input type="hidden" name="data[<?php echo $fieldName; ?>]" value="" /><?php
+		?><input type="hidden" name="<?php echo $dataFieldName; ?>" value="" /><?php
 	endif;
 	// display
 	$optIndex = 0;

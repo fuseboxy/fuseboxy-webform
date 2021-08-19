@@ -5,6 +5,7 @@
 			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<string name="$fieldValue" />
 			<structure name="$fieldConfig">
 				<string name="placeholder" optional="yes" />
@@ -28,7 +29,7 @@
 		?><input 
 			type="text"
 			id="<?php echo $fieldID; ?>"
-			name="data[<?php echo $fieldName; ?>]"
+			name="<?php echo $dataFieldName; ?>"
 			value="<?php echo htmlspecialchars($fieldValue); ?>"
 			class="form-control datepicker br-0 <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>

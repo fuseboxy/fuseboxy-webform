@@ -5,6 +5,7 @@
 			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<list name="$fieldValue" delim="|">
 				<string name="+" />
 			</list>
@@ -37,7 +38,7 @@ $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $f
 			type="checkbox"
 			id="<?php echo $checkboxID; ?>"
 			class="form-check-input"
-			name="data[<?php echo $fieldName; ?>][]"
+			name="<?php echo $dataFieldName; ?>[]"
 			value="<?php echo htmlspecialchars($optValue); ?>"
 			<?php if ( in_array($optValue, $fieldValue) ) echo 'checked'; ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly'; ?>

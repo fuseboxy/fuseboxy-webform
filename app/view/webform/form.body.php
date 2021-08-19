@@ -53,14 +53,19 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 				$fieldNameSubList = explode(',', $fieldNameSubList);
 				// display column
 				?><div class="webform-col webform-col-<?php echo implode('-', $fieldNameSubList); ?> <?php echo $fieldWidth; ?>"><?php
+					// when [fieldName] is normal string, e.g. {first_name},
+					// ===> form submit the field as {data[first_name]}
+					// when [fieldName] is having dot, e.g. {my.nested.var}
+					// ===> form submit the fields as {data[my][nested][var]}
 					foreach ( $fieldNameSubList as $fieldName ) :
 						// check whether empty field
 						if ( !empty($fieldName) ) :
-							$fieldID = 'webform-input-'.$fieldName;
+							$fieldID = 'webform-input-'.str_replace('.', '-', $fieldName);
 							$fieldConfig = $fieldConfigAll[$fieldName];
+							$dataFieldName = 'data['.str_replace('.', '][', $fieldName).']';
 							// defined value > submitted value > default
 							if     ( isset($fieldConfig['value'])          ) $fieldValue = $fieldConfig['value'];
-							elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
+elseif ( isset($arguments['data'][$fieldName]) ) $fieldValue = $arguments['data'][$fieldName];
 							elseif ( isset($fieldConfig['default'])        ) $fieldValue = $fieldConfig['default'];
 							else $fieldValue = '';
 							// display field
