@@ -44,19 +44,25 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 	if ( Webform::parseStepRow($fieldNameList, true) != 'fields' ) :
 		echo Webform::parseStepRow($fieldNameList);
 	// field list
+	// ===> example : "aaa|bbb|ccc|ddd,eee|x.y.z"
+	// ===> result  : ["aaa", "bbb", "ccc", "ddd,eee", "x.y.z"]
 	else :
 		$fieldNameList = explode('|', $fieldNameList);
 		if ( !is_array($fieldWidthList) ) $fieldWidthList = explode('|', $fieldWidthList);
 		?><div class="form-row"><?php
 			foreach ( $fieldNameList as $i => $fieldNameSubList ) :
 				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
-				$fieldNameSubList = explode(',', $fieldNameSubList);
+				// determine column class
+				// ===> example : "foo,bar,ab_cd,x.y.z"
+				// ===> result  : "webform-col-foo-bar-ab_cd-x-y-z"
+				$colClassName = 'webform-col-'.str_replace([',','.'], '-', $fieldNameSubList);
 				// display column
-				?><div class="webform-col webform-col-<?php echo implode('-', $fieldNameSubList); ?> <?php echo $fieldWidth; ?>"><?php
+				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
 					// when [fieldName] is normal string, e.g. {first_name},
 					// ===> form submit the field as {data[first_name]}
 					// when [fieldName] is having dot, e.g. {my.nested.var}
 					// ===> form submit the fields as {data[my][nested][var]}
+					$fieldNameSubList = explode(',', $fieldNameSubList);
 					foreach ( $fieldNameSubList as $fieldName ) :
 						// check whether empty field
 						if ( !empty($fieldName) ) :
