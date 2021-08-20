@@ -1691,9 +1691,15 @@ class Webform {
 				} // foreach-fieldLayout
 			} // is-fieldLayout
 		} // foreach-step
-		// go through each field config
+		// get columns of database table
+		$columns = ORM::columns(self::$config['beanType']);
+		if ( $columns === false ) {
+			self::$error = ORM::error();
+			return false;
+		}
+		// check each field config
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// check field config : options
+			// field config : options
 			if ( isset($cfg['format']) and in_array($cfg['format'], ['checkbox','radio']) and !isset($cfg['options']) ) {
 				self::$error = "Options for [{$fieldName}] is required";
 				return false;
@@ -1701,12 +1707,19 @@ class Webform {
 				self::$error = "Options for [{$fieldName}] must be array";
 				return false;
 			}
-			// check field config : custom
+			// field config : custom
 			if ( isset($cfg['format']) and $cfg['format'] == 'custom' and !isset($cfg['scriptPath']) ) {
 				self::$error = "Script path for [{$fieldName}] is required";
 				return false;
 			} elseif ( isset($cfg['format']) and $cfg['format'] == 'custom' and !file_exists($cfg['scriptPath']) ) {
 				self::$error = "Script path for [{$fieldName}] not exists ({$cfg['scriptPath']})";
+				return false;
+			}
+			// field config : nested field name
+			$fieldNameArray = array_filter(explode('.', $fieldName));
+			$isNestedField = ( count($fieldNameArray) > 1 );
+			if ( isset($columns[$fieldNameArray[0].'_id']) ) {
+				self::$error = "Field name [{$fieldNameArray[0]}.*] is forbidden (because clashing with associated object [{$fieldNameArray[0]}] of ORM)";
 				return false;
 			}
 		}
