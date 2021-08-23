@@ -39,7 +39,8 @@
 		/><?php
 	// readonly
 	elseif ( $fieldValue !== '' ) :
-		?><div class="form-control-plaintext text-primary"><strong><?php echo $fieldValue; ?></strong></div><?php	// empty
+		?><div class="form-control-plaintext text-primary"><strong><?php echo $fieldValue; ?></strong></div><?php
+	// empty
 	else :
 		?><div class="form-control-plaintext text-muted">- - -</div><?php
 	endif;

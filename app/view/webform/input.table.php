@@ -77,4 +77,4 @@
 			endforeach;
 		endif;
 	?></fieldset>
-</section>
+</div>
