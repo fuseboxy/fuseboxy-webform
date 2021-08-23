@@ -161,7 +161,7 @@ switch ( $fusebox->action ) :
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
 		// display form
-		$layout['content'] = Webform::render($arguments['step'], $xfa);
+		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -193,7 +193,7 @@ switch ( $fusebox->action ) :
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
 		// display form
-		$layout['content'] = Webform::render($arguments['step'], $xfa);
+		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -213,7 +213,7 @@ switch ( $fusebox->action ) :
 		$btnKey = empty($webform['beanID']) ? 'submit' : 'update';
 		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
 		// display form
-		$layout['content'] = Webform::render('confirm', $xfa);
+		$layout['content'] = Webform::renderStep('confirm', $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -362,6 +362,35 @@ switch ( $fusebox->action ) :
 	case 'upload-progress':
 		if ( !empty($webform['closed']) ) die('Forbidden');
 		include Webform::$libPath['uploadProgress'];
+		break;
+
+
+	// new table row
+	case 'appendRow':
+		F::error('Argument [field] is required', empty($arguments['field']));
+		// load config
+		$fieldConfig = Webform::fieldConfig($arguments['field']);
+		F::error(Webform::error(), $fieldConfig === false);
+		// validation
+		F::error('Forbidden', isset($fieldConfig['format']) and $fieldConfig['format'] != 'table');
+		// exit point
+		if ( !empty($fieldConfig['appendRow']) ) $xfa['appendRow'] = "{$fusebox->controller}.appendRow&field={$arguments['field']}";
+		if ( !empty($fieldConfig['removeRow']) ) $xfa['removeRow'] = "{$fusebox->controller}.removeRow";
+		// essential variables
+		$fieldName = $arguments['field'];
+		$fieldID = 'webform-input-'.str_replace('.', '-', $fieldName);
+		$dataFieldName = 'data['.str_replace('.', '][', $fieldName).']';
+		$dataFieldName = 'data['.str_replace('.', '][', $fieldName).']';
+		//
+Webform::fieldName2fieldID
+fieldName2dataFieldName
+fieldName2fieldValue
+
+		// display
+		$rowIndex = Util::uuid();
+		include $filePath;
+		break;
+	case 'removeRow':
 		break;
 
 

@@ -869,63 +869,6 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			render form of specific step
-		</description>
-		<io>
-			<in>
-				<!-- config -->
-				<structure name="$config" scope="self">
-					<structure name="steps">
-						<structure name="~stepName~" />
-					</structure>
-					<structure name="fieldConfig">
-						<structure name="~fieldName~" />
-					</structure>
-				</structure>
-				<!-- parameter -->
-				<string name="$step" />
-				<structure name="$xfa" optional="yes" comments="exit points" />
-			</in>
-			<out>
-				<string name="~return~" comments="form output" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function render($step, $xfa=[]) {
-		$editable = ( in_array(self::$mode, ['new','edit']) and $step != 'confirm' );
-		// validation
-		if ( !self::stepExists($step) ) return false;
-		// when [confirm] is simply true (no field specifed)
-		// ===> display all fields & quit
-		// ===> otherwise, display specified fields
-		if ( $step == 'confirm' and self::$config['steps']['confirm'] === true ) {
-			$original = self::$mode;
-			self::$mode = 'view';
-			$output = self::renderAll($xfa);
-			self::$mode = $original;
-			return $output;
-		}
-		// prepare variable
-		$fieldLayout = self::$config['steps'][$step];
-		// load data from cache
-		$arguments['data'] = self::data();
-		if ( $arguments['data'] === false ) return false;
-		// display
-		ob_start();
-		$arguments['step'] = $step;
-		$webform['config'] = self::$config;
-		include F::appPath('view/webform/form.php');
-		// done!
-		return ob_get_clean();
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
 			render all steps at once
 		</description>
 		<io>
@@ -959,6 +902,63 @@ class Webform {
 		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
+		$webform['config'] = self::$config;
+		include F::appPath('view/webform/form.php');
+		// done!
+		return ob_get_clean();
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			render form of specific step
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="steps">
+						<structure name="~stepName~" />
+					</structure>
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
+					</structure>
+				</structure>
+				<!-- parameter -->
+				<string name="$step" />
+				<structure name="$xfa" optional="yes" comments="exit points" />
+			</in>
+			<out>
+				<string name="~return~" comments="form output" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function renderStep($step, $xfa=[]) {
+		$editable = ( in_array(self::$mode, ['new','edit']) and $step != 'confirm' );
+		// validation
+		if ( !self::stepExists($step) ) return false;
+		// when [confirm] is simply true (no field specifed)
+		// ===> display all fields & quit
+		// ===> otherwise, display specified fields
+		if ( $step == 'confirm' and self::$config['steps']['confirm'] === true ) {
+			$original = self::$mode;
+			self::$mode = 'view';
+			$output = self::renderAll($xfa);
+			self::$mode = $original;
+			return $output;
+		}
+		// prepare variable
+		$fieldLayout = self::$config['steps'][$step];
+		// load data from cache
+		$arguments['data'] = self::data();
+		if ( $arguments['data'] === false ) return false;
+		// display
+		ob_start();
+		$arguments['step'] = $step;
 		$webform['config'] = self::$config;
 		include F::appPath('view/webform/form.php');
 		// done!
