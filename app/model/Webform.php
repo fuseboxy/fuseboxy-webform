@@ -158,6 +158,50 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			convert field name to [name] attribute for <input>
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" example="student_name|student.name" />
+			</in>
+			<out>
+				<structure name="~return~" example="data[student_name]|data[student][name]" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function fieldName2dataFieldName($fieldName) {
+		return 'data['.str_replace('.', '][', $fieldName).']';
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			convert field name to [id] attribute for HTML element
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" example="student_name|student.name" />
+			</in>
+			<out>
+				<structure name="~return~" example="webform-input-student_name|webform-input-student-name" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function fieldName2dataFieldName($fieldName) {
+		return 'webform-input-'.str_replace('.', '-', $fieldName);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			convert human-readable file-size string to number of bytes
 		</description>
 		<io>

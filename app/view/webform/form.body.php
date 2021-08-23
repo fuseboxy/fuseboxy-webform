@@ -66,9 +66,9 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 					foreach ( $fieldNameSubList as $fieldName ) :
 						// check whether empty field
 						if ( !empty($fieldName) ) :
-							$fieldID = 'webform-input-'.str_replace('.', '-', $fieldName);
+							$fieldID = Webform::fieldName2fieldID($fieldName);
 							$fieldConfig = $fieldConfigAll[$fieldName];
-							$dataFieldName = 'data['.str_replace('.', '][', $fieldName).']';
+							$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
 							// determine value to show in this field
 							// ===> precedence: defined-value > submitted-value > default-value > empty
 							if ( isset($fieldConfig['value']) ) {
