@@ -18,8 +18,10 @@
 					<string name="~columnHeader~" value="~columnWidth~" />
 				</structure>
 				<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
-				<boolean name="appendRow" optional="yes" />
-				<boolean name="removeRow" optional="yes" />
+			</structure>
+			<structure name="$xfa">
+				<string name="appendRow" optional="yes" />
+				<string name="removeRow" optional="yes" />
 			</structure>
 		</in>
 		<out>
@@ -51,10 +53,10 @@
 						endforeach;
 					endif;
 					// button
-					if ( !empty($fieldConfig['appendRow']) ) :
+					if ( !empty($xfa['appendRow']) ) :
 						?><th width="5%" class="text-center px-0"><?php
 							?><a 
-								href="<?php echo $fieldConfig['appendRow'] ?>"
+								href="<?php echo F::url($xfa['appendRow']); ?>"
 								class="btn btn-sm btn-success"
 								data-toggle="ajax-load"
 								data-target="#<?php echo $fieldID; ?> > fieldset"
