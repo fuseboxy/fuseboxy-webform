@@ -339,7 +339,7 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// ajax file upload
+	// ajax file upload (for [format=file|image] field)
 	case 'upload':
 		if ( !empty($webform['closed']) ) die('Forbidden');
 		// validation
@@ -358,38 +358,35 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// ajax upload progress
+	// ajax upload progress (for [format=file|image] field)
 	case 'upload-progress':
 		if ( !empty($webform['closed']) ) die('Forbidden');
 		include Webform::$libPath['uploadProgress'];
 		break;
 
 
-	// new table row
+	// append table row (for [format=table] field)
 	case 'appendRow':
 		F::error('Argument [field] is required', empty($arguments['field']));
 		// load config
 		$fieldConfig = Webform::fieldConfig($arguments['field']);
 		F::error(Webform::error(), $fieldConfig === false);
-		// validation
 		F::error('Forbidden', isset($fieldConfig['format']) and $fieldConfig['format'] != 'table');
 		// exit point
 		if ( !empty($fieldConfig['appendRow']) ) $xfa['appendRow'] = "{$fusebox->controller}.appendRow&field={$arguments['field']}";
 		if ( !empty($fieldConfig['removeRow']) ) $xfa['removeRow'] = "{$fusebox->controller}.removeRow";
-		// essential variables
+		// other essential variables
 		$fieldName = $arguments['field'];
-		$fieldID = 'webform-input-'.str_replace('.', '-', $fieldName);
-		$dataFieldName = 'data['.str_replace('.', '][', $fieldName).']';
-		$dataFieldName = 'data['.str_replace('.', '][', $fieldName).']';
-		//
-Webform::fieldName2fieldID
-fieldName2dataFieldName
-fieldName2fieldValue
-
-		// display
+		$fieldID = Webform::fieldName2fieldID($fieldName);
+		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
 		$rowIndex = Util::uuid();
-		include $filePath;
+		F::error(Util::error(), $rowIndex === false);
+		// display
+		include $fieldConfig['tableRow'];
 		break;
+
+
+	// remove table row (for [format=table] field)
 	case 'removeRow':
 		break;
 
