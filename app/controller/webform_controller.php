@@ -25,7 +25,7 @@
 				<!-- settings of each field used in form -->
 				<structure name="fieldConfig">
 					<structure name="~fieldName~">
-						<string name="format" default="text" comments="text|textarea|checkbox|radio|date|file|image|signature|hidden|output|custom" />
+						<string name="format" default="text" comments="text|textarea|checkbox|radio|date|file|image|signature|hidden|output|table|custom" />
 						<string name="label" optional="yes" />
 						<string name="inline-label" optional="yes" />
 						<string name="placeholder" optional="yes" />
@@ -53,8 +53,16 @@
 						<string name="filetypeError" optional="yes" comments="error message shown when file type failed; use {FILE_TYPE} as mask" />
 						<!-- for [format=image] only -->
 						<string name="resize" optional="yes" example="800x600|1024w|100h" />
+						<!-- for [format=table] only -->
+						<string name="tableTitle" optional="yes" />
+						<structure name="tableHeader" optional="yes">
+							<string name="~columnHeader~" value="~columnWidth~" />
+						</structure>
+						<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
+						<boolean name="appendRow" optional="yes" />
+						<boolean name="removeRow" optional="yes" />
 						<!-- for [format=custom] only -->
-						<string name="scriptPath" optional="yes" example="/path/to/custom/input.php" />
+						<file name="scriptPath" optional="yes" example="/path/to/custom/input.php" />
 					</structure>
 				</structure>
 				<!-- email notification settings -->
