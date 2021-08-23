@@ -35,40 +35,38 @@
 </fusedoc>
 */ ?>
 <div id="<?php echo $fieldID; ?>" class="webform-input-table input-group">
-	<header>
-		<table class="table table-bordered mb-0">
-			<thead><?php
-				// title
-				if ( !empty($fieldConfig['tableTitle']) ) :
-					?><tr class="bg-light">
-						<th colspan="5" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th>
-					</tr><?php
+	<table class="table table-bordered mb-0">
+		<thead><?php
+			// title
+			if ( !empty($fieldConfig['tableTitle']) ) :
+				?><tr class="bg-light">
+					<th colspan="5" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th>
+				</tr><?php
+			endif;
+			?><tr class="text-center bg-white small"><?php
+				// header
+				if ( !empty($fieldConfig['tableHeader']) ) :
+					foreach ( $fieldConfig['tableHeader'] as $headerText => $headerWidth ) :
+						if ( is_numeric($headerText) ) list($headerText, $headerWidth) = [ $headerWidth, '' ];
+						?><th <?php if ( !empty($headerWidth) ) echo "width='{$headerWidth}'"; ?>><?php echo $headerText; ?></th><?php
+					endforeach;
 				endif;
-				?><tr class="text-center bg-white small"><?php
-					// header
-					if ( !empty($fieldConfig['tableHeader']) ) :
-						foreach ( $fieldConfig['tableHeader'] as $headerText => $headerWidth ) :
-							if ( is_numeric($headerText) ) list($headerText, $headerWidth) = [ $headerWidth, '' ];
-							?><th <?php if ( !empty($headerWidth) ) echo "width='{$headerWidth}'"; ?>><?php echo $headerText; ?></th><?php
-						endforeach;
-					endif;
-					// button
-					if ( !empty($xfa['appendRow']) ) :
-						?><th width="5%" class="text-center px-0"><?php
-							?><a 
-								href="<?php echo F::url($xfa['appendRow']); ?>"
-								class="btn btn-sm btn-success"
-								data-toggle="ajax-load"
-								data-target="#<?php echo $fieldID; ?> > fieldset"
-								data-mode="append"
-								data-loading="none"
-							><i class="fa fa-fw fa-plus small"></i></a><?php
-						?></th><?php
-					endif;
-				?></tr>
-			</thead>
-		</table>
-	</header>
+				// button
+				if ( !empty($xfa['appendRow']) ) :
+					?><th width="50" class="text-center px-0"><?php
+						?><a 
+							href="<?php echo F::url($xfa['appendRow']); ?>"
+							class="btn btn-sm btn-success"
+							data-toggle="ajax-load"
+							data-target="#<?php echo $fieldID; ?> > fieldset"
+							data-mode="append"
+							data-loading="none"
+						><i class="fa fa-fw fa-plus small"></i></a><?php
+					?></th><?php
+				endif;
+			?></tr>
+		</thead>
+	</table>
 	<fieldset><?php
 		// content
 		if ( !empty($fieldValue) ) :
