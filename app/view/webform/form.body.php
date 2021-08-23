@@ -2,28 +2,30 @@
 <fusedoc>
 	<io>
 		<in>
-			<structure name="$fieldConfigAll">
-				<structure name="~fieldName~">
-					<string name="format" default="text" comments="output|hidden|text|url|textarea|checkbox|radio|file|image|signature" />
-					<string name="label" optional="yes" />
-					<string name="placeholder" optional="yes" />
-					<!-- options -->
-					<structure name="options" optional="yes" comments="show dropdown when specified">
-						<string name="~optionValue~" value="~optionText~" optional="yes" />
-						<structure name="~optGroup~" optional="yes">
-							<structure name="~optionValue~" value="~optionText~" />
+			<structure name="$webform" comments="config">
+				<structure name="fieldConfig">
+					<structure name="~fieldName~">
+						<string name="format" default="text" comments="output|hidden|text|url|textarea|checkbox|radio|file|image|signature" />
+						<string name="label" optional="yes" />
+						<string name="placeholder" optional="yes" />
+						<!-- options -->
+						<structure name="options" optional="yes" comments="show dropdown when specified">
+							<string name="~optionValue~" value="~optionText~" optional="yes" />
+							<structure name="~optGroup~" optional="yes">
+								<structure name="~optionValue~" value="~optionText~" />
+							</structure>
 						</structure>
+						<!-- attribute -->
+						<boolean name="required" optional="yes" />
+						<boolean name="readonly" optional="yes" comments="output does not pass value; readonly does" />
+						<string name="default" optional="yes" comments="filling with this value if field has no value" />
+						<string name="value" optional="yes" comments="force filling with this value even if field has value" />
+						<!-- styling -->
+						<string name="class" optional="yes" />
+						<string name="style" optional="yes" />
+						<!-- help text -->
+						<string name="help" optional="yes" comments="help text show after input field" />
 					</structure>
-					<!-- attribute -->
-					<boolean name="required" optional="yes" />
-					<boolean name="readonly" optional="yes" comments="output does not pass value; readonly does" />
-					<string name="default" optional="yes" comments="filling with this value if field has no value" />
-					<string name="value" optional="yes" comments="force filling with this value even if field has value" />
-					<!-- styling -->
-					<string name="class" optional="yes" />
-					<string name="style" optional="yes" />
-					<!-- help text -->
-					<string name="help" optional="yes" comments="help text show after input field" />
 				</structure>
 			</structure>
 			<structure name="$fieldLayout">
@@ -67,7 +69,7 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 						// check whether empty field
 						if ( !empty($fieldName) ) :
 							$fieldID = Webform::fieldName2fieldID($fieldName);
-							$fieldConfig = $fieldConfigAll[$fieldName];
+							$fieldConfig = Webform::fieldConfig($fieldName);
 							$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
 							// determine value to show in this field
 							// ===> precedence: defined-value > submitted-value > default-value > empty

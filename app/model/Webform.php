@@ -906,9 +906,8 @@ class Webform {
 			self::$mode = $original;
 			return $output;
 		}
-		// prepare variables
+		// prepare variable
 		$fieldLayout = self::$config['steps'][$step];
-		$fieldConfigAll = self::$config['fieldConfig'];
 		// load data from cache
 		$arguments['data'] = self::data();
 		if ( $arguments['data'] === false ) return false;
@@ -951,9 +950,8 @@ class Webform {
 	*/
 	public static function renderAll($xfa=[]) {
 		$editable = in_array(self::$mode, ['new','edit']);
-		// prepare variables
+		// prepare variable
 		$fieldLayoutAll = self::$config['steps'];
-		$fieldConfigAll = self::$config['fieldConfig'];
 		// exclude [confirm] step
 		if ( isset($fieldLayoutAll['confirm']) ) unset($fieldLayoutAll['confirm']);
 		// load data from cache
