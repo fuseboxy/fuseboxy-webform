@@ -39,8 +39,10 @@
 		<thead><?php
 			// title
 			if ( !empty($fieldConfig['tableTitle']) ) :
+				$colspan = count($fieldConfig['tableHeader'] ?? []);
+				if ( !empty($xfa['appendRow']) ) $colspan++;
 				?><tr class="bg-light">
-					<th colspan="5" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th>
+					<th colspan="<?php echo $colspan; ?>" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th>
 				</tr><?php
 			endif;
 			?><tr class="text-center bg-white small"><?php
