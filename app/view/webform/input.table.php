@@ -34,7 +34,7 @@
 	</io>
 </fusedoc>
 */ ?>
-<div id="<?php echo $fieldID; ?>" class="webform-input-table input-group">
+<div id="<?php echo $fieldID; ?>" class="webform-input-table">
 	<table class="table table-bordered mb-0">
 		<thead><?php
 			// title
