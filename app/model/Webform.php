@@ -149,7 +149,7 @@ class Webform {
 			return false;
 		}
 		// done!
-		self::$config['fieldConfig'][$fieldName];
+		return self::$config['fieldConfig'][$fieldName];
 	}
 
 
