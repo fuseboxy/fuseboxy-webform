@@ -130,6 +130,34 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			obtain field config of specific field
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" />
+			</in>
+			<out>
+				<structure name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function fieldConfig($fieldName) {
+		// validation
+		if ( empty(self::$config['fieldConfig'][$fieldName]) ) {
+			self::$error = "Field config for [{$fieldName}] not found";
+			return false;
+		}
+		// done!
+		self::$config['fieldConfig'][$fieldName];
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			convert human-readable file-size string to number of bytes
 		</description>
 		<io>
