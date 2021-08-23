@@ -192,7 +192,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function fieldName2dataFieldName($fieldName) {
+	public static function fieldName2fieldID($fieldName) {
 		return 'webform-input-'.str_replace('.', '-', $fieldName);
 	}
 
