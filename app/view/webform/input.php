@@ -10,7 +10,7 @@
 				<string name="label" optional="yes" />
 				<string name="help" optional="yes" comments="help text show under input field" />
 				<boolean name="required" optional="yes" comments="show asterisk at label (or in-label of certain types)" />
-				<string name="scriptPath" optional="yes" oncondition="when [format=custom]" />
+				<string name="customScript" optional="yes" oncondition="when [format=custom]" />
 			</structure>
 		</in>
 		<out />
@@ -26,7 +26,7 @@
 		?></label><?php
 	endif;
 	// field
-	if ( $fieldConfig['format'] == 'custom' ) include $fieldConfig['scriptPath'];
+	if ( $fieldConfig['format'] == 'custom' ) include $fieldConfig['customScript'];
 	else include F::appPath('view/webform/input.'.$fieldConfig['format'].'.php');
 	// help
 	if ( !empty($fieldConfig['help']) ) :

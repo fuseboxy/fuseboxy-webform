@@ -1778,11 +1778,11 @@ class Webform {
 				return false;
 			}
 			// field config : custom
-			if ( isset($cfg['format']) and $cfg['format'] == 'custom' and !isset($cfg['scriptPath']) ) {
-				self::$error = "Script path for [{$fieldName}] is required";
+			if ( isset($cfg['format']) and $cfg['format'] == 'custom' and !isset($cfg['customScript']) ) {
+				self::$error = "Custom script for [{$fieldName}] is required";
 				return false;
-			} elseif ( isset($cfg['format']) and $cfg['format'] == 'custom' and !file_exists($cfg['scriptPath']) ) {
-				self::$error = "Script path for [{$fieldName}] not exists ({$cfg['scriptPath']})";
+			} elseif ( isset($cfg['format']) and $cfg['format'] == 'custom' and !file_exists($cfg['customScript']) ) {
+				self::$error = "Custom script for [{$fieldName}] not exists ({$cfg['customScript']})";
 				return false;
 			}
 			// field config : nested field name

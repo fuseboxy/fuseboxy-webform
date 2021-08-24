@@ -62,7 +62,7 @@
 						<boolean name="appendRow" optional="yes" />
 						<boolean name="removeRow" optional="yes" />
 						<!-- for [format=custom] only -->
-						<file name="scriptPath" optional="yes" example="/path/to/custom/input.php" />
+						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
 					</structure>
 				</structure>
 				<!-- email notification settings -->
