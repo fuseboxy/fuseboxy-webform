@@ -58,6 +58,9 @@
 						<structure name="tableHeader" optional="yes">
 							<string name="~columnHeader~" value="~columnWidth~" />
 						</structure>
+						<structure name="tableRow" optional="yes">
+							<structure name="~rowFieldName~" />
+						</structure>
 						<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
 						<boolean name="appendRow" optional="yes" />
 						<boolean name="removeRow" optional="yes" />
