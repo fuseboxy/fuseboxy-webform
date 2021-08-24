@@ -279,7 +279,7 @@ class Webform {
 		<io>
 			<in>
 				<array name="$nestedArray" />
-				<list name="$fieldKey" delim="." />
+				<list name="$nestedKey" delim="." />
 			</in>
 			<out>
 				<mixed name="~return~" />
@@ -287,10 +287,10 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function getNestedFieldValue($nestedArray, $fieldKey) {
-		$fieldKey = explode('.', $fieldKey);
+	public static function getNestedArrayValue($nestedArray, $nestedKey) {
+		$nestedKey = explode('.', $nestedKey);
 		$result = &$nestedArray;
-		foreach ( $fieldKey as $key ) $result = &$result[$key] ?? null;
+		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
 		return $result;
 	}
 
@@ -744,7 +744,7 @@ class Webform {
 		// ===> e.g. [ 'to' => ':email' ]
 		// ===> e.g. [ 'to' => 'foo@bar.com' ]
 		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function($emailField){
-			$emailFieldValue = self::getNestedFieldValue($emailField);
+			$emailFieldValue = self::getNestedArrayValue($emailField);
 			if ( $emailFieldValue === false ) return false;
 			return $emailFieldValue;
 		}, substr($cfg['to'], 1));
