@@ -279,7 +279,7 @@ class Webform {
 		<io>
 			<in>
 				<array name="$nestedArray" />
-				<list name="$nestedKey" delim="." />
+				<list name="$fieldKey" delim="." />
 			</in>
 			<out>
 				<mixed name="~return~" />
@@ -287,10 +287,10 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function getNestedArrayValue($nestedArray, $nestedKey) {
-		$path = explode('.', $nestedKey);
+	public static function getNestedFieldValue($nestedArray, $fieldKey) {
+		$fieldKey = explode('.', $fieldKey);
 		$result = &$nestedArray;
-		foreach ( $path as $key ) $result = &$result[$key] ?? null;
+		foreach ( $fieldKey as $key ) $result = &$result[$key] ?? null;
 		return $result;
 	}
 
@@ -740,20 +740,20 @@ class Webform {
 			'subject'   => $cfg['subject'],
 			'body'      => $cfg['body'],
 		);
-		// retrieve email field (when necessary)
-		$emailField = ( $cfg['to'][0] == ':' ) ? substr($cfg['to'], 1) : false;
-		// validate email field
-		if ( $emailField and !isset($formData[$emailField]) ) {
-			self::$error = "Email field not found (field={$emailField})";
-			return false;
-		} elseif ( $emailField and empty($formData[$emailField]) ) {
-			self::$error = "Notification recipient not specified (field={$emailField})";
-			return false;
-		}
 		// send to recipient (by email field or custom value)
 		// ===> e.g. [ 'to' => ':email' ]
 		// ===> e.g. [ 'to' => 'foo@bar.com' ]
-		$mail['to'] = $emailField ? $formData[$emailField] : $cfg['to'];
+		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function($emailField){
+			$emailFieldValue = self::getNestedFieldValue($emailField);
+			if ( $emailFieldValue === false ) return false;
+			return $emailFieldValue;
+		}, substr($cfg['to'], 1));
+		// validate recipient email
+		if ( empty($mail['to']) ) {
+			self::$error = 'Email recipient not specified';
+			if ( $cfg['to'][0] == ':' ) self::$error .= " ({$cfg['to']})";
+			return false;
+		}
 		// prepare mapping of mask & data
 		$masks = array();
 		foreach ( $formData as $key => $val ) $masks["[[{$key}]]"] = $val;
