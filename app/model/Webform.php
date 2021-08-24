@@ -744,7 +744,7 @@ class Webform {
 		// ===> e.g. [ 'to' => ':email' ]
 		// ===> e.g. [ 'to' => 'foo@bar.com' ]
 		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function($emailField){
-			$emailFieldValue = self::getNestedArrayValue($emailField);
+			$emailFieldValue = self::getNestedArrayValue($formData, $emailField);
 			if ( $emailFieldValue === false ) return false;
 			return $emailFieldValue;
 		}, substr($cfg['to'], 1));
