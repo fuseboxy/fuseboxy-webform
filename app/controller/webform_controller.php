@@ -58,6 +58,9 @@
 						<structure name="tableHeader" optional="yes">
 							<string name="~columnHeader~" value="~columnWidth~" />
 						</structure>
+						<structure name="tableRow" optional="yes">
+							<structure name="~rowFieldName~" />
+						</structure>
 						<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
 						<boolean name="appendRow" optional="yes" />
 						<boolean name="removeRow" optional="yes" />
@@ -388,7 +391,8 @@ switch ( $fusebox->action ) :
 		$rowIndex = Util::uuid();
 		F::error(Util::error(), $rowIndex === false);
 		// display
-		include $fieldConfig['tableRow'];
+		if ( is_string($fieldConfig['tableRow']) ) include $fieldConfig['tableRow'];
+		else include F::appPath('view/webform/input.table.row.php');
 		break;
 
 

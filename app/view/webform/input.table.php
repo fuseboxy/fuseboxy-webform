@@ -17,6 +17,9 @@
 				<structure name="tableHeader" optional="yes">
 					<string name="~columnHeader~" value="~columnWidth~" />
 				</structure>
+				<structure name="tableRow" optional="yes">
+					<structure name="~rowFieldName~" />
+				</structure>
 				<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
 				<boolean name="appendRow" />
 				<boolean name="removeRow" />
@@ -40,7 +43,7 @@
 <div id="<?php echo $fieldID; ?>" class="webform-input-table">
 	<table class="table table-bordered mb-0">
 		<thead><?php
-			// title
+			// table title
 			if ( !empty($fieldConfig['tableTitle']) ) :
 				$colspan = count($fieldConfig['tableHeader'] ?? []);
 				if ( !empty($xfa['appendRow']) ) $colspan++;
@@ -48,15 +51,16 @@
 					<th colspan="<?php echo $colspan; ?>" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th>
 				</tr><?php
 			endif;
+			// table header
 			?><tr class="text-center bg-white small"><?php
-				// header
+				// column name
 				if ( !empty($fieldConfig['tableHeader']) ) :
 					foreach ( $fieldConfig['tableHeader'] as $headerText => $headerWidth ) :
 						if ( is_numeric($headerText) ) list($headerText, $headerWidth) = [ $headerWidth, '' ];
 						?><th <?php if ( !empty($headerWidth) ) echo "width='{$headerWidth}'"; ?>><?php echo $headerText; ?></th><?php
 					endforeach;
 				endif;
-				// button
+				// append button
 				if ( !empty($fieldConfig['appendRow']) and !empty($xfa['appendRow']) ) :
 					?><th width="50" class="text-center px-0"><?php
 						?><a 
@@ -73,10 +77,13 @@
 		</thead>
 	</table>
 	<fieldset><?php
-		// content
+		// table content
 		if ( !empty($fieldValue) ) :
 			foreach ( $fieldValue as $rowIndex => $rowItem ) :
-				include $fieldConfig['tableRow'];
+				// use custom row (when specified)
+				if ( is_string($fieldConfig['tableRow']) ) include $fieldConfig['tableRow'];
+				// otherwise, use row template
+				else include F::appPath('view/webform/input.table.row.php');
 			endforeach;
 		endif;
 	?></fieldset>
