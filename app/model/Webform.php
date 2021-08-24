@@ -743,11 +743,12 @@ class Webform {
 		// send to recipient (by email field or custom value)
 		// ===> e.g. [ 'to' => ':email' ]
 		// ===> e.g. [ 'to' => 'foo@bar.com' ]
-		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function($emailField){
+		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function() use ($cfg, $formData){
+			$emailField = substr($cfg['to'], 1);
 			$emailFieldValue = self::getNestedArrayValue($formData, $emailField);
 			if ( $emailFieldValue === false ) return false;
 			return $emailFieldValue;
-		}, substr($cfg['to'], 1));
+		});
 		// validate recipient email
 		if ( empty($mail['to']) ) {
 			self::$error = 'Email recipient not specified';
