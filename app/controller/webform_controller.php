@@ -160,6 +160,9 @@ switch ( $fusebox->action ) :
 		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
+		// exit point : dynamic table
+		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
+		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -192,6 +195,9 @@ switch ( $fusebox->action ) :
 		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
 		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
+		// exit point : dynamic table
+		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
+		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -367,16 +373,16 @@ switch ( $fusebox->action ) :
 
 	// append table row (for [format=table] field)
 	case 'appendRow':
-		F::error('Argument [field] is required', empty($arguments['field']));
+		F::error('Argument [fieldName] is required', empty($arguments['fieldName']));
 		// load config
-		$fieldConfig = Webform::fieldConfig($arguments['field']);
+		$fieldConfig = Webform::fieldConfig($arguments['fieldName']);
 		F::error(Webform::error(), $fieldConfig === false);
 		F::error('Forbidden', isset($fieldConfig['format']) and $fieldConfig['format'] != 'table');
 		// exit point
-		if ( !empty($fieldConfig['appendRow']) ) $xfa['appendRow'] = "{$fusebox->controller}.appendRow&field={$arguments['field']}";
-		if ( !empty($fieldConfig['removeRow']) ) $xfa['removeRow'] = "{$fusebox->controller}.removeRow";
+		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
+		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
 		// other essential variables
-		$fieldName = $arguments['field'];
+		$fieldName = $arguments['fieldName'];
 		$fieldID = Webform::fieldName2fieldID($fieldName);
 		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
 		$rowIndex = Util::uuid();
