@@ -159,7 +159,7 @@ switch ( $fusebox->action ) :
 		else $xfa['submit'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
-		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
+		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -191,7 +191,7 @@ switch ( $fusebox->action ) :
 		else $xfa['update'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		// exit point : ajax upload
 		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
-		$xfa['uploadProgress'] = "{$fusebox->controller}.upload-progress";
+		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -359,7 +359,7 @@ switch ( $fusebox->action ) :
 
 
 	// ajax upload progress (for [format=file|image] field)
-	case 'upload-progress':
+	case 'uploadProgress':
 		if ( !empty($webform['closed']) ) die('Forbidden');
 		include Webform::$libPath['uploadProgress'];
 		break;
