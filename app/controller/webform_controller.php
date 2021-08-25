@@ -388,8 +388,6 @@ switch ( $fusebox->action ) :
 		$fieldName = $arguments['fieldName'];
 		$fieldID = Webform::fieldName2fieldID($fieldName);
 		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
-		$rowIndex = Util::uuid();
-		F::error(Util::error(), $rowIndex === false);
 		// display
 		if ( is_string($fieldConfig['tableRow']) ) include $fieldConfig['tableRow'];
 		else include F::appPath('view/webform/input.table.row.php');
