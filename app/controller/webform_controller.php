@@ -385,6 +385,7 @@ switch ( $fusebox->action ) :
 		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
 		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
 		// other essential variables
+		$editable = true;
 		$fieldName = $arguments['fieldName'];
 		$fieldID = Webform::fieldName2fieldID($fieldName);
 		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
