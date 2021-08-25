@@ -45,13 +45,14 @@ $rowID = 'row-'.$rowIndex;
 				// display each field
 				$rowColumnIndex = 0;
 				foreach ( $fieldConfig['tableRow'] as $rowColumnKey => $rowColumnItems ) :
-					// obtain column width from [tableHeader] config
-					if ( empty($fieldConfig['tableHeader']) ) $columnWidth = '';
-					else $columnWidth = array_values($fieldConfig['tableHeader'])[$rowColumnIndex] ?? '';
 					// multiple fields in same column
-					// ===> apply directly
+					// ===> apply & clean-up each item
 					if ( is_numeric($rowColumnKey) and is_array($rowColumnItems) ) :
-						$rowFieldInSameColumn = $rowColumnItems;
+						$rowFieldInSameColumn = array();
+						foreach ( $rowColumnItems as $key => $val ) :
+							if ( is_string($val) ) $rowFieldInSameColumn[$val] = array();
+							else $rowFieldInSameColumn[$key] = $val;
+						endforeach;
 					// only field name specified
 					// ===> put into container & assign empty config
 					elseif ( is_numeric($rowColumnKey) and is_string($rowColumnItems) ) :
@@ -61,8 +62,11 @@ $rowID = 'row-'.$rowIndex;
 					else :
 						$rowFieldInSameColumn = array([$rowColumnKey => $rowColumnItems]);
 					endif;
+					// obtain column width from [tableHeader] config
+					if ( empty($fieldConfig['tableHeader']) ) $columnWidth = '';
+					else $columnWidth = array_values($fieldConfig['tableHeader'])[$rowColumnIndex] ?? '';
 					// display column
-					?><td <?php if ( !empty($columnWidth) ) echo "width='{$columnWidth}'"; ?>><?php
+					?><td class="px-2 pt-2 pb-0" <?php if ( !empty($columnWidth) ) echo "width='{$columnWidth}'"; ?>><?php
 						// go through each field in same column
 						foreach ( $rowFieldInSameColumn as $rowFieldName => $rowFieldConfig ) :
 							// render with function
@@ -77,11 +81,14 @@ $rowID = 'row-'.$rowIndex;
 									// determine default format (when necessary)
 									if     ( empty($fieldConfig['format']) and !empty($fieldConfig['options']) ) $fieldConfig['format'] = 'dropdown';
 									elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fieldConfig['format'] = 'text';
-									// reuse input template
+									// re-use input template
 									ob_start();
-									include F::appPath("view/webform/input.{$fieldConfig['format']}.php");
+									include F::appPath('view/webform/input.php');
+									$row = Util::phpQuery( ob_get_clean() );
+									// adjust spacing
+									$row->find('.form-group')->addClass('mb-2');
 									// done!
-									return ob_get_clean();
+									return $row;
 								}
 							endif;
 							// determine actual field name (e.g. workexp.0.employer)
@@ -95,7 +102,7 @@ $rowID = 'row-'.$rowIndex;
 				endforeach;
 				// remove button
 				if ( !empty($xfa['removeRow']) and !empty($fieldConfig['removeRow']) and !empty($editable) ) :
-					?><td width="50" class="text-center px-0">
+					?><td width="50" class="text-center px-0 py-2">
 						<a 
 							href="<?php echo F::url($xfa['removeRow']); ?>"
 							class="btn btn-sm btn-square btn-danger mt-1"

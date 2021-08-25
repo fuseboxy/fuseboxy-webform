@@ -49,7 +49,7 @@
 				endif;
 				// append button
 				if ( $showAppendButton ) :
-					?><th width="50" class="text-center px-0"><?php
+					?><th width="50" class="text-center px-0 py-2"><?php
 						?><a 
 							href="<?php echo F::url($xfa['appendRow'].'&fieldName='.$fieldName); ?>"
 							class="btn btn-sm btn-success"
