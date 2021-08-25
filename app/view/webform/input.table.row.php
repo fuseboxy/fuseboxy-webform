@@ -55,11 +55,11 @@ $rowID = 'row-'.$rowIndex;
 					// only field name specified
 					// ===> put into container & assign empty config
 					elseif ( is_numeric($rowColumnKey) and is_string($rowColumnItems) ) :
-						$rowFieldInSameColumn = array($rowColumnItems => []);
+						$rowFieldInSameColumn = array([ $rowColumnItems => array() ]);
 					// field name & config specified
 					// ===> put into container
 					else :
-						$rowFieldInSameColumn = array($rowColumnKey => $rowColumnItems);
+						$rowFieldInSameColumn = array([$rowColumnKey => $rowColumnItems]);
 					endif;
 					// display column
 					?><td <?php if ( !empty($columnWidth) ) echo "width='{$columnWidth}'"; ?>><?php
