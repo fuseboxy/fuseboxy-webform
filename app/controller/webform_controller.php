@@ -384,10 +384,11 @@ switch ( $fusebox->action ) :
 		// exit point
 		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
 		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
-		// other essential variables
+		// more essential variables (for input)
 		$editable = true;
 		$fieldName = $arguments['fieldName'];
 		$fieldID = Webform::fieldName2fieldID($fieldName);
+		$fieldValue = '';
 		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
 		// display
 		if ( is_string($fieldConfig['tableRow']) ) include $fieldConfig['tableRow'];
