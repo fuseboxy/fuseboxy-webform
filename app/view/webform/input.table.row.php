@@ -6,8 +6,13 @@
 	<io>
 		<in>
 			<string name="$rowIndex" optional="yes" />
+			<boolean name="$editable" />
+			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$dataFieldName" />
+			<array name="$fieldValue">
+				<structure name="+" />
+			</arrya>
 			<structure name="$fieldConfig">
 				<structure name="tableRow">
 					<structure name="~rowFieldName~" />
@@ -19,7 +24,10 @@
 			</structure>
 		</in>
 		<out>
-			<structure name="data" scope="form">
+			<structure name="data" scope="form" optional="yes" oncondition="editable">
+				<array name="~fieldName~">
+					<structure name="+" />
+				</array>
 			</structure>
 		</out>
 	</io>
@@ -36,7 +44,7 @@ $rowID = 'row-'.$rowIndex;
 					?><td><?php echo $rowField; ?></td><?php
 				endforeach;
 				// remove button
-				if ( !empty($fieldConfig['removeRow']) and !empty($xfa['removeRow']) ) :
+				if ( !empty($xfa['removeRow']) and !empty($fieldConfig['removeRow']) and !empty($editable) ) :
 					?><td width="50" class="text-center px-0">
 						<a 
 							href="<?php echo F::url($xfa['removeRow']); ?>"
