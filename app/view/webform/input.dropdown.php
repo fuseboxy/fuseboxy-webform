@@ -43,7 +43,7 @@
 			// empty first item
 			?><option value=""><?php if ( !empty($fieldConfig['placeholder']) ) echo $fieldConfig['placeholder']; ?></option><?php
 			// user-defined items
-			foreach ( $fieldConfig['options'] as $optValue => $optText ) :
+			foreach ( $fieldConfig['options'] ?? [] as $optValue => $optText ) :
 				// optgroup
 				if ( is_array($optText) ) :
 					$optGroupLabel = $optValue;

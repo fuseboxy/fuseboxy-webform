@@ -31,7 +31,7 @@
 	endif;
 	// display
 	$optIndex = 0;
-	foreach ( $fieldConfig['options'] as $optValue => $optText ) :
+	foreach ( $fieldConfig['options'] ?? [] as $optValue => $optText ) :
 		if ( is_array($optText) ) :
 			$optGroupLabel = $optValue;
 			$optGroupItems = $optText;
