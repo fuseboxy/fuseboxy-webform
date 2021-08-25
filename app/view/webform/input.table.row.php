@@ -39,9 +39,9 @@
 $rowIndex = $rowIndex ?? Util::uuid();
 $rowID = 'row-'.$rowIndex;
 ?><div id="<?php echo $rowID; ?>" class="webform-input-table-row">
-	<table class="table table-bordered mb-0">
-		<tbody>
-			<tr class="text-center bg-white small"><?php
+	<table class="table table-bordered small mb-0">
+		<tbody class="bg-white">
+			<tr><?php
 				// display each field
 				$rowColumnIndex = 0;
 				foreach ( $fieldConfig['tableRow'] as $rowColumnKey => $rowColumnItems ) :

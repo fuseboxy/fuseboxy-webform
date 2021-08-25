@@ -28,20 +28,18 @@
 </fusedoc>
 */ ?>
 <div class="webform-input-table-header">
-	<table class="table table-bordered mb-0">
-		<thead><?php
+	<table class="table table-bordered small mb-0">
+		<thead class="bg-light"><?php
 			// check whether to show button
 			$showAppendButton = ( !empty($xfa['appendRow']) and !empty($fieldConfig['appendRow']) and !empty($editable) );
 			// table title
 			if ( !empty($fieldConfig['tableTitle']) ) :
 				$columnCount = count($fieldConfig['tableHeader'] ?? []);
 				if ( $showAppendButton ) $columnCount++;
-				?><tr class="bg-light">
-					<th colspan="<?php echo $columnCount; ?>" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th>
-				</tr><?php
+				?><tr><th colspan="<?php echo $columnCount; ?>" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th></tr><?php
 			endif;
 			// table header
-			?><tr class="text-center bg-white small"><?php
+			?><tr class="text-center bg-white"><?php
 				// column name
 				if ( !empty($fieldConfig['tableHeader']) ) :
 					foreach ( $fieldConfig['tableHeader'] as $headerText => $columnWidth ) :
