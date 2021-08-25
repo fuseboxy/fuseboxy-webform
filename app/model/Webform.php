@@ -1771,20 +1771,37 @@ class Webform {
 		// check each field config
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// field config : options
-			if ( isset($cfg['format']) and in_array($cfg['format'], ['checkbox','radio']) and !isset($cfg['options']) ) {
-				self::$error = "Options for [{$fieldName}] is required";
-				return false;
-			} elseif ( isset($cfg['options']) and $cfg['options'] !== false and !is_array($cfg['options']) ) {
-				self::$error = "Options for [{$fieldName}] must be array";
-				return false;
+			if ( isset($cfg['format']) and in_array($cfg['format'], ['checkbox','radio']) ) {
+				if ( !isset($cfg['options']) ) {
+					self::$error = "Field config [options] for [{$fieldName}] is required";
+					return false;
+				} elseif ( $cfg['options'] !== false and !is_array($cfg['options']) ) {
+					self::$error = "Field config [options] for [{$fieldName}] must be array";
+					return false;
+				}
 			}
 			// field config : custom
-			if ( isset($cfg['format']) and $cfg['format'] == 'custom' and !isset($cfg['customScript']) ) {
-				self::$error = "Custom script for [{$fieldName}] is required";
-				return false;
-			} elseif ( isset($cfg['format']) and $cfg['format'] == 'custom' and !file_exists($cfg['customScript']) ) {
-				self::$error = "Custom script for [{$fieldName}] not exists ({$cfg['customScript']})";
-				return false;
+			if ( isset($cfg['format']) and $cfg['format'] == 'custom' ) {
+				if ( !isset($cfg['customScript']) ) {
+					self::$error = "Field config [customScript] for [{$fieldName}] is required";
+					return false;
+				} elseif ( !file_exists($cfg['customScript']) ) {
+					self::$error = "Script of [customScript] for [{$fieldName}] not exists ({$cfg['customScript']})";
+					return false;
+				}
+			}
+			// field config : table
+			if ( isset($cfg['format']) and $cfg['format'] == 'table' ) {
+				if ( empty($cfg['tableRow']) and !is_array($cfg['tableRow']) ) {
+					self::$error = "Field config [tableRow] for [{$fieldName}] is required";
+					return false;
+				} elseif ( is_string($cfg['tableRow']) and !file_exists($cfg['tableRow']) ) {
+					self::$error = "Script of [tableRow] for [{$fieldName}] not exists ({$cfg['tableRow']})";
+					return false;
+				} elseif ( !is_array($cfg['tableRow']) ) {
+					self::$error = "Field config [tableRow] for [{$fieldName}] must be array";
+					return false;
+				}
 			}
 			// field config : nested field name
 			$fieldNameArray = array_filter(explode('.', $fieldName));
