@@ -41,7 +41,7 @@
 </fusedoc>
 */ ?>
 <div id="<?php echo $fieldID; ?>" class="webform-input-table">
-	<header><?php echo include F::appPath('view/webform/input.table.header.php'); ?></header>
+	<header><?php include F::appPath('view/webform/input.table.header.php'); ?></header>
 	<fieldset><?php
 		// table content
 		if ( !empty($fieldValue) ) :
