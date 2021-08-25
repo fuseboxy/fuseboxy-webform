@@ -38,17 +38,6 @@
 */
 $rowIndex = $rowIndex ?? Util::uuid();
 $rowID = 'row-'.$rowIndex;
-
-// render row field
-if ( !function_exists('renderRowField') ) :
-	function renderRowField($fieldID, $fieldName, $fieldValue, $fieldConfig){
-		global $editable;
-		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
-		if ( empty($fieldConfig['format']) or $fieldConfig['format'] === true ) $fieldConfig['format'] = 'text';
-		include F::appPath("view/webform/input.{$fieldConfig['format']}.php");
-	}
-endif;
-// display row
 ?><div id="<?php echo $rowID; ?>" class="webform-input-table-row">
 	<table class="table table-bordered mb-0">
 		<tbody>
@@ -76,13 +65,29 @@ endif;
 					?><td <?php if ( !empty($columnWidth) ) echo "width='{$columnWidth}'"; ?>><?php
 						// go through each field in same column
 						foreach ( $rowFieldInSameColumn as $rowFieldName => $rowFieldConfig ) :
-							echo "<div>{$rowFieldName}</div>";
-							/*echo renderRowField(
-								"{$fieldID}-{$rowIndex}-{$rowFieldName}",
-								"{$fieldName}.{$rowIndex}.{$rowFieldName}",
-								'', //Webform::getNestedArrayValue($fieldValue, "{$rowIndex}.{$rowFieldName}"),
-								$rowFieldConfig
-							);*/
+							// render with function
+							// ===> avoid modifying certain important variables
+							// ===> (e.g. editable, fieldID, fieldName, fieldValue, fieldConfig)
+							if ( !function_exists('webform__inputTableRow__renderField') ) :
+								function webform__inputTableRow__renderField($fieldName, $fieldConfig, $tableFieldValue, $editable){
+									// determine other essential variables
+									$fieldID = Webform::fieldName2fieldID($fieldName);
+									$fieldValue = Webform::getNestedArrayValue($tableFieldValue, explode('.', $fieldName, 2)[1]);
+									$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
+									// determine default format (when necessary)
+									if     ( empty($fieldConfig['format']) and !empty($fieldConfig['options']) ) $fieldConfig['format'] = 'dropdown';
+									elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fieldConfig['format'] = 'text';
+									// reuse input template
+									ob_start();
+									include F::appPath("view/webform/input.{$fieldConfig['format']}.php");
+									// done!
+									return ob_get_clean();
+								}
+							endif;
+							// determine actual field name (e.g. workexp.0.employer)
+							$actualFieldName = "{$fieldName}.{$rowIndex}.{$rowFieldName}";
+							// display row field
+							echo webform__inputTableRow__renderField($actualFieldName, $rowFieldConfig, $fieldValue, !empty($editable));
 						endforeach;
 					?></td><?php
 					// continue...
