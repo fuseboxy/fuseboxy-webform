@@ -1792,7 +1792,7 @@ class Webform {
 			}
 			// field config : table
 			if ( isset($cfg['format']) and $cfg['format'] == 'table' ) {
-				if ( empty($cfg['tableRow']) and !is_array($cfg['tableRow']) ) {
+				if ( !isset($cfg['tableRow']) ) {
 					self::$error = "Field config [tableRow] for [{$fieldName}] is required";
 					return false;
 				} elseif ( is_string($cfg['tableRow']) and !file_exists($cfg['tableRow']) ) {
