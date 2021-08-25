@@ -41,7 +41,7 @@ $rowID = 'row-'.$rowIndex;
 			<tr class="text-center bg-white small"><?php
 				// display each field
 				foreach ( $fieldConfig['tableRow'] as $rowField ) :
-					?><td><?php echo $rowField; ?></td><?php
+					?><td><?php var_dump($rowField); ?></td><?php
 				endforeach;
 				// remove button
 				if ( !empty($xfa['removeRow']) and !empty($fieldConfig['removeRow']) and !empty($editable) ) :
