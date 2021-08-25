@@ -288,6 +288,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function getNestedArrayValue($nestedArray, $nestedKey) {
+		$nestedArray = $nestedArray ?: [];
 		$nestedKey = explode('.', $nestedKey);
 		$result = &$nestedArray;
 		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
