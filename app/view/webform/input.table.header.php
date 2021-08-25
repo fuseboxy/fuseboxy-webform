@@ -9,7 +9,7 @@
 			<structure name="$fieldConfig">
 				<string name="tableTitle" optional="yes" />
 				<structure name="tableHeader" optional="yes">
-					<string name="~columnHeader~" value="~columnWidth~" />
+					<string name="~headerText~" value="~columnWidth~" />
 				</structure>
 				<structure name="tableRow" optional="yes">
 					<structure name="~rowFieldName~" />
