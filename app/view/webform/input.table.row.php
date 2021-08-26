@@ -56,11 +56,11 @@ $rowID = 'row-'.$rowIndex;
 					// only field name specified
 					// ===> put into container & assign empty config
 					elseif ( is_numeric($rowColumnKey) and is_string($rowColumnItems) ) :
-						$rowFieldInSameColumn = array([ $rowColumnItems => array() ]);
+						$rowFieldInSameColumn = array($rowColumnItems => []);
 					// field name & config specified
 					// ===> put into container
 					else :
-						$rowFieldInSameColumn = array([$rowColumnKey => $rowColumnItems]);
+						$rowFieldInSameColumn = array($rowColumnKey => $rowColumnItems);
 					endif;
 					// obtain column width from [tableHeader] config
 					if ( empty($fieldConfig['tableHeader']) ) $columnWidth = '';
