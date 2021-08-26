@@ -273,8 +273,7 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			access nested array value by list delimited by period
-			===> e.g. pass [student.name] to access [student][name] of array
+			access nested-array value (e.g. data[student][name]) by period-delimited-list (e.g. data.student.name)
 		</description>
 		<io>
 			<in>
@@ -908,6 +907,28 @@ class Webform {
 		include F::appPath('view/webform/form.php');
 		// done!
 		return ob_get_clean();
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			render specific field
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" />
+			</in>
+			<out>
+				<string name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function renderField($fieldName) {
+
 	}
 
 
