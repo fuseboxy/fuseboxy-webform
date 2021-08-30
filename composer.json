@@ -1,7 +1,8 @@
 {
 	"name": "fuseboxy/fuseboxy-webform",
 	"description": "Fuseboxy Webform",
-	"type": "fuseboxy-module",
 	"license": "MIT",
-	"require": {}
+	"type": "fuseboxy-module",
+	"require": { "fuseboxy/fuseboxy-installer": "*" },
+	"autoload": { "files": [ "app/model/Webform.php" ] }
 }
