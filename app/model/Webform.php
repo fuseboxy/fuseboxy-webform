@@ -894,15 +894,14 @@ class Webform {
 	*/
 	public static function renderAll($xfa=[]) {
 		$editable = in_array(self::$mode, ['new','edit']);
-		// prepare variable
+		// essential variable
 		$fieldLayoutAll = self::$config['steps'];
+		$webform['config'] = self::$config;
 		// exclude [confirm] step
 		if ( isset($fieldLayoutAll['confirm']) ) unset($fieldLayoutAll['confirm']);
-		// display
-		ob_start();
-		$webform['config'] = self::$config;
-		include F::appPath('view/webform/form.php');
 		// done!
+		ob_start();
+		include F::appPath('view/webform/form.php');
 		return ob_get_clean();
 	}
 
@@ -942,10 +941,15 @@ class Webform {
 		// determine value to show in field
 		// ===> precedence: defined-value > submitted-value > default-value > empty
 		$fieldValue = $fieldConfig['value'] ?? self::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
-		// display field
+		// exit point : ajax upload
+		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
+		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
+		// exit point : dynamic table
+		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
+		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
+		// done!
 		ob_start();
 		include F::appPath('view/webform/input.php');
-		// done!
 		return ob_get_clean();
 	}
 
@@ -982,24 +986,23 @@ class Webform {
 		$editable = ( in_array(self::$mode, ['new','edit']) and $step != 'confirm' );
 		// validation
 		if ( !self::stepExists($step) ) return false;
-		// when [confirm] is simply true (no field specifed)
-		// ===> display all fields & quit
-		// ===> otherwise, display specified fields
+		// when [confirm] is simply true (no step specifed)
+		// ===> display all steps & quit
+		// ===> otherwise, display specified step
 		if ( $step == 'confirm' and self::$config['steps']['confirm'] === true ) {
 			$original = self::$mode;
 			self::$mode = 'view';
-			$output = self::renderAll($xfa);
+			$output = self::renderAll();
 			self::$mode = $original;
 			return $output;
 		}
-		// prepare variable
-		$fieldLayout = self::$config['steps'][$step];
-		// display
-		ob_start();
+		// essential variables
 		$arguments['step'] = $step;
 		$webform['config'] = self::$config;
-		include F::appPath('view/webform/form.php');
+		$fieldLayout = self::$config['steps'][$step];
 		// done!
+		ob_start();
+		include F::appPath('view/webform/form.php');
 		return ob_get_clean();
 	}
 

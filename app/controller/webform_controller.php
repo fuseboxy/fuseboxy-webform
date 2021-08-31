@@ -160,12 +160,6 @@ switch ( $fusebox->action ) :
 		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		else $xfa['submit'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		// exit point : ajax upload
-		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
-		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
-		// exit point : dynamic table
-		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
-		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -195,12 +189,6 @@ switch ( $fusebox->action ) :
 		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		else $xfa['update'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		// exit point : ajax upload
-		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
-		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
-		// exit point : dynamic table
-		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
-		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -381,9 +369,6 @@ switch ( $fusebox->action ) :
 		$fieldConfig = Webform::fieldConfig($arguments['fieldName']);
 		F::error(Webform::error(), $fieldConfig === false);
 		F::error('Forbidden', isset($fieldConfig['format']) and $fieldConfig['format'] != 'table');
-		// exit point
-		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
-		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
 		// more essential variables (for input)
 		$editable = true;
 		$fieldName = $arguments['fieldName'];
