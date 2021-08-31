@@ -43,62 +43,41 @@ $rowID = 'row-'.$rowIndex;
 		<tbody class="bg-white">
 			<tr><?php
 				// display each field
-				$rowColumnIndex = 0;
-				foreach ( $fieldConfig['tableRow'] as $rowColumnKey => $rowColumnItems ) :
+				$tableColumnIndex = 0;
+				foreach ( $fieldConfig['tableRow'] as $tableColumnKey => $tableColumnItems ) :
 					// multiple fields in same column
 					// ===> apply & clean-up each item
-					if ( is_numeric($rowColumnKey) and is_array($rowColumnItems) ) :
-						$rowFieldInSameColumn = array();
-						foreach ( $rowColumnItems as $key => $val ) :
-							if ( is_string($val) ) $rowFieldInSameColumn[$val] = array();
-							else $rowFieldInSameColumn[$key] = $val;
+					if ( is_numeric($tableColumnKey) and is_array($tableColumnItems) ) :
+						$tableFieldInSameColumn = array();
+						foreach ( $tableColumnItems as $key => $val ) :
+							if ( is_string($val) ) $tableFieldInSameColumn[$val] = array();
+							else $tableFieldInSameColumn[$key] = $val;
 						endforeach;
 					// only field name specified
 					// ===> put into container & assign empty config
-					elseif ( is_numeric($rowColumnKey) and is_string($rowColumnItems) ) :
-						$rowFieldInSameColumn = array($rowColumnItems => []);
+					elseif ( is_numeric($tableColumnKey) and is_string($tableColumnItems) ) :
+						$tableFieldInSameColumn = array($tableColumnItems => []);
 					// field name & config specified
 					// ===> put into container
 					else :
-						$rowFieldInSameColumn = array($rowColumnKey => $rowColumnItems);
+						$tableFieldInSameColumn = array($tableColumnKey => $tableColumnItems);
 					endif;
 					// obtain column width from [tableHeader] config
-					if ( empty($fieldConfig['tableHeader']) ) $columnWidth = '';
-					else $columnWidth = array_values($fieldConfig['tableHeader'])[$rowColumnIndex] ?? '';
+					if ( empty($fieldConfig['tableHeader']) ) $colWidth = '';
+					else $colWidth = array_values($fieldConfig['tableHeader'])[$tableColumnIndex] ?? '';
 					// display column
-					?><td class="px-2 pt-2 pb-0" <?php if ( !empty($columnWidth) ) echo "width='{$columnWidth}'"; ?>><?php
+					?><td class="px-2 pt-2 pb-0" <?php if ( !empty($colWidth) ) echo "width='{$colWidth}'"; ?>><?php
 						// go through each field in same column
-						foreach ( $rowFieldInSameColumn as $rowFieldName => $rowFieldConfig ) :
-							// render with function
-							// ===> avoid modifying certain important variables
-							// ===> (e.g. editable, fieldID, fieldName, fieldValue, fieldConfig)
-							if ( !function_exists('webform__inputTableRow__renderField') ) :
-								function webform__inputTableRow__renderField($fieldName, $fieldConfig, $tableFieldValue, $editable){
-									// determine other essential variables
-									$fieldID = Webform::fieldName2fieldID($fieldName);
-									$fieldValue = Webform::getNestedArrayValue($tableFieldValue, explode('.', $fieldName, 2)[1]);
-									$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
-									// determine default format (when necessary)
-									if     ( empty($fieldConfig['format']) and !empty($fieldConfig['options']) ) $fieldConfig['format'] = 'dropdown';
-									elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fieldConfig['format'] = 'text';
-									// re-use input template
-									ob_start();
-									include F::appPath('view/webform/input.php');
-									$row = Util::phpQuery( ob_get_clean() );
-									// adjust spacing
-									$row->find('.form-group')->addClass('mb-2');
-									// done!
-									return $row;
-								}
-							endif;
+						foreach ( $tableFieldInSameColumn as $tableFieldName => $tableFieldConfig ) :
 							// determine actual field name (e.g. workexp.0.employer)
-							$actualFieldName = "{$fieldName}.{$rowIndex}.{$rowFieldName}";
-							// display row field
-							echo webform__inputTableRow__renderField($actualFieldName, $rowFieldConfig, $fieldValue, !empty($editable));
+							$actualFieldName = "{$fieldName}.{$rowIndex}.{$tableFieldName}";
+							$tableFieldValue = Webform::getNestedArrayValue($fieldValue, explode('.', $actualFieldName, 2)[1]);
+							// display table field
+							echo Webform::renderField($actualFieldName, $tableFieldValue, $tableFieldConfig);
 						endforeach;
 					?></td><?php
 					// continue...
-					$rowColumnIndex++;
+					$tableColumnIndex++;
 				endforeach;
 				// remove button
 				if ( !empty($xfa['removeRow']) and !empty($fieldConfig['removeRow']) and !empty($editable) ) :

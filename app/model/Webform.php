@@ -875,8 +875,8 @@ class Webform {
 		<io>
 			<in>
 				<string name="$fieldName" />
-				<structure name="$formData" optional="yes" />
 				<structure name="$fieldConfig" optional="yes" />
+				<structure name="$formData" optional="yes" />
 			</in>
 			<out>
 				<string name="~return~" comments="output" />
@@ -884,17 +884,18 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function renderField($fieldName, $formData=null, $fieldConfig=null) {
+	public static function renderField($fieldName, $fieldConfig=null, $formData=null) {
 		$editable = in_array(self::$mode, ['new','edit']);
 		// simply display nothing (when empty field name)
 		if ( empty($fieldName) ) return '';
 		// obtain field config (when necessary)
-		$fieldConfig = self::fieldConfig($fieldName);
+		$fieldConfig = $fieldConfig ?? self::fieldConfig($fieldName);
 		if ( $fieldConfig === false ) return false;
 		// load data from cache
-		$formData = self::data();
+		$formData = $formData ?? self::data();
 		if ( $formData === false ) return false;
-		// determine other essential variables
+		// more essential variables
+		$webform['config'] = self::$config;
 		$fieldID = self::fieldName2fieldID($fieldName);
 		$dataFieldName = self::fieldName2dataFieldName($fieldName);
 		// determine value to show in field
@@ -906,8 +907,10 @@ class Webform {
 		// exit point : dynamic table
 		$xfa['appendRow'] = F::command('controller').'.appendRow';
 		$xfa['removeRow'] = F::command('controller').'.removeRow';
-		// more essential variable
-		$webform['config'] = self::$config;
+// determine default format (when necessary)
+if     ( empty($fieldConfig['format']) and !empty($fieldConfig['options']) ) $fieldConfig['format'] = 'dropdown';
+elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fieldConfig['format'] = 'text';
+
 		// done!
 		ob_start();
 		include F::appPath('view/webform/input.php');
