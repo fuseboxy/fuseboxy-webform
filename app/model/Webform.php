@@ -988,7 +988,10 @@ class Webform {
 	public static function renderStepRow($stepRow, $getType=false) {
 		$type = self::stepRowType($stepRow);
 		if ( $type === false ) return false;
+		// determine method to invoke
+		$class  = __CLASS__;
 		$method = __FUNCTION__.'__'.$type;
+		// done!
 		return __CLASS__::$method($stepRow);
 	}
 	public static function renderStepRow__heading($stepRow) {
