@@ -63,7 +63,11 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 				// ===> show [ddd] and [eee] fields in same column vertically
 				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
 					$fieldNameSubList = explode(',', $fieldNameSubList);
-					foreach ( $fieldNameSubList as $fieldName ) echo Webform::renderField($fieldName);
+					foreach ( $fieldNameSubList as $fieldName ) :
+						$output = Webform::renderField($fieldName);
+						F::alert(Webform::error(), $output === false);
+						echo $output;
+					endforeach;
 				?></div><!--/.col--><?php
 			endforeach; // foreach-fieldNameList
 		?></div><!--/.row--><?php

@@ -898,9 +898,6 @@ class Webform {
 		$fieldLayoutAll = self::$config['steps'];
 		// exclude [confirm] step
 		if ( isset($fieldLayoutAll['confirm']) ) unset($fieldLayoutAll['confirm']);
-		// load data from cache
-		$arguments['data'] = self::data();
-		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
 		$webform['config'] = self::$config;
@@ -920,6 +917,7 @@ class Webform {
 		<io>
 			<in>
 				<string name="$fieldName" />
+				<structure name="$formData" optional="yes" />
 				<structure name="$fieldConfig" optional="yes" />
 			</in>
 			<out>
@@ -935,12 +933,15 @@ class Webform {
 		// obtain field config (when necessary)
 		$fieldConfig = self::fieldConfig($fieldName);
 		if ( $fieldConfig === false ) return false;
+		// load data from cache
+		$formData = self::data();
+		if ( $formData === false ) return false;
 		// determine other essential variables
 		$fieldID = self::fieldName2fieldID($fieldName);
 		$dataFieldName = self::fieldName2dataFieldName($fieldName);
 		// determine value to show in field
 		// ===> precedence: defined-value > submitted-value > default-value > empty
-		$fieldValue = $fieldConfig['value'] ?? self::getNestedArrayValue($arguments['data'], $fieldName) ?? $fieldConfig['default'] ?? '';
+		$fieldValue = $fieldConfig['value'] ?? self::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
 		// display field
 		ob_start();
 		include F::appPath('view/webform/input.php');
@@ -993,9 +994,6 @@ class Webform {
 		}
 		// prepare variable
 		$fieldLayout = self::$config['steps'][$step];
-		// load data from cache
-		$arguments['data'] = self::data();
-		if ( $arguments['data'] === false ) return false;
 		// display
 		ob_start();
 		$arguments['step'] = $step;
