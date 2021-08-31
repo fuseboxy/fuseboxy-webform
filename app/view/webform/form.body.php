@@ -7,12 +7,13 @@
 					<list name="~fieldNameSubList~" delim="," comments="multiple fields in same column" />
 				</list>
 			</structure>
-			<structure name="data" scope="$arguments" comments="form data">
-				<mixed name="~fieldName~" />
-			</structure>
 		</in>
 		<out />
 	</io>
 </fusedoc>
 */
-foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) echo Webform::renderStepRow($fieldNameList);
+foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
+	$output = echo Webform::renderStepRow($fieldNameList);
+	if ( $output === false ) F::alert([ 'type' => 'warning', 'message' => Webform::error() ]);
+	else echo $output;
+endforeach;
