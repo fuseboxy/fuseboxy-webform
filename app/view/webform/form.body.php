@@ -13,7 +13,7 @@
 </fusedoc>
 */
 foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
-	$output = echo Webform::renderStepRow($fieldNameList);
+	$output = Webform::renderStepRow($fieldNameList);
 	if ( $output === false ) F::alert([ 'type' => 'warning', 'message' => Webform::error() ]);
 	else echo $output;
 endforeach;
