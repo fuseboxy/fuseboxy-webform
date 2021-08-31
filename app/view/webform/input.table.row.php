@@ -66,7 +66,7 @@ $rowID = 'row-'.$rowIndex;
 					if ( empty($fieldConfig['tableHeader']) ) $colWidth = '';
 					else $colWidth = array_values($fieldConfig['tableHeader'])[$tableColumnIndex] ?? '';
 					// display column
-					?><td class="px-2 pt-2 pb-0" <?php if ( !empty($colWidth) ) echo "width='{$colWidth}'"; ?>><?php
+					?><td class="px-2 pt-2 pb-0" width="<?php echo $colWidth; ?>"><?php
 						// go through each field in same column
 						foreach ( $tableFieldInSameColumn as $tableFieldName => $tableFieldConfig ) :
 							// determine actual field name (e.g. workexp.0.employer)
