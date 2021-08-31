@@ -890,10 +890,10 @@ class Webform {
 		if ( empty($fieldName) ) return '';
 		// obtain field config (when necessary)
 		$fieldConfig = $fieldConfig ?? self::fieldConfig($fieldName);
-		if ( $fieldConfig === false ) return false;
+		if ( $fieldConfig === false ) return F::alert([ 'type' => 'warning', 'message' => self::error() ]);
 		// load data from cache
 		$formData = $formData ?? self::data();
-		if ( $formData === false ) return false;
+		if ( $formData === false ) return F::alert([ 'type' => 'warning', 'message' => self::error() ]);
 		// more essential variables
 		$webform['config'] = self::$config;
 		$fieldID = self::fieldName2fieldID($fieldName);
@@ -991,7 +991,7 @@ elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fi
 	*/
 	public static function renderStepRow($stepRow, $colWidth=null) {
 		$type = self::stepRowType($stepRow);
-		if ( $type === false ) return false;
+		if ( $type === false ) return F::alert([ 'type' => 'warning', 'message' => self::error() ]);
 		// fix variables
 		$stepRow  = trim($stepRow);
 		$colWidth = trim($colWidth);
@@ -1038,11 +1038,7 @@ elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fi
 				// ===> show [ddd] and [eee] fields in same column vertically
 				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
 					$fieldNameSubList = explode(',', $fieldNameSubList);
-					foreach ( $fieldNameSubList as $fieldName ) :
-						$output = self::renderField($fieldName);
-						if ( $output !== false ) echo $output;
-						else F::alert(self::error());
-					endforeach;
+					foreach ( $fieldNameSubList as $fieldName ) echo self::renderField($fieldName);
 				?></div><?php
 			endforeach; // foreach-fieldNameList
 		?></div><?php
