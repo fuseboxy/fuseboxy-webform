@@ -14,6 +14,6 @@
 */
 foreach ( $fieldLayout as $key => $val ) :
 	$output = Webform::renderStepRow($key, $val);
-	if ( $output === false ) F::alert([ 'type' => 'warning', 'message' => Webform::error() ]);
-	else echo $output;
+	if ( $output !== false ) echo $output;
+	else F::alert(self::error());
 endforeach;

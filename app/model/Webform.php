@@ -1035,8 +1035,8 @@ class Webform {
 					$fieldNameSubList = explode(',', $fieldNameSubList);
 					foreach ( $fieldNameSubList as $fieldName ) :
 						$output = self::renderField($fieldName);
-						F::alert(self::error(), $output === false);
-						echo $output;
+						if ( $output !== false ) echo $output;
+						else F::alert(self::error());
 					endforeach;
 				?></div><?php
 			endforeach; // foreach-fieldNameList
