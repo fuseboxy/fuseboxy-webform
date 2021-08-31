@@ -884,7 +884,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function renderField($fieldName) {
+	public static function renderField($fieldName, $formData=null, $fieldConfig=null) {
 		$editable = in_array(self::$mode, ['new','edit']);
 		// simply display nothing (when empty field name)
 		if ( empty($fieldName) ) return '';
@@ -989,6 +989,9 @@ class Webform {
 	public static function renderStepRow($stepRow, $colWidth=null) {
 		$type = self::stepRowType($stepRow);
 		if ( $type === false ) return false;
+		// fix variables
+		$stepRow  = trim($stepRow);
+		$colWidth = trim($colWidth);
 		// determine method to invoke
 		$class  = __CLASS__;
 		$method = __FUNCTION__.'__'.$type;
@@ -998,10 +1001,9 @@ class Webform {
 	// heading
 	// ===> (e.g.) ### Personal Details
 	public static function renderStepRow__heading($stepRow) {
-		$stepRow = trim($stepRow);
 		$size = 'h'.(strlen($stepRow)-strlen(ltrim($stepRow, '#')));
 		$text = trim(ltrim($stepRow, '#'));
-		return '<div class="'.$size.'">'.$text.'</div>';
+		return "<div class='{$size}'>{$text}</div>";
 	}
 	// direct output
 	// ===> (e.g.) ~~<br>
