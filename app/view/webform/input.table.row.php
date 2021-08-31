@@ -73,7 +73,7 @@ $rowID = 'row-'.$rowIndex;
 							$actualFieldName = "{$fieldName}.{$rowIndex}.{$tableFieldName}";
 							$tableFieldValue = Webform::getNestedArrayValue($fieldValue, explode('.', $actualFieldName, 2)[1]);
 							// display table field
-							echo Webform::renderField($actualFieldName, $tableFieldValue, $tableFieldConfig);
+							echo Webform::renderField($actualFieldName, $tableFieldConfig, $tableFieldValue);
 						endforeach;
 					?></td><?php
 					// continue...

@@ -903,9 +903,12 @@ class Webform {
 		// exit point : dynamic table
 		$xfa['appendRow'] = F::command('controller').'.appendRow';
 		$xfa['removeRow'] = F::command('controller').'.removeRow';
+
+
 // determine default format (when necessary)
 if     ( empty($fieldConfig['format']) and !empty($fieldConfig['options']) ) $fieldConfig['format'] = 'dropdown';
 elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fieldConfig['format'] = 'text';
+
 
 		// done!
 		ob_start();
