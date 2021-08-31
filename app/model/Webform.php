@@ -920,15 +920,32 @@ class Webform {
 		<io>
 			<in>
 				<string name="$fieldName" />
+				<structure name="$fieldConfig" optional="yes" />
 			</in>
 			<out>
-				<string name="~return~" />
+				<string name="~return~" comments="output" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
 	public static function renderField($fieldName) {
-
+		$editable = in_array(self::$mode, ['new','edit']);
+		// simply display nothing (when empty field name)
+		if ( empty($fieldName) ) return '';
+		// obtain field config (when necessary)
+		$fieldConfig = self::fieldConfig($fieldName);
+		if ( $fieldConfig === false ) return false;
+		// determine other essential variables
+		$fieldID = self::fieldName2fieldID($fieldName);
+		$dataFieldName = self::fieldName2dataFieldName($fieldName);
+		// determine value to show in field
+		// ===> precedence: defined-value > submitted-value > default-value > empty
+		$fieldValue = $fieldConfig['value'] ?? self::getNestedArrayValue($arguments['data'], $fieldName) ?? $fieldConfig['default'] ?? '';
+		// display field
+		ob_start();
+		include F::appPath('view/webform/input.php');
+		// done!
+		return ob_get_clean();
 	}
 
 

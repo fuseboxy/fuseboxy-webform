@@ -59,33 +59,11 @@ foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 				// ===> result  : "webform-col-foo-bar-ab_cd-x-y-z"
 				$colClassName = 'webform-col-'.str_replace([',','.'], '-', $fieldNameSubList);
 				// display column
+				// ===> for example : "ddd,eee"
+				// ===> show [ddd] and [eee] fields in same column vertically
 				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
-					// when [fieldName] is normal string, e.g. {first_name},
-					// ===> form submit the field as {data[first_name]}
-					// when [fieldName] is having dot, e.g. {my.nested.var}
-					// ===> form submit the fields as {data[my][nested][var]}
 					$fieldNameSubList = explode(',', $fieldNameSubList);
-					foreach ( $fieldNameSubList as $fieldName ) :
-						// check whether empty field
-						if ( !empty($fieldName) ) :
-							$fieldID = Webform::fieldName2fieldID($fieldName);
-							$fieldConfig = Webform::fieldConfig($fieldName);
-							$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
-							// determine value to show in this field
-							// ===> precedence: defined-value > submitted-value > default-value > empty
-							if ( isset($fieldConfig['value']) ) {
-								$fieldValue = $fieldConfig['value'];
-							} elseif ( Webform::getNestedArrayValue($arguments['data'], $fieldName) !== null ) {
-								$fieldValue = Webform::getNestedArrayValue($arguments['data'], $fieldName);
-							} elseif ( isset($fieldConfig['default']) ) {
-								$fieldValue = $fieldConfig['default'];
-							} else {
-								$fieldValue = '';
-							}
-							// display field
-							include F::appPath('view/webform/input.php');
-						endif; // if-empty
-					endforeach; // foreach-fieldNameSubList
+					foreach ( $fieldNameSubList as $fieldName ) echo Webform::renderField($fieldName);
 				?></div><!--/.col--><?php
 			endforeach; // foreach-fieldNameList
 		?></div><!--/.row--><?php

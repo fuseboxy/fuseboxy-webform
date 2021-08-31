@@ -1,5 +1,9 @@
 <?php /*
 <fusedoc>
+	<description>
+		when [fieldName] is normal, e.g. {my_first_name}, form submit the field as {data[my_first_name]}
+		when [fieldName] is nested, e.g. {my.nested.var}, form submit the fields as {data[my][nested][var]}
+	</description>
 	<io>
 		<in>
 			<string name="$fieldID" example="webform-field-first_name" />
@@ -13,7 +17,11 @@
 				<string name="customScript" optional="yes" oncondition="when [format=custom]" />
 			</structure>
 		</in>
-		<out />
+		<out>
+			<structure name="data" scope="form" optional="yes">
+				<mixed name="~fieldName~" />
+			</structure>
+		</out>
 	</io>
 </fusedoc>
 */ ?>
