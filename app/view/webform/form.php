@@ -20,7 +20,7 @@
 	id="webform-form"
 	method="post"
 	class="<?php echo Webform::$config['beanType']; ?>"
-	data-step="<?php echo $arguments['step'] ?? ''; ?>"
+	data-step="<?php echo implode(array_keys($formBody)); ?>"
 ><?php
 // fields
 foreach ( array_values($formBody) as $i => $fieldLayout ) :
