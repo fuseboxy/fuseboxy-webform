@@ -994,7 +994,7 @@ class Webform {
 		if ( $step == 'confirm' and self::$config['steps']['confirm'] === true ) {
 			$original = self::$mode;
 			self::$mode = 'view';
-			$output = self::renderAll();
+			$output = self::renderAll($xfa);
 			self::$mode = $original;
 			return $output;
 		}
