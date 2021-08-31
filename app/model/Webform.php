@@ -992,7 +992,7 @@ class Webform {
 		$class  = __CLASS__;
 		$method = __FUNCTION__.'__'.$type;
 		// done!
-		return __CLASS__::$method($stepRow);
+		return $class::$method($stepRow);
 	}
 	public static function renderStepRow__heading($stepRow) {
 		$stepRow = trim($stepRow);
