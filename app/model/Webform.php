@@ -978,6 +978,7 @@ class Webform {
 		<io>
 			<in>
 				<string name="$stepRow" />
+				<string name="$colWidth" optional="yes" example="2|2|8" />
 			</in>
 			<out>
 				<string name="~return~" comments="display row in corresponding format" />
@@ -985,29 +986,63 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function renderStepRow($stepRow, $getType=false) {
+	public static function renderStepRow($stepRow, $colWidth=null) {
 		$type = self::stepRowType($stepRow);
 		if ( $type === false ) return false;
 		// determine method to invoke
 		$class  = __CLASS__;
 		$method = __FUNCTION__.'__'.$type;
 		// done!
-		return $class::$method($stepRow);
+		return $class::$method(...$args);
 	}
+	// heading
+	// ===> (e.g.) ### Personal Details
 	public static function renderStepRow__heading($stepRow) {
 		$stepRow = trim($stepRow);
 		$size = 'h'.(strlen($stepRow)-strlen(ltrim($stepRow, '#')));
 		$text = trim(ltrim($stepRow, '#'));
 		return '<div class="'.$size.'">'.$text.'</div>';
 	}
+	// direct output
+	// ===> (e.g.) ~~<br>
 	public static function renderStepRow__output($stepRow) {
 		return '<div>'.trim(ltrim(trim($stepRow), '~')).'</div>';
 	}
+	// horizontal line
+	// ===> (e.g.) ---
 	public static function renderStepRow__line($stepRow) {
 		return '<hr />';
 	}
-	public static function renderStepRow__fields($stepRow) {
-		return '';
+	// field list
+	// ===> (e.g.) aaa|bbb|ccc|ddd,eee|x.y.z
+	public static function renderStepRow__fields($fieldNameList, $fieldWidthList) {
+		// fix variables
+		$fieldNameList = explode('|', $fieldNameList);
+		if ( !is_array($fieldWidthList) ) $fieldWidthList = explode('|', $fieldWidthList);
+		// capture output
+		ob_start();
+		?><div class="form-row"><?php
+			foreach ( $fieldNameList as $i => $fieldNameSubList ) :
+				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
+				// determine column class
+				// ===> example : "foo,bar,ab_cd,x.y.z"
+				// ===> result  : "webform-col-foo-bar-ab_cd-x-y-z"
+				$colClassName = 'webform-col-'.str_replace([',','.'], '-', $fieldNameSubList);
+				// display column
+				// ===> for example : "ddd,eee"
+				// ===> show [ddd] and [eee] fields in same column vertically
+				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
+					$fieldNameSubList = explode(',', $fieldNameSubList);
+					foreach ( $fieldNameSubList as $fieldName ) :
+						$output = self::renderField($fieldName);
+						F::alert(self::error(), $output === false);
+						echo $output;
+					endforeach;
+				?></div><?php
+			endforeach; // foreach-fieldNameList
+		?></div><?php
+		// done!
+		return ob_get_clean();
 	}
 
 
