@@ -947,6 +947,8 @@ class Webform {
 		// exit point : dynamic table
 		$xfa['appendRow'] = F::command('controller').'.appendRow';
 		$xfa['removeRow'] = F::command('controller').'.removeRow';
+		// more essential variable
+		$webform['config'] = self::$config;
 		// done!
 		ob_start();
 		include F::appPath('view/webform/input.php');
