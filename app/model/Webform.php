@@ -993,7 +993,7 @@ class Webform {
 		$class  = __CLASS__;
 		$method = __FUNCTION__.'__'.$type;
 		// done!
-		return $class::$method(...$args);
+		return $class::$method($stepRow, $colWidth);
 	}
 	// heading
 	// ===> (e.g.) ### Personal Details
