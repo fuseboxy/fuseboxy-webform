@@ -12,8 +12,8 @@
 	</io>
 </fusedoc>
 */
-foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
-	$output = Webform::renderStepRow($fieldNameList);
+foreach ( $fieldLayout as $key => $val ) :
+	$output = Webform::renderStepRow($key, $val);
 	if ( $output === false ) F::alert([ 'type' => 'warning', 'message' => Webform::error() ]);
 	else echo $output;
 endforeach;
