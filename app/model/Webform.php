@@ -942,11 +942,11 @@ class Webform {
 		// ===> precedence: defined-value > submitted-value > default-value > empty
 		$fieldValue = $fieldConfig['value'] ?? self::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
-		$xfa['uploadHandler'] = "{$fusebox->controller}.upload";
-		$xfa['uploadProgress'] = "{$fusebox->controller}.uploadProgress";
+		$xfa['uploadHandler'] = F::command('controller').'.upload';
+		$xfa['uploadProgress'] = F::command('controller').'.uploadProgress';
 		// exit point : dynamic table
-		$xfa['appendRow'] = "{$fusebox->controller}.appendRow";
-		$xfa['removeRow'] = "{$fusebox->controller}.removeRow";
+		$xfa['appendRow'] = F::command('controller').'.appendRow';
+		$xfa['removeRow'] = F::command('controller').'.removeRow';
 		// done!
 		ob_start();
 		include F::appPath('view/webform/input.php');
