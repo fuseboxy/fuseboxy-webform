@@ -852,14 +852,10 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function renderAll($xfa=[]) {
-		$editable = in_array(self::$mode, ['new','edit']);
-		// essential variable
-		$fieldLayoutAll = self::$config['steps'];
-		$webform['config'] = self::$config;
-		// exclude [confirm] step
-		if ( isset($fieldLayoutAll['confirm']) ) unset($fieldLayoutAll['confirm']);
-		// done!
 		ob_start();
+		$webform['config'] = self::$config;
+		$formBody = self::$config['steps'];
+		if ( isset($formBody['confirm']) ) unset($formBody['confirm']);
 		include F::appPath('view/webform/form.php');
 		return ob_get_clean();
 	}
@@ -961,9 +957,8 @@ elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fi
 			return $output;
 		}
 		// essential variables
-		$arguments['step'] = $step;
 		$webform['config'] = self::$config;
-		$fieldLayout = self::$config['steps'][$step];
+		$formBody = array($step => self::$config['steps'][$step]);
 		// done!
 		ob_start();
 		include F::appPath('view/webform/form.php');
