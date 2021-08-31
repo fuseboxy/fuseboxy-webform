@@ -18,22 +18,22 @@
 		<out />
 	</io>
 </fusedoc>
-*/ ?>
-<form 
+*/
+?><form 
 	id="webform-form"
 	method="post"
 	class="<?php echo Webform::$config['beanType']; ?>"
-	<?php if ( !empty($arguments['step']) ) : ?>data-step="<?php echo $arguments['step']; ?>"<?php endif; ?>
+	data-step="<?php echo $arguments['step'] ?? ''; ?>"
 ><?php
 // display multiple steps, or...
 if ( isset($fieldLayoutAll) ) :
 	foreach ( array_values($fieldLayoutAll) as $i => $fieldLayout ) :
 		if ( $i ) echo '<br /><br />';
-		include F::appPath('view/webform/form.body.php');
+		foreach ( $fieldLayout as $key => $val ) echo Webform::renderStepRow($key, $val);
 	endforeach;
 // display single step
 elseif ( isset($fieldLayout) ) :
-	include F::appPath('view/webform/form.body.php');
+	foreach ( $fieldLayout as $key => $val ) echo Webform::renderStepRow($key, $val);
 endif;
 // captcha
 include F::appPath('view/webform/form.captcha.php');
