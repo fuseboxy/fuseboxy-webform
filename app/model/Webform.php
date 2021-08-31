@@ -853,7 +853,7 @@ class Webform {
 	*/
 	public static function renderAll($xfa=[]) {
 		ob_start();
-		$webform['config'] = self::$config;
+		$webform = self::$config;
 		$formBody = self::$config['steps'];
 		if ( isset($formBody['confirm']) ) unset($formBody['confirm']);
 		include F::appPath('view/webform/form.php');
@@ -891,7 +891,7 @@ class Webform {
 		$formData = $formData ?? self::data();
 		if ( $formData === false ) return F::alert([ 'type' => 'warning', 'message' => self::error() ]);
 		// more essential variables
-		$webform['config'] = self::$config;
+		$webform = self::$config;
 		$fieldID = self::fieldName2fieldID($fieldName);
 		$dataFieldName = self::fieldName2dataFieldName($fieldName);
 		// determine value to show in field
@@ -957,7 +957,7 @@ elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fi
 			return $output;
 		}
 		// essential variables
-		$webform['config'] = self::$config;
+		$webform = self::$config;
 		$formBody = array($step => self::$config['steps'][$step]);
 		// done!
 		ob_start();

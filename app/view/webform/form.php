@@ -2,7 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
-			<structure name="$config" scope="Webform">
+			<structure name="$webform">
 				<string name="beanType" />
 			</structure>
 			<structure name="$formBody">
@@ -19,7 +19,7 @@
 ?><form 
 	id="webform-form"
 	method="post"
-	class="<?php echo Webform::$config['beanType']; ?>"
+	class="<?php echo $webform['beanType']; ?>"
 	data-step="<?php echo implode(array_keys($formBody)); ?>"
 ><?php
 // fields

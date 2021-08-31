@@ -11,12 +11,10 @@
 				<string name="update" optional="yes" />
 			</structure>
 			<structure name="$webform">
-				<structure name="config">
-					<structure name="customButton">
-						<structure name="next|back|edit|submit|update|print">
-							<string name="icon" />
-							<string name="text" />
-						</structure>
+				<structure name="customButton">
+					<structure name="next|back|edit|submit|update|print">
+						<string name="icon" />
+						<string name="text" />
 					</structure>
 				</structure>
 			</structure>
@@ -39,11 +37,11 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						class="btn btn-lg btn-primary btn-submit mx-2"
 						formaction="<?php echo F::url($xfa['submit']); ?>"
 					><?php
-						if ( !empty($webform['config']['customButton']['submit']['icon']) ) :
-							?><i class="<?php echo $webform['config']['customButton']['submit']['icon']; ?>"></i><?php
+						if ( !empty($webform['customButton']['submit']['icon']) ) :
+							?><i class="<?php echo $webform['customButton']['submit']['icon']; ?>"></i><?php
 						endif;
-						if ( !empty($webform['config']['customButton']['submit']['text']) ) :
-							?><span><?php echo $webform['config']['customButton']['submit']['text']; ?></span><?php
+						if ( !empty($webform['customButton']['submit']['text']) ) :
+							?><span><?php echo $webform['customButton']['submit']['text']; ?></span><?php
 						endif;
 					?></button><?php
 				endif;
@@ -54,11 +52,11 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						class="btn btn-lg btn-primary btn-update mx-2"
 						formaction="<?php echo F::url($xfa['update']); ?>"
 					><?php
-						if ( !empty($webform['config']['customButton']['update']['icon']) ) :
-							?><i class="<?php echo $webform['config']['customButton']['update']['icon']; ?>"></i><?php
+						if ( !empty($webform['customButton']['update']['icon']) ) :
+							?><i class="<?php echo $webform['customButton']['update']['icon']; ?>"></i><?php
 						endif;
-						if ( !empty($webform['config']['customButton']['update']['text']) ) :
-							?><span><?php echo $webform['config']['customButton']['update']['text']; ?></span><?php
+						if ( !empty($webform['customButton']['update']['text']) ) :
+							?><span><?php echo $webform['customButton']['update']['text']; ?></span><?php
 						endif;
 					?></button><?php
 				endif;
@@ -68,11 +66,11 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						class="btn btn-lg btn-dark btn-edit mx-2"
 						href="<?php echo F::url($xfa['edit']); ?>"
 					><?php
-						if ( !empty($webform['config']['customButton']['edit']['icon']) ) :
-							?><i class="<?php echo $webform['config']['customButton']['edit']['icon']; ?>"></i><?php
+						if ( !empty($webform['customButton']['edit']['icon']) ) :
+							?><i class="<?php echo $webform['customButton']['edit']['icon']; ?>"></i><?php
 						endif;
-						if ( !empty($webform['config']['customButton']['edit']['text']) ) :
-							?><span><?php echo $webform['config']['customButton']['edit']['text']; ?></span><?php
+						if ( !empty($webform['customButton']['edit']['text']) ) :
+							?><span><?php echo $webform['customButton']['edit']['text']; ?></span><?php
 						endif;
 					?></a><?php
 				endif;
@@ -83,11 +81,11 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						href="<?php echo F::url($xfa['print']); ?>"
 						target="_blank"
 					><?php
-						if ( !empty($webform['config']['customButton']['print']['icon']) ) :
-							?><i class="<?php echo $webform['config']['customButton']['print']['icon']; ?>"></i><?php
+						if ( !empty($webform['customButton']['print']['icon']) ) :
+							?><i class="<?php echo $webform['customButton']['print']['icon']; ?>"></i><?php
 						endif;
-						if ( !empty($webform['config']['customButton']['print']['text']) ) :
-							?><span><?php echo $webform['config']['customButton']['print']['text']; ?></span><?php
+						if ( !empty($webform['customButton']['print']['text']) ) :
+							?><span><?php echo $webform['customButton']['print']['text']; ?></span><?php
 						endif;
 					?></a><?php
 				endif;
@@ -106,11 +104,11 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						class="btn btn-light btn-back float-left"
 						href="<?php echo F::url($xfa['back']); ?>"
 					><?php
-						if ( !empty($webform['config']['customButton']['back']['icon']) ) :
-							?><i class="<?php echo $webform['config']['customButton']['back']['icon']; ?>"></i><?php
+						if ( !empty($webform['customButton']['back']['icon']) ) :
+							?><i class="<?php echo $webform['customButton']['back']['icon']; ?>"></i><?php
 						endif;
-						if ( !empty($webform['config']['customButton']['back']['text']) ) :
-							?><span><?php echo $webform['config']['customButton']['back']['text']; ?></span><?php
+						if ( !empty($webform['customButton']['back']['text']) ) :
+							?><span><?php echo $webform['customButton']['back']['text']; ?></span><?php
 						endif;
 					?></a><?php
 				endif;
@@ -121,11 +119,11 @@ if ( $hasUpperButton or $hasLowerButton ) :
 						class="btn btn-primary btn-next float-right"
 						formaction="<?php echo F::url($xfa['next']); ?>"
 					><?php
-						if ( !empty($webform['config']['customButton']['next']['text']) ) :
-							?><span><?php echo $webform['config']['customButton']['next']['text']; ?></span><?php
+						if ( !empty($webform['customButton']['next']['text']) ) :
+							?><span><?php echo $webform['customButton']['next']['text']; ?></span><?php
 						endif;
-						if ( !empty($webform['config']['customButton']['next']['icon']) ) :
-							?><i class="<?php echo $webform['config']['customButton']['next']['icon']; ?>"></i><?php
+						if ( !empty($webform['customButton']['next']['icon']) ) :
+							?><i class="<?php echo $webform['customButton']['next']['icon']; ?>"></i><?php
 						endif;
 					?></button><?php
 				endif;
