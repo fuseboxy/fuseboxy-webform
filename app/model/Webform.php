@@ -792,47 +792,6 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			parse step row key and render or determine type
-		</description>
-		<io>
-			<in>
-				<string name="$stepRow" />
-				<boolean name="$getType" default="false" />
-			</in>
-			<out>
-				<string name="~return~" value="heading|line|output|fields" oncondition="when [getType] is true" />
-				<string name="~return~" comments="display row in corresponding format" oncondition="when [getType] is false" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function parseStepRow($stepRow, $getType=false) {
-		$stepRow = trim($stepRow);
-		// heading
-		if ( strlen($stepRow) != strlen(ltrim($stepRow, '#')) ) {
-			$size = 'h'.( strlen($stepRow) - strlen(ltrim($stepRow, '#')) );
-			$text = trim(ltrim($stepRow, '#'));
-			return $getType ? 'heading' : "<div class='{$size}'>{$text}</div>";
-		}
-		// output
-		if ( strlen($stepRow) and $stepRow[0] === '~' ) {
-			$output = trim(substr($stepRow, 1));
-			return $getType ? 'output' : ( strlen($output) ? "<div>{$output}</div>" : '' );
-		}
-		// line
-		if ( trim($stepRow, '=-') === '' ) {
-			return $getType ? 'line' : '<hr />';
-		}
-		// fields (render nothing)
-		return $getType ? 'fields' : '';
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
 			obtain step name previous to specified step
 		</description>
 		<io>
@@ -1006,6 +965,46 @@ class Webform {
 		ob_start();
 		include F::appPath('view/webform/form.php');
 		return ob_get_clean();
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			render step row key according to type
+		</description>
+		<io>
+			<in>
+				<string name="$stepRow" />
+			</in>
+			<out>
+				<string name="~return~" comments="display row in corresponding format" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function renderStepRow($stepRow, $getType=false) {
+		$type = self::stepRowType($stepRow);
+		if ( $type === false ) return false;
+		$method = __FUNCTION__.'__'.$type;
+		return __CLASS__::$method($stepRow);
+	}
+	public static function renderStepRow__heading($stepRow) {
+		$stepRow = trim($stepRow);
+		$size = 'h'.(strlen($stepRow)-strlen(ltrim($stepRow, '#')));
+		$text = trim(ltrim($stepRow, '#'));
+		return '<div class="'.$size.'">'.$text.'</div>';
+	}
+	public static function renderStepRow__output($stepRow) {
+		return '<div>'.trim(ltrim(trim($stepRow), '~')).'</div>';
+	}
+	public static function renderStepRow__line($stepRow) {
+		return '<hr />';
+	}
+	public static function renderStepRow__fields($stepRow) {
+		return '';
 	}
 
 

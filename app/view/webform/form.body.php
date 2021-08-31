@@ -44,7 +44,9 @@
 foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) :
 	// heading & line & output
 	if ( Webform::stepRowType($fieldNameList) != 'fields' ) :
-		echo Webform::parseStepRow($fieldNameList);
+		$output = Webform::renderStepRow($fieldNameList);
+		F::alert(Webform::error(), $output === false);
+		echo $output;
 	// field list
 	// ===> example : "aaa|bbb|ccc|ddd,eee|x.y.z"
 	// ===> result  : ["aaa", "bbb", "ccc", "ddd,eee", "x.y.z"]
