@@ -52,7 +52,7 @@ class Webform {
 		if ( $formData === false ) throw new Exception(self::error());
 		return ( self::getNestedArrayValue($formData, $fieldName) == $compareValue );
 	}
-	public static function assertNotEquals($fieldName, $compareValue) {
+	public static function assertNotEqual($fieldName, $compareValue) {
 		return !self::assertEqual($fieldName, $compareValue);
 	}
 
