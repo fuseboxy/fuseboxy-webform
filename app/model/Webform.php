@@ -897,10 +897,10 @@ class Webform {
 		$formStep = implode(array_keys($all));
 		// display multiple steps
 		ob_start();
-		foreach ( $all as $step => $fieldLayout ) :
+		foreach ( $all as $step => $fieldLayout ) {
 			foreach ( $fieldLayout as $key => $val ) echo Webform::renderStepRow($key, $val);
 			if ( $step != array_key_last($all) ) echo '<br /><br />';
-		endforeach;
+		}
 		$formBody = ob_get_clean();
 		// done!
 		ob_start();

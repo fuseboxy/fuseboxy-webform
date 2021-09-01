@@ -12,16 +12,8 @@
 	</io>
 </fusedoc>
 */
-?><form 
-	id="webform-form"
-	method="post"
-	class="<?php echo $webform['beanType']; ?>"
-	data-step="<?php echo $formStep ?? ''; ?>"
-><?php
-// fields
-echo $formBody;
-// captcha
-include F::appPath('view/webform/form.captcha.php');
-// button
-include F::appPath('view/webform/form.button.php');
+?><form id="webform-form" method="post" class="<?php echo $webform['beanType']; ?>" data-step="<?php echo $formStep ?? ''; ?>"><?php
+	?><div id="webform-form-body"><?php echo $formBody; ?></div><?php
+	include F::appPath('view/webform/form.captcha.php');
+	include F::appPath('view/webform/form.button.php');
 ?></form>
