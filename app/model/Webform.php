@@ -894,7 +894,7 @@ class Webform {
 		if ( isset($all['confirm']) ) unset($all['confirm']);
 		// essential variables
 		$webform  = self::$config;
-		$formStep = implode(array_keys($all))
+		$formStep = implode(array_keys($all));
 		// display multiple steps
 		ob_start();
 		foreach ( $all as $step => $fieldLayout ) :
