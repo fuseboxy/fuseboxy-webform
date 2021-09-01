@@ -6,7 +6,6 @@
 	<io>
 		<in>
 			<string name="$rowIndex" optional="yes" />
-			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$dataFieldName" />
@@ -27,7 +26,7 @@
 			</structure>
 		</in>
 		<out>
-			<structure name="data" scope="form" optional="yes" oncondition="editable">
+			<structure name="data" scope="form" optional="yes">
 				<array name="~fieldName~">
 					<structure name="+" />
 				</array>
@@ -80,7 +79,7 @@ $rowID = 'row-'.$rowIndex;
 					$tableColumnIndex++;
 				endforeach;
 				// remove button
-				if ( !empty($xfa['removeRow']) and !empty($fieldConfig['removeRow']) and !empty($editable) ) :
+				if ( !empty($xfa['removeRow']) and !empty($fieldConfig['removeRow']) ) :
 					?><td width="50" class="text-center px-0 py-2">
 						<a 
 							href="<?php echo F::url($xfa['removeRow']); ?>"

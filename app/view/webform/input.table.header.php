@@ -31,7 +31,7 @@
 	<table class="table table-bordered small mb-0">
 		<thead class="bg-light"><?php
 			// check whether to show button
-			$showAppendButton = ( !empty($xfa['appendRow']) and !empty($fieldConfig['appendRow']) and !empty($editable) );
+			$showAppendButton = ( !empty($xfa['appendRow']) and !empty($fieldConfig['appendRow']) );
 			// table title
 			if ( !empty($fieldConfig['tableTitle']) ) :
 				$columnCount = count($fieldConfig['tableHeader'] ?? []);
