@@ -1008,7 +1008,7 @@ elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fi
 		}
 		// essential variables
 		$webform = self::$config;
-		$formStep = implode(array_keys($formBody));
+		$formStep = $step;
 		// display single step
 		ob_start();
 		foreach ( self::$config['steps'][$step] as $key => $val ) echo Webform::renderStepRow($key, $val);
