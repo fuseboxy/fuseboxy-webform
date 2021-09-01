@@ -5,12 +5,8 @@
 			<structure name="$webform">
 				<string name="beanType" />
 			</structure>
-			<structure name="$formBody">
-				<structure name="~stepName~">
-					<list name="~fieldNameList~" value="~fieldWidthList~" delim="|" />
-				</structure>
-			</structure>
-			<string name="step" scope="$arguments" optional="yes" />
+			<string name="$formStep" optional="yes" />
+			<string name="$formBody" comments="form fields" />
 		</in>
 		<out />
 	</io>
@@ -20,13 +16,10 @@
 	id="webform-form"
 	method="post"
 	class="<?php echo $webform['beanType']; ?>"
-	data-step="<?php echo implode(array_keys($formBody)); ?>"
+	data-step="<?php echo $formStep ?? ''; ?>"
 ><?php
 // fields
-foreach ( array_values($formBody) as $i => $fieldLayout ) :
-	if ( $i ) echo '<br /><br />';
-	foreach ( $fieldLayout as $key => $val ) echo Webform::renderStepRow($key, $val);
-endforeach;
+echo $formBody;
 // captcha
 include F::appPath('view/webform/form.captcha.php');
 // button

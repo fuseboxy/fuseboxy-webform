@@ -890,10 +890,20 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function renderAll($xfa=[]) {
+		$all = self::$config['steps'];
+		if ( isset($all['confirm']) ) unset($all['confirm']);
+		// essential variables
+		$webform  = self::$config;
+		$formStep = implode(array_keys($all))
+		// display multiple steps
 		ob_start();
-		$webform = self::$config;
-		$formBody = self::$config['steps'];
-		if ( isset($formBody['confirm']) ) unset($formBody['confirm']);
+		foreach ( $all as $step => $fieldLayout ) :
+			foreach ( $fieldLayout as $key => $val ) echo Webform::renderStepRow($key, $val);
+			if ( $step != array_key_last($all) ) echo '<br /><br />';
+		endforeach;
+		$formBody = ob_get_clean();
+		// done!
+		ob_start();
 		include F::appPath('view/webform/form.php');
 		return ob_get_clean();
 	}
@@ -998,7 +1008,11 @@ elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fi
 		}
 		// essential variables
 		$webform = self::$config;
-		$formBody = array($step => self::$config['steps'][$step]);
+		$formStep = implode(array_keys($formBody));
+		// display single step
+		ob_start();
+		foreach ( self::$config['steps'][$step] as $key => $val ) echo Webform::renderStepRow($key, $val);
+		$formBody = ob_get_clean();
 		// done!
 		ob_start();
 		include F::appPath('view/webform/form.php');
