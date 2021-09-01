@@ -24,6 +24,40 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			assertion methods for checking value against in-progress form data
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
+				<mixed name="$compareValue" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function assertContains($fieldName, $compareValue) {
+		$fieldValue = self::getNestedArrayValue(self::data(), $fieldName);
+		if ( is_array($fieldValue) ) return in_array($compareValue, $fieldValue);
+		return ( stripos($fieldValue, $compareValue) !== false );
+	}
+	public static function assertNotContains($fieldName, $compareValue) {
+		return !self::assertContain($fieldName, $compareValue);
+	}
+	public static function assertEqual($fieldName, $compareValue) {
+		return ( self::getNestedArrayValue(self::data(), $fieldName) == $compareValue );
+	}
+	public static function assertNotEquals($fieldName, $compareValue) {
+		return !self::assertEqual($fieldName, $compareValue);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			clear cached data of webform
 		</description>
 		<io>
