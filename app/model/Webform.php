@@ -38,15 +38,19 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function assertContains($fieldName, $compareValue) {
-		$fieldValue = self::getNestedArrayValue(self::data(), $fieldName);
+		$formData = self::data();
+		if ( $formData === false ) throw new Exception(self::error());
+		$fieldValue = self::getNestedArrayValue($formData, $fieldName);
 		if ( is_array($fieldValue) ) return in_array($compareValue, $fieldValue);
 		return ( stripos($fieldValue, $compareValue) !== false );
 	}
 	public static function assertNotContains($fieldName, $compareValue) {
-		return !self::assertContain($fieldName, $compareValue);
+		return !self::assertContains($fieldName, $compareValue);
 	}
 	public static function assertEqual($fieldName, $compareValue) {
-		return ( self::getNestedArrayValue(self::data(), $fieldName) == $compareValue );
+		$formData = self::data();
+		if ( $formData === false ) throw new Exception(self::error());
+		return ( self::getNestedArrayValue($formData, $fieldName) == $compareValue );
 	}
 	public static function assertNotEquals($fieldName, $compareValue) {
 		return !self::assertEqual($fieldName, $compareValue);
