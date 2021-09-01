@@ -5,6 +5,9 @@
 	</description>
 	<io>
 		<in>
+			<structure name="$xfa">
+				<string name="appendRow" optional="yes" />
+			</structure>
 			<string name="$fieldName" />
 			<structure name="$fieldConfig">
 				<string name="tableTitle" optional="yes" />
@@ -16,9 +19,6 @@
 				</structure>
 				<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
 				<boolean name="appendRow" />
-			</structure>
-			<structure name="$xfa">
-				<string name="appendRow" optional="yes" />
 			</structure>
 		</in>
 		<out>

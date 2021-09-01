@@ -5,10 +5,11 @@
 	</description>
 	<io>
 		<in>
+			<structure name="$xfa">
+				<string name="removeRow" optional="yes" />
+			</structure>
 			<string name="$rowIndex" optional="yes" />
-			<string name="$fieldID" />
 			<string name="$fieldName" />
-			<string name="$dataFieldName" />
 			<array name="$fieldValue">
 				<structure name="+" />
 			</arrya>
@@ -17,12 +18,9 @@
 					<string name="~headerText~" value="~columnWidth~" />
 				</structure>
 				<structure name="tableRow">
-					<structure name="~rowFieldName~" />
+					<structure name="~tableFieldName~" />
 				</structure>
 				<boolean name="removeRow" />
-			</structure>
-			<structure name="$xfa">
-				<string name="removeRow" optional="yes" />
 			</structure>
 		</in>
 		<out>

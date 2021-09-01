@@ -369,15 +369,11 @@ switch ( $fusebox->action ) :
 		$fieldConfig = Webform::fieldConfig($arguments['fieldName']);
 		F::error(Webform::error(), $fieldConfig === false);
 		F::error('Forbidden', isset($fieldConfig['format']) and $fieldConfig['format'] != 'table');
-		// more essential variables (for input)
-		$editable = true;
+		// more essential variables
 		$fieldName = $arguments['fieldName'];
-		$fieldID = Webform::fieldName2fieldID($fieldName);
-		$fieldValue = '';
-		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
+		$fieldValue = array();
 		// display
-		if ( is_string($fieldConfig['tableRow']) ) include $fieldConfig['tableRow'];
-		else include F::appPath('view/webform/input.table.row.php');
+		include F::appPath('view/webform/input.table.row.php');
 		break;
 
 
