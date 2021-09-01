@@ -946,18 +946,15 @@ class Webform {
 		// ===> precedence: defined-value > submitted-value > default-value > empty
 		$fieldValue = $fieldConfig['value'] ?? self::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
-		$xfa['uploadHandler'] = F::command('controller').'.upload';
-		$xfa['uploadProgress'] = F::command('controller').'.uploadProgress';
+		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image','signature']) ) {
+			$xfa['uploadHandler'] = F::command('controller').'.upload';
+			$xfa['uploadProgress'] = F::command('controller').'.uploadProgress';
+		}
 		// exit point : dynamic table
-		$xfa['appendRow'] = F::command('controller').'.appendRow';
-		$xfa['removeRow'] = F::command('controller').'.removeRow';
-
-
-// determine default format (when necessary)
-if     ( empty($fieldConfig['format']) and !empty($fieldConfig['options']) ) $fieldConfig['format'] = 'dropdown';
-elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fieldConfig['format'] = 'text';
-
-
+		if ( !F::is('*.view,*.confirm') and $fieldConfig['format'] == 'table' ) {
+			$xfa['appendRow'] = F::command('controller').'.appendRow';
+			$xfa['removeRow'] = F::command('controller').'.removeRow';
+		}
 		// done!
 		ob_start();
 		include F::appPath('view/webform/input.php');
