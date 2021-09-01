@@ -984,7 +984,6 @@ elseif ( empty($fieldConfig['format']) or  $fieldConfig['format'] === true ) $fi
 	</fusedoc>
 	*/
 	public static function renderStep($step, $xfa=[]) {
-		$editable = ( in_array(self::$mode, ['new','edit']) and $step != 'confirm' );
 		// validation
 		if ( !self::stepExists($step) ) return false;
 		// when [confirm] is simply true (no step specifed)

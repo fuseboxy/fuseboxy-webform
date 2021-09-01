@@ -203,9 +203,9 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		F::error('Confirmation is not required', empty($webform['steps']['confirm']));
 		// exit point : back
-		$mode = empty($webform['beanID']) ? 'new' : 'edit';
+		$operation = empty($webform['beanID']) ? 'new' : 'edit';
 		$prevStep = Webform::prevStep($fusebox->action);
-		$xfa['back'] = "{$fusebox->controller}.{$mode}&step={$prevStep}";
+		$xfa['back'] = "{$fusebox->controller}.{$operation}&step={$prevStep}";
 		// exit point : save
 		$btnKey = empty($webform['beanID']) ? 'submit' : 'update';
 		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
