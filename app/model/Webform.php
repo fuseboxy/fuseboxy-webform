@@ -377,7 +377,8 @@ class Webform {
 					<structure name="notification" optional="yes">
 						<string name="to" default=":email" />
 					</structure>
-					<string name="snapshot" default="snapshot" comments="table to save snapshot; no snapshot to take when false" />
+					<string name="snapshot" default="snapshot" comments="table to save snapshot; take no snapshot when false" />
+					<string name="autosave" default="autosave" comments="table to save autosave; perform no autosave when false" />
 					<string name="closed" comments="message to show when form closed" />
 					<!-- default custom message -->
 					<structure name="customMessage">
@@ -509,6 +510,8 @@ class Webform {
 		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) self::$config['notification']['to'] = ':email';
 		// snapshot : default table name
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) self::$config['snapshot'] = 'snapshot';
+		// autosave : default table name
+		if ( isset(self::$config['autosave']) and self::$config['autosave'] === true ) self::$config['autosave'] = 'autosave';
 		// opened & closed : default
 		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
 		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
