@@ -516,16 +516,20 @@ class Webform {
 		if ( empty(self::$config['customMessage']) ) self::$config['customMessage'] = array();
 		if ( empty(self::$config['customMessage']['closed']) ) self::$config['customMessage']['closed'] = 'Form was closed.';
 		if ( empty(self::$config['customMessage']['completed']) ) self::$config['customMessage']['completed'] = 'Your submission was received.';
+		if ( empty(self::$config['customMessage']['neverSaved']) ) self::$config['customMessage']['neverSaved'] = 'Never saved';
+		if ( empty(self::$config['customMessage']['lastSavedAt']) ) self::$config['customMessage']['lastSavedAt'] = 'Last saved at ';
+		if ( empty(self::$config['customMessage']['lastSavedOn']) ) self::$config['customMessage']['lastSavedOn'] = 'Last saved on ';
 		// custom button : default & fix format
 		if ( empty(self::$config['customButton']) ) self::$config['customButton'] = array();
-		foreach ( ['next','back','edit','submit','update','print','chooseFile','chooseAnotherFile'] as $key ) {
+		foreach ( ['next','back','edit','submit','update','print','chooseFile','chooseAnotherFile','autosave'] as $key ) {
 			if ( !isset(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array();
 			// use as button text when only string specified
 			elseif ( is_string(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => self::$config['customButton'][$key]);
 			// default button text
 			if ( !isset(self::$config['customButton'][$key]['text']) ) self::$config['customButton'][$key]['text'] = call_user_func(function() use ($key){
-				if ( $key == 'chooseAnotherFile' ) return 'Choose AnotherFile';
+				if ( $key == 'chooseAnotherFile' ) return 'Choose Another File';
 				elseif ( $key == 'chooseFile' ) return 'Choose File';
+				elseif ( $key == 'autosave' ) return 'Auto-save';
 				return ucfirst($key);
 			});
 		}
@@ -905,6 +909,7 @@ class Webform {
 		// done!
 		ob_start();
 		include F::appPath('view/webform/form.php');
+		include F::appPath('view/webform/autosave.php');
 		return ob_get_clean();
 	}
 
@@ -1013,6 +1018,7 @@ class Webform {
 		// done!
 		ob_start();
 		include F::appPath('view/webform/form.php');
+		include F::appPath('view/webform/autosave.php');
 		return ob_get_clean();
 	}
 

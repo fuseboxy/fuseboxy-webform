@@ -79,8 +79,9 @@
 					<string name="body" />
 				</boolean_or_structure>
 				<!-- other settings -->
-				<boolean_or_string name="writeLog" optional="yes" default="false" comments="simply true to log with default action; or specify action name for log" />
+				<boolean_or_string name="writeLog" optional="yes" default="false" comments="simply true to log with default action; or specify action name to log" />
 				<boolean_or_string name="snapshot" optional="yes" default="false" comments="simply true to save to {snapshot} table; or specify table name to save" />
+				<boolean_or_string name="autosave" optional="yes" deafult="false" comments="simply true to save to {autosave} table; or specify table name to save" />
 				<boolean name="opened" optional="yes" default="true" comments="whether the form is opened" />
 				<boolean name="closed" optional="yes" default="false" comments="whether the form is closed" />
 				<!-- advanced -->
@@ -92,9 +93,12 @@
 					<string name="opened" />
 					<string name="closed" />
 					<string name="completed" />
+					<string name="neverSaved" comments="for autosave only" />
+					<string name="lastSavedAt" comments="for autosave only" />
+					<string name="lastSavedOn" comments="for autosave only" />
 				</structure>
 				<structure name="customButton">
-					<structure name="next|back|edit|submit|update|print|chooseFile|chooseAnotherFile">
+					<structure name="next|back|edit|submit|update|print|chooseFile|chooseAnotherFile|autosave">
 						<string name="icon" />
 						<string name="text" />
 					</structure>
@@ -160,6 +164,8 @@ switch ( $fusebox->action ) :
 		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		else $xfa['submit'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		// exit point : autosave
+		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -189,6 +195,8 @@ switch ( $fusebox->action ) :
 		$nextStep = Webform::nextStep($arguments['step']);
 		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		else $xfa['update'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		// exit point : autosave
+		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -263,6 +271,12 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.{$action}&step={$nextStep}", $arguments['step'] != $lastStep);
 		// go to save (when last step)
 		F::redirect("{$fusebox->controller}.save");
+		break;
+
+
+	// auto-save form (without any validation)
+	case 'autosave':
+		F::error('under construction');
 		break;
 
 
