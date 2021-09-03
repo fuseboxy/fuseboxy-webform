@@ -30,7 +30,7 @@ if ( isset($xfa['autosave']) ) :
 	?><form 
 		id="<?php echo $formID; ?>"
 		method="post"
-		class="webform-autosave toast mb-md-5 mb-3 mr-3"
+		class="webform-autosave toast show position-fixed"
 		action="<?php echo F::url($xfa['autosave']); ?>"
 		data-toggle="ajax-submit"
 		data-target="#<?php echo $formID; ?>"
@@ -52,7 +52,7 @@ if ( isset($xfa['autosave']) ) :
 		?></header>
 		<div class="toast-body p-2">
 			<button type="submit" class="btn btn-sm btn-block btn-primary rounded text-nowrap">
-				<span class="timer d-inline-block ml-n2 mr-1" style="width: 15px;"><input
+				<span class="timer d-inline-block" style="width: 15px;"><input
 					type="hidden"
 					value="0"
 					data-max="60"
