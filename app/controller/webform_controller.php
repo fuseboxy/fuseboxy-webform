@@ -274,9 +274,23 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// auto-save form (without any validation)
+	// retain in-progress data
 	case 'autosave':
-		F::error('under construction');
+		F::error('Forbidden', !F::ajaxRequest());
+		// validate
+		if ( empty($arguments['data']) ) $err = 'No data for autosave';
+		// temply save to database
+		if ( empty($err) ) $lastSaved = Webform::autosave($arguments['data']);
+		if ( isset($lastSaved) and $lastSaved === false ) $err = Webform::error();
+		// display error message (when necessary)
+		// ===> do not use F::error to avoid triggering [500 Internal Server Error]
+		if ( !empty($err) ) {
+			F::alert(['type' => 'danger webform-autosave', 'message' => $err ]);
+		// display form
+		} else {
+			$xfa['autosave'] = "{$fusebox->controller}.autosave";
+			include F::appPath('view/webform/autosave.php');
+		}
 		break;
 
 
@@ -353,7 +367,7 @@ switch ( $fusebox->action ) :
 	// ajax file upload (for [format=file|image] field)
 	case 'upload':
 		if ( !empty($webform['closed']) ) die('Forbidden');
-		// validation
+		// validate
 		if     ( empty($arguments['uploaderID'])   ) $err = 'Argument [uploaderID] is required';
 		elseif ( empty($arguments['fieldName'])    ) $err = 'Argument [fieldName] is required';
 		elseif ( empty($arguments['originalName']) ) $err = 'Argument [originalName] is required';
