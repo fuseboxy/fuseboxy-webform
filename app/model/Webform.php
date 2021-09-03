@@ -76,14 +76,15 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function autosave($data) {
-		$currentUser = Auth::user('username');
-		$currentYear = AcademicYear::current();
+//		$currentUser = Auth::user('username');
+//		$currentYear = AcademicYear::current();
 		// check data format
-		if ( !is_array($formData) ) {
+/*
+		if ( !is_array($data) ) {
 			self::$error = 'Invalid form data format';
 			return false;
 		}
-
+*/
 
 /***** WORK-IN-PROGRESS *****/
 
