@@ -63,7 +63,7 @@ if ( isset($xfa['autosave']) ) :
 					data-thickness="1"
 					readonly
 				/></span>
-				<span class="text"><?php echo $webform['customButton']['text']; ?></span>
+				<span class="text"><?php echo $webform['customButton']['autosave']['text']; ?></span>
 			</button>
 		</div>
 	</form><?php
