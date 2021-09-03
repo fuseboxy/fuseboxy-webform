@@ -62,6 +62,42 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			save in-progress form data into database
+			===> no data validation is needed
+		</description>
+		<io>
+			<in>
+				<structure name="$data" />
+			</in>
+			<out>
+				<datetime name="~return~" comments="last saved time" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function autosave($data) {
+		$currentUser = Auth::user('username');
+		$currentYear = AcademicYear::current();
+		// check data format
+		if ( !is_array($formData) ) {
+			self::$error = 'Invalid form data format';
+			return false;
+		}
+
+
+/***** WORK-IN-PROGRESS *****/
+
+
+		// done!
+		return date('Y-m-d H:i:s');
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			clear cached data of webform
 		</description>
 		<io>
