@@ -978,10 +978,10 @@ class Webform {
 		if ( empty($fieldName) ) return '';
 		// obtain field config (when necessary)
 		$fieldConfig = $fieldConfig ?? self::fieldConfig($fieldName);
-		if ( $fieldConfig === false ) return F::alert([ 'type' => 'warning', 'message' => self::error() ]);
+		if ( $fieldConfig === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// load data from cache
 		$formData = $formData ?? self::data();
-		if ( $formData === false ) return F::alert([ 'type' => 'warning', 'message' => self::error() ]);
+		if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// more essential variables
 		$webform = self::$config;
 		$fieldID = self::fieldName2fieldID($fieldName);
@@ -1082,7 +1082,7 @@ class Webform {
 	*/
 	public static function renderStepRow($stepRow, $colWidth=null) {
 		$type = self::stepRowType($stepRow);
-		if ( $type === false ) return F::alert([ 'type' => 'warning', 'message' => self::error() ]);
+		if ( $type === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// fix variables
 		$stepRow  = trim($stepRow);
 		$colWidth = trim($colWidth);
