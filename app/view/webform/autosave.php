@@ -25,17 +25,18 @@
 	</io>
 </fusedoc>
 */
+$formID = 'autosave-'.Util::uuid();
 if ( isset($xfa['autosave']) ) :
 	?><form 
-		id="webform-autosave"
+		id="<?php echo $formID; ?>"
 		method="post"
-		class="toast mb-md-5 mb-3 mr-3"
+		class="webform-autosave toast mb-md-5 mb-3 mr-3"
 		action="<?php echo F::url($xfa['autosave']); ?>"
 		data-toggle="ajax-submit"
-		data-target="#webform-autosave"
+		data-target="#<?php echo $formID; ?>"
 		data-loading="none"
 		onsubmit="$('#webform-form [name^=data]:not([disabled])').each(function(){
-			$(this).clone().hide().val( $(this).val() ).appendTo('#webform-autosave');
+			$(this).clone().hide().val( $(this).val() ).appendTo('#<?php echo $formID; ?>');
 		});"
 	>
 		<header class="toast-header small text-nowrap"><?php
