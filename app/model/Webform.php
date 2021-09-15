@@ -495,9 +495,9 @@ class Webform {
 		// ===> when only field-name specified, use field-name as key & apply empty config
 		// ===> when false or null, remove field config
 		// ===> when config is string, use as label
-		$arr = self::$config['fieldConfig'];
+		$allFieldConfig = self::$config['fieldConfig'] ?? array();
 		self::$config['fieldConfig'] = array();
-		foreach ( $arr as $fieldName => $config ) {
+		foreach ( $allFieldConfig as $fieldName => $config ) {
 			if ( is_numeric($fieldName) ) list($fieldName, $config) = array($config, []);
 			if ( is_string($config) ) $config = array('label' => $config);
 			if ( $config !== false and $config !== null ) self::$config['fieldConfig'][$fieldName] = is_array($config) ? $config : [];
