@@ -446,7 +446,9 @@ class Webform {
 		// set default steps
 		// ===> when none specified
 		// ===> simply use all fields as specified in field-config
-		if ( empty(self::$config['steps']) ) self::$config['steps'] = array('default' => array_keys(self::$config['fieldConfig']));
+		if ( empty(self::$config['steps']) and isset(self::$config['fieldConfig']) ) {
+			self::$config['steps'] = array('default' => array_keys(self::$config['fieldConfig']));
+		}
 		// default having [confirm] step
 		if ( !isset(self::$config['steps']['confirm']) ) self::$config['steps']['confirm'] = true;
 		// fix [heading|line|output] of each step
