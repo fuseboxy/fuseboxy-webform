@@ -1470,13 +1470,9 @@ class Webform {
 	*/
 	public static function stepRowType($stepRow) {
 		$stepRow = trim($stepRow);
-		// heading
 		if ( strlen($stepRow) and $stepRow[0] === '#' ) return 'heading';
-		// output
 		if ( strlen($stepRow) and $stepRow[0] === '~' ) return 'output';
-		// line
-		if ( trim($stepRow, '=-') === '' ) return 'line';
-		// fields
+		if ( strlen($stepRow) and trim($stepRow, '=-') === '' ) return 'line';
 		return 'fields';
 	}
 
