@@ -174,20 +174,20 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function data($data=null) {
-		$key = self::token();
+		$token = self::token();
 		// init container
-		$_SESSION['webform'][$key] = $_SESSION['webform'][$key] ?? array();
+		$_SESSION['webform'][$token] = $_SESSION['webform'][$token] ?? array();
 		// when getter
 		// ===> return cached data right away
-		if ( $data === null ) return $_SESSION['webform'][$key];
+		if ( $data === null ) return $_SESSION['webform'][$token];
 		// when setter
 		// ===> clean-up data
 		// ===> merge cached data with argument
 		$sanitized = self::dataSanitize($data);
 		if ( $sanitized === false ) return false;
-		$merged = self::dataMerge($_SESSION['webform'][$key], $sanitized);
+		$merged = self::dataMerge($_SESSION['webform'][$token], $sanitized);
 		if ( $merged === false ) return false;
-		$_SESSION['webform'][$key] = $merged;
+		$_SESSION['webform'][$token] = $merged;
 		// done!
 		return true;
 	}
@@ -202,8 +202,15 @@ class Webform {
 		</description>
 		<io>
 			<in>
-				<structure name="$array1" />
-				<structure name="$array2" />
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~token~">
+						<mixed name="~fieldName~" />
+					</structure>
+				</structure>
+				<!-- parameter -->
+				<structure name="$baseData" />
+				<structure name="$newData" />
 			</in>
 			<out>
 				<structure name="~return~" />
@@ -211,8 +218,22 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function dataMerge($array1, $array2) {
-return array_merge_recursive($array1, $array2);
+	public static function dataMerge($baseData, $newData) {
+		// go through each item in submitted data
+		foreach ( $newData as $key => $val ) {
+			// when array
+			// ===> go through each item
+			// ===> (until simple value)
+			if ( is_array($val) ) {
+				$baseData[$key] = self::dataMerge($baseData[$key], $val);
+			// when simple value (or not exists)
+			// ===> simply append (or overwrite)
+			} else {
+				$baseData[$key] = $val;
+			}
+		}
+		// done!
+		return $baseData;
 	}
 
 
