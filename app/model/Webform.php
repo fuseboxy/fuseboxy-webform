@@ -606,7 +606,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			}
 		} // foreach-step
 		// field config : field-name-only to empty-array
-		self::$config['fieldConfig'] = self::initConfig__fieldNameOnly2emptyArray(self::$config['fieldConfig'] ?? []);
+		self::$config['fieldConfig'] = self::initConfig__defaultEmptyConfig(self::$config['fieldConfig'] ?? []);
 		// field config : remove [options] when false
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			if ( isset($cfg['options']) and $cfg['options'] === false ) {
@@ -620,13 +620,13 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// fix field config of [format=table]
 			if ( isset($cfg['format']) and $cfg['format'] == 'table' and isset($cfg['tableRow']) ) {
-				$cfg['tableRow'] = self::initConfig__fieldNameOnly2emptyArray($cfg['tableRow']);
+				$cfg['tableRow'] = self::initConfig__defaultEmptyConfig($cfg['tableRow']);
 				$cfg['tableRow'] = self::initConfig__defaultFieldFormat($cfg['tableRow']);
 				self::$config['fieldConfig'][$fieldName]['tableRow'] = $cfg['tableRow'];
 				// fix field config of multi-field-in-one-cell
 				foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
 					if ( is_numeric($tableCellIndex) ) {
-						$tableCellFieldConfigList = self::initConfig__fieldNameOnly2emptyArray($tableCellFieldConfigList);
+						$tableCellFieldConfigList = self::initConfig__defaultEmptyConfig($tableCellFieldConfigList);
 						$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
 						self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
 					}
@@ -739,6 +739,58 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 	/**
 	<fusedoc>
 		<description>
+			fix field config with field-name specified only
+			===> when only field-name specified, use field-name as key & apply empty config
+			===> when false or null, remove field config
+			===> when config is string, use as label
+		</description>
+		<io>
+			<in>
+				<structure name="$fieldConfigList">
+					<string name="+" value="~fieldName~" optional="yes" />
+					<string name="~fieldName~" value="~label" optional="yes" />
+					<structure name="~fieldName~" optional="yes" />
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~">
+					<structure name="~fieldName~">
+						<string name="label" optional="yes" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultEmptyConfig($fieldConfigList) {
+		$result = array();
+		// go through each item
+		foreach ( $fieldConfigList as $fieldName => $cfg ) {
+			// when field-name only
+			// ===> assign empty config
+			if ( is_numeric($fieldName) and is_string($cfg) ) {
+				$fieldName = $cfg;
+				$cfg = array();
+			}
+			// when config is true   ===> assign empty config
+			// when config is string ===> use as label
+			if ( $cfg === true ) $cfg = array();
+			elseif ( is_string($cfg) ) $cfg = array('label' => $cfg);
+			// when config is not false
+			// ===> (allow empty array)
+			// ===> put into result
+			if ( $cfg !== false and $cfg !== null ) $result[$fieldName] = $cfg;
+		}
+		// done!
+		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			assign default format for multiple fields
 		</description>
 		<io>
@@ -771,58 +823,6 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 			}
 		}
 		return $fieldConfigList;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			fix field config with field-name specified only
-			===> when only field-name specified, use field-name as key & apply empty config
-			===> when false or null, remove field config
-			===> when config is string, use as label
-		</description>
-		<io>
-			<in>
-				<structure name="$fieldConfigList">
-					<string name="+" value="~fieldName~" optional="yes" />
-					<string name="~fieldName~" value="~label" optional="yes" />
-					<structure name="~fieldName~" optional="yes" />
-				</structure>
-			</in>
-			<out>
-				<structure name="~return~">
-					<structure name="~fieldName~">
-						<string name="label" optional="yes" />
-					</structure>
-				</structure>
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function initConfig__fieldNameOnly2emptyArray($fieldConfigList) {
-		$result = array();
-		// go through each item
-		foreach ( $fieldConfigList as $fieldName => $cfg ) {
-			// when field-name only
-			// ===> assign empty config
-			if ( is_numeric($fieldName) and is_string($cfg) ) {
-				$fieldName = $cfg;
-				$cfg = array();
-			}
-			// when config is true   ===> assign empty config
-			// when config is string ===> use as label
-			if ( $cfg === true ) $cfg = array();
-			elseif ( is_string($cfg) ) $cfg = array('label' => $cfg);
-			// when config is not false
-			// ===> (allow empty array)
-			// ===> put into result
-			if ( $cfg !== false and $cfg !== null ) $result[$fieldName] = $cfg;
-		}
-		// done!
-		return $result;
 	}
 
 
