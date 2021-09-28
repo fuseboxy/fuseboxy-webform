@@ -20,7 +20,6 @@
 				<structure name="tableRow" optional="yes">
 					<structure name="~rowFieldName~" />
 				</structure>
-				<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
 				<boolean name="appendRow" />
 				<boolean name="removeRow" />
 			</structure>
@@ -46,10 +45,7 @@
 		// table content
 		if ( !empty($fieldValue) ) :
 			foreach ( $fieldValue as $rowIndex => $rowItem ) :
-				// use custom row (when specified)
-				if ( is_string($fieldConfig['tableRow']) ) include $fieldConfig['tableRow'];
-				// otherwise, use row template
-				else include F::appPath('view/webform/input.table.row.php');
+				include F::appPath('view/webform/input.table.row.php');
 			endforeach;
 		endif;
 	?></fieldset>
