@@ -393,6 +393,8 @@ switch ( $fusebox->action ) :
 	// append table row (for [format=table] field)
 	case 'appendRow':
 		F::error('Argument [fieldName] is required', empty($arguments['fieldName']));
+		// set form mode
+		Webform::mode( empty($webform['beanID']) ? 'new' : 'edit' );
 		// load config
 		$fieldConfig = Webform::fieldConfig($arguments['fieldName']);
 		F::error(Webform::error(), $fieldConfig === false);
