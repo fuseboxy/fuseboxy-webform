@@ -221,16 +221,9 @@ class Webform {
 	public static function dataMerge($baseData, $newData) {
 		// go through each item in submitted data
 		foreach ( $newData as $key => $val ) {
-			// when array
-			// ===> go through each item
-			// ===> (until simple value)
-			if ( is_array($val) ) {
-				$baseData[$key] = self::dataMerge($baseData[$key], $val);
-			// when simple value (or not exists)
-			// ===> simply append (or overwrite)
-			} else {
-				$baseData[$key] = $val;
-			}
+			// when array value  ===> keep merging recursively
+			// when simple value ===> simply overwrite (or append)
+			$baseData[$key] = is_array($val) ? self::dataMerge($baseData[$key], $val) : $val;
 		}
 		// done!
 		return $baseData;
@@ -270,20 +263,21 @@ class Webform {
 	private static function dataSanitize($data) {
 		// go through each item
 		foreach ( $data as $key => $val ) {
-			if ( is_array($val) ) {
-				// clean-up recursively
-				$val = self::dataSanitize($val);
-			} else {
+			// when array value  ===> clean-up recursively
+			// when simple value ===> do the clean-up
+			$data[$key] = is_array($val) ? self::dataSanitize($val) : call_user_func(function() use ($key, $val){
 				// trim space & remove tab
 				$val = str_replace("\t", ' ', trim($val));
-				// convert html tag (make it visible but harmless)
-				// ===> except signature field (in order to keep SVG data)
-				if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][$key]['format'] != 'signature' ) {
-					$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
-				}
-			}
-			// put into result
-			$data[$key] = $val;
+/***** IMPORTANT *****/
+// this doesn't work when signature field is nested field name (e.g. student.signature)
+// convert html tag (make it visible but harmless)
+// ===> except signature field (in order to keep SVG data)
+if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][$key]['format'] != 'signature' ) {
+	$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
+}
+				// cleaned
+				return $val;
+			});
 		}
 		// done!
 		return $data;
