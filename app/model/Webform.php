@@ -615,6 +615,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		}
 		// field config : default format
 		self::$config['fieldConfig'] = self::initConfig__defaultFieldFormat(self::$config['fieldConfig']);
+		// field config : default label & inline-label & placeholder
+		self::$config['fieldConfig'] = self::initConfig__defaultFieldLabel(self::$config['fieldConfig']);
+
 
 
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
@@ -637,20 +640,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 
 		// field config : default
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// label : derived from field name
-			if ( !isset($cfg['label']) or $cfg['label'] === true ) {
-				self::$config['fieldConfig'][$fieldName]['label'] = implode(' ', array_map(function($word){
-					return in_array($word, ['id','url']) ? strtoupper($word) : ucfirst($word);
-				}, explode('_', $fieldName)));
-			}
-			// label-inline & placeholder : derived from field name
-			foreach ( ['label-inline','placeholder'] as $key ) {
-				if ( isset($cfg[$key]) and $cfg[$key] === true ) {
-					self::$config['fieldConfig'][$fieldName][$key] = implode(' ', array_map(function($word){
-						return in_array($word, ['id','url']) ? strtoupper($word) : ucfirst($word);
-					}, explode('_', $fieldName)));
-				}
-			}
 			// file : default config
 			if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) {
 				// file size : default
@@ -813,6 +802,7 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 	</fusedoc>
 	*/
 	public static function initConfig__defaultFieldFormat($fieldConfigList) {
+		// go through each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			if ( empty($cfg['format']) and isset($cfg['options']) ) {
 				$fieldConfigList[$fieldName]['format'] = 'dropdown';
@@ -822,6 +812,56 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 				$fieldConfigList[$fieldName]['format'] = 'text';
 			}
 		}
+		// done!
+		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			assign default label/inline-label/placeholder to multiple fields
+			===> derived from field name
+		</description>
+		<io>
+			<in>
+				<structure name="$fieldConfigList">
+					<structure name="~fieldName~">
+						<boolean name="label" value="true" optional="yes" />
+						<boolean name="placeholder" value="true" optional="yes" />
+						<boolean name="inline-label" value="true" optional="yes" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~">
+					<structure name="~fieldName~">
+						<string name="label" />
+						<string name="placeholder" optional="yes" />
+						<string name="inline-label" optional="yes" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultFieldLabel($fieldConfigList) {
+		// go through each field
+		foreach ( $fieldConfigList as $fieldName => $cfg ) {
+			// force label to be assigned
+			if ( !isset($cfg['label']) ) $cfg['label'] = true;
+			// derived from field name
+			foreach ( ['label','label-inline','placeholder'] as $key ) {
+				if ( isset($cfg[$key]) and $cfg[$key] === true ) {
+					$fieldConfigList[$fieldName][$key] = implode(' ', array_map(function($word){
+						return in_array($word, ['id','url']) ? strtoupper($word) : ucfirst($word);
+					}, explode('_', $fieldName)));
+				}
+			}
+		}
+		// done!
 		return $fieldConfigList;
 	}
 
