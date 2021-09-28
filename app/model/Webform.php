@@ -576,7 +576,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					}
 				}
 			}
-		}
+		} // foreach-step
 		// fix field-layout of each step
 		// ===> when only field-name-list specified
 		// ===> use field-name-list as key & apply empty field-width-list
@@ -604,18 +604,37 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				self::$error = "Field layout of step [{$stepName}] is invalid";
 				return false;
 			}
-		}
-		// field-config : fix format
+		} // foreach-step
+		// field config : field-name-only to empty-array
 		// ===> when only field-name specified, use field-name as key & apply empty config
 		// ===> when false or null, remove field config
 		// ===> when config is string, use as label
-		$allFieldConfig = self::$config['fieldConfig'] ?? array();
-		self::$config['fieldConfig'] = array();
-		foreach ( $allFieldConfig as $fieldName => $config ) {
-			if ( is_numeric($fieldName) ) list($fieldName, $config) = array($config, []);
-			if ( is_string($config) ) $config = array('label' => $config);
-			if ( $config !== false and $config !== null ) self::$config['fieldConfig'][$fieldName] = is_array($config) ? $config : [];
+		self::$config['fieldConfig'] = self::initConfig__fieldNameOnly2emptyArray(self::$config['fieldConfig'] ?? []);
+/*
+		foreach ( $fieldConfigAll as $fieldName => $cfg ) {
+			if ( isset($cfg['tableRow']) ) foreach ( $cfg['tableRow'] as $tableCellFieldName => $tableCellFieldConfig ) {
+				// single field in single cell (field name only)
+				if ( is_numeric($tableCellFieldName) and is_string($tableCellFieldConfig) ) {
+					$tableCellFieldName = $tableCellFieldConfig;
+					$tableCellFieldConfig = array();
+unset(self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellFieldName]);
+self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellFieldConfig] = array();
+				// multiple fields in single cell
+				} elseif ( is_numeric($tableCellFieldName) ) {
+					foreach ( $tableCellFieldConfig as $tableCellSubFieldName => $tableCellSubFieldConfig ) {
+						// only field name specified
+						$tableCellSubFieldName = $tableCellSubFieldConfig;
+						$tableCellSubFieldConfig = array();
+
+
+						if ( is_numeric($tableCellSubFieldName) and $)
+					}
+0 => 'level'
+					$
+				}
+			} // if-isset-tableRow-foreach-tableRow
 		}
+*/
 		// field config : remove [options] when false
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			if ( isset($cfg['options']) and $cfg['options'] === false ) {
@@ -644,7 +663,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					}, explode('_', $fieldName)));
 				}
 			}
-			// file config
+			// file : default config
 			if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) {
 				// file size : default
 				if ( empty($cfg['filesize']) ) self::$config['fieldConfig'][$fieldName]['filesize'] = '10MB';
@@ -655,7 +674,34 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				// file type error : default
 				if ( empty($cfg['filetypeError']) ) self::$config['fieldConfig'][$fieldName]['filetypeError'] = 'Only file of {FILE_TYPE} is allowed';
 			}
+
+			// table : default config
+			if ( isset($cfg['format']) and $cfg['format'] == 'table' ) {
+/*
+if ( empty($cfg['tableRow']) ) self::$config['fieldConfig'][$fieldName]['tableRow'] = array();
+foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableRowIndex => $tableCellFieldConfigList ) {
+	// if multiple fields in one cell
+	if ( is_numeric($tableRowIndex) ) {
+		foreach ( $tableRowIndex as $tableCellFieldName => $tableCellFieldConfig ) {
+self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellFieldName]['format'] = 'text';
 		}
+	// if single field in one cell
+	} else {
+		$tableCellFieldName = $tableRowIndex;
+		$tableCellFieldConfig = $tableCellFieldConfigList;
+self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellFieldName]['format'] = 'text';
+	}
+}
+*/
+				if ( !isset($cfg['tableRow']) ) {
+					self::$error = "Field config [tableRow] for [{$fieldName}] is required";
+					return false;
+				} elseif ( !is_array($cfg['tableRow']) ) {
+					self::$error = "Field config [tableRow] for [{$fieldName}] must be array";
+					return false;
+				}
+			}
+		} // foreach-fieldConfig
 		// notification : default & fix format
 		if ( !isset(self::$config['notification']) ) self::$config['notification'] = false;
 		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
@@ -697,6 +743,58 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( !isset(self::$config['customButton']['print' ]['icon']) ) self::$config['customButton']['print' ]['icon'] = 'fa fa-print mr-1';
 		// done!
 		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			fix field config with field-name specified only
+			===> when only field-name specified, use field-name as key & apply empty config
+			===> when false or null, remove field config
+			===> when config is string, use as label
+		</description>
+		<io>
+			<in>
+				<structure name="$fieldConfigList">
+					<string name="+" value="~fieldName~" optional="yes" />
+					<string name="~fieldName~" value="~label" optional="yes" />
+					<structure name="~fieldName~" optional="yes" />
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~">
+					<structure name="~fieldName~">
+						<string name="label" optional="yes" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	private static function initConfig__fieldNameOnly2emptyArray($fieldConfigList) {
+		$result = array();
+		// go through each item
+		foreach ( $fieldConfigList as $fieldName => $fieldConfig ) {
+			// when field-name only
+			// ===> assign empty config
+			if ( is_numeric($fieldName) and is_string($fieldConfig) ) {
+				$fieldName = $fieldConfig;
+				$fieldConfig = array();
+			}
+			// when config is true   ===> assign empty config
+			// when config is string ===> use as label
+			if ( $fieldConfig === true ) $fieldConfig = array();
+			elseif ( is_string($fieldConfig) ) $fieldConfig = array('label' => $fieldConfig);
+			// when config is not false
+			// ===> (allow empty array)
+			// ===> put into result
+			if ( $fieldConfig !== false and $fieldConfig !== null ) $result[$fieldName] = $fieldConfig;
+		}
+		// done!
+		return $result;
 	}
 
 
@@ -2063,9 +2161,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				if ( !isset($cfg['tableRow']) ) {
 					self::$error = "Field config [tableRow] for [{$fieldName}] is required";
 					return false;
-				} elseif ( is_string($cfg['tableRow']) and !file_exists($cfg['tableRow']) ) {
-					self::$error = "Script of [tableRow] for [{$fieldName}] not exists ({$cfg['tableRow']})";
-					return false;
 				} elseif ( !is_array($cfg['tableRow']) ) {
 					self::$error = "Field config [tableRow] for [{$fieldName}] must be array";
 					return false;
@@ -2078,7 +2173,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				self::$error = "Field name [{$fieldNameArray[0]}.*] is forbidden (because clashing with associated object [{$fieldNameArray[0]}] of ORM)";
 				return false;
 			}
-		}
+		} // foreach-fieldConfig
 		// check notification : any missing
 		foreach ( ['from','to','subject','body'] as $item ) {
 			if ( is_array(self::$config['notification']) and empty(self::$config['notification'][$item]) ) {
