@@ -174,19 +174,98 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function data($data=null) {
+		$key = self::token();
 		// init container
-		if ( !isset($_SESSION['webform'][self::token()]) ) $_SESSION['webform'][self::token()] = array();
+		$_SESSION['webform'][$key] = $_SESSION['webform'][$key] ?? array();
 		// when getter
 		// ===> return cached data right away
-		if ( $data === null ) return $_SESSION['webform'][self::token()];
+		if ( $data === null ) return $_SESSION['webform'][$key];
 		// when setter
 		// ===> clean-up data
 		// ===> merge cached data with argument
-		$data = self::sanitize($data);
-		if ( $data === false ) return false;
-		$_SESSION['webform'][self::token()] = array_merge_recursive($_SESSION['webform'][self::token()], $data);
+		$sanitized = self::dataSanitize($data);
+		if ( $sanitized === false ) return false;
+		$merged = self::dataMerge($_SESSION['webform'][$key], $sanitized);
+		if ( $merged === false ) return false;
+		$_SESSION['webform'][$key] = $merged;
 		// done!
 		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			merge (cached & submitted) data recursively
+		</description>
+		<io>
+			<in>
+				<structure name="$array1" />
+				<structure name="$array2" />
+			</in>
+			<out>
+				<structure name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function dataMerge($array1, $array2) {
+return array_merge_recursive($array1, $array2);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			clean-up (submitted) data recursively
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" />
+						</structure>
+					</structure>
+				</structure>
+				<!-- parameter -->
+				<structure name="$data" comments="data before cleansing">
+					<mixed name="~fieldName~" />
+				</struture>
+			</in>
+			<out>
+				<structure name="~return~" comments="data after cleansed">
+					<mixed name="~fieldName~" />
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	private static function dataSanitize($data) {
+		// go through each item
+		foreach ( $data as $key => $val ) {
+			if ( is_array($val) ) {
+				// clean-up recursively
+				$val = self::dataSanitize($val);
+			} else {
+				// trim space & remove tab
+				$val = str_replace("\t", ' ', trim($val));
+				// convert html tag (make it visible but harmless)
+				// ===> except signature field (in order to keep SVG data)
+				if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][$key]['format'] != 'signature' ) {
+					$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
+				}
+			}
+			// put into result
+			$data[$key] = $val;
+		}
+		// done!
+		return $data;
 	}
 
 
@@ -1158,59 +1237,6 @@ class Webform {
 		?></div><?php
 		// done!
 		return ob_get_clean();
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			clean-up data
-		</description>
-		<io>
-			<in>
-				<!-- config -->
-				<structure name="$config" scope="self">
-					<structure name="fieldConfig">
-						<structure name="~fieldName~">
-							<string name="format" />
-						</structure>
-					</structure>
-				</structure>
-				<!-- parameter -->
-				<structure name="$data" comments="data before cleansing">
-					<mixed name="~fieldName~" />
-				</struture>
-			</in>
-			<out>
-				<structure name="~return~" comments="data after cleansed">
-					<mixed name="~fieldName~" />
-				</structure>
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	private static function sanitize($data) {
-		// go through each item
-		foreach ( $data as $key => $val ) {
-			if ( is_array($val) ) {
-				// clean-up recursively
-				$val = self::sanitize($val);
-			} else {
-				// trim space & remove tab
-				$val = str_replace("\t", ' ', trim($val));
-				// convert html tag (make it visible but harmless)
-				// ===> except signature field (in order to keep SVG data)
-				if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][$key]['format'] != 'signature' ) {
-					$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
-				}
-			}
-			// put into result
-			$data[$key] = $val;
-		}
-		// done!
-		return $data;
 	}
 
 
