@@ -618,9 +618,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// field config : default label & inline-label & placeholder
 		self::$config['fieldConfig'] = self::initConfig__defaultFieldLabel(self::$config['fieldConfig']);
 		// field config : default file config
-		self::$config['fieldConfig'] = self::initConfig__defaultFileFieldConfig(self::$config['fieldConfig']);
+		self::$config['fieldConfig'] = self::initConfig__fixFileField(self::$config['fieldConfig']);
 		// field config : default table config
-		self::$config['fieldConfig'] = self::initConfig__defaultTableFieldConfig(self::$config['fieldConfig']);
+		self::$config['fieldConfig'] = self::initConfig__fixTableField(self::$config['fieldConfig']);
 		// notification : default & fix format
 		if ( !isset(self::$config['notification']) ) self::$config['notification'] = false;
 		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
@@ -743,7 +743,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__defaultFileFieldConfig($fieldConfigList) {
+	public static function initConfig__fixFileField($fieldConfigList) {
 		// go through each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			// certain format only
@@ -820,7 +820,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__defaultTableFieldConfig($fieldConfigList) {
+	public static function initConfig__fixTableField($fieldConfigList) {
 		// go through each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			// table format only
