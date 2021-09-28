@@ -617,68 +617,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		self::$config['fieldConfig'] = self::initConfig__defaultFieldFormat(self::$config['fieldConfig']);
 		// field config : default label & inline-label & placeholder
 		self::$config['fieldConfig'] = self::initConfig__defaultFieldLabel(self::$config['fieldConfig']);
-
-
-
-		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// fix field config of [format=table]
-			if ( isset($cfg['format']) and $cfg['format'] == 'table' and isset($cfg['tableRow']) ) {
-				$cfg['tableRow'] = self::initConfig__defaultEmptyConfig($cfg['tableRow']);
-				$cfg['tableRow'] = self::initConfig__defaultFieldFormat($cfg['tableRow']);
-				self::$config['fieldConfig'][$fieldName]['tableRow'] = $cfg['tableRow'];
-				// fix field config of multi-field-in-one-cell
-				foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
-					if ( is_numeric($tableCellIndex) ) {
-						$tableCellFieldConfigList = self::initConfig__defaultEmptyConfig($tableCellFieldConfigList);
-						$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
-						self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
-					}
-				} // foreach-tableRow
-			} // if-format-table
-		} // foreach-fieldConfig
-
-
-		// field config : default
-		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// file : default config
-			if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) {
-				// file size : default
-				if ( empty($cfg['filesize']) ) self::$config['fieldConfig'][$fieldName]['filesize'] = '10MB';
-				// file type : default
-				if ( empty($cfg['filetype']) ) self::$config['fieldConfig'][$fieldName]['filetype'] = in_array($cfg['format'], ['image','signature']) ? 'gif,jpg,jpeg,png' : 'gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
-				// file size error : default
-				if ( empty($cfg['filesizeError']) ) self::$config['fieldConfig'][$fieldName]['filesizeError'] = 'File cannot exceed {FILE_SIZE}';
-				// file type error : default
-				if ( empty($cfg['filetypeError']) ) self::$config['fieldConfig'][$fieldName]['filetypeError'] = 'Only file of {FILE_TYPE} is allowed';
-			}
-
-			// table : default config
-			if ( isset($cfg['format']) and $cfg['format'] == 'table' ) {
-/*
-if ( empty($cfg['tableRow']) ) self::$config['fieldConfig'][$fieldName]['tableRow'] = array();
-foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableRowIndex => $tableCellFieldConfigList ) {
-	// if multiple fields in one cell
-	if ( is_numeric($tableRowIndex) ) {
-		foreach ( $tableRowIndex as $tableCellFieldName => $tableCellFieldConfig ) {
-self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellFieldName]['format'] = 'text';
-		}
-	// if single field in one cell
-	} else {
-		$tableCellFieldName = $tableRowIndex;
-		$tableCellFieldConfig = $tableCellFieldConfigList;
-self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellFieldName]['format'] = 'text';
-	}
-}
-*/
-				if ( !isset($cfg['tableRow']) ) {
-					self::$error = "Field config [tableRow] for [{$fieldName}] is required";
-					return false;
-				} elseif ( !is_array($cfg['tableRow']) ) {
-					self::$error = "Field config [tableRow] for [{$fieldName}] must be array";
-					return false;
-				}
-			}
-		} // foreach-fieldConfig
+		// field config : default file config
+		self::$config['fieldConfig'] = self::initConfig__defaultFileFieldConfig(self::$config['fieldConfig']);
+		// field config : default table config
+		self::$config['fieldConfig'] = self::initConfig__defaultTableFieldConfig(self::$config['fieldConfig']);
 		// notification : default & fix format
 		if ( !isset(self::$config['notification']) ) self::$config['notification'] = false;
 		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
@@ -780,6 +722,52 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 	/**
 	<fusedoc>
 		<description>
+			assign default (esssential) config for file-related fields
+		</description>
+		<io>
+			<in>
+				<structure name="$fieldConfigList">
+					<structure name="~fieldName~">
+						<string name="format" optional="yes" />
+						<array name="options" optional="yes" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~">
+					<structure name="~fieldName~">
+						<string name="format" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultFileFieldConfig($fieldConfigList) {
+		// go through each field
+		foreach ( $fieldConfigList as $fieldName => $cfg ) {
+			// certain format only
+			if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) {
+				// file size : default
+				if ( empty($cfg['filesize']) ) $fieldConfigList[$fieldName]['filesize'] = '10MB';
+				// file type : default
+				if ( empty($cfg['filetype']) ) $fieldConfigList[$fieldName]['filetype'] = in_array($cfg['format'], ['image','signature']) ? 'gif,jpg,jpeg,png' : 'gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx';
+				// file size error : default
+				if ( empty($cfg['filesizeError']) ) $fieldConfigList[$fieldName]['filesizeError'] = 'File cannot exceed {FILE_SIZE}';
+				// file type error : default
+				if ( empty($cfg['filetypeError']) ) $fieldConfigList[$fieldName]['filetypeError'] = 'Only file of {FILE_TYPE} is allowed';
+			}
+		}
+		// done!
+		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			assign default format for multiple fields
 		</description>
 		<io>
@@ -812,6 +800,45 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 				$fieldConfigList[$fieldName]['format'] = 'text';
 			}
 		}
+		// done!
+		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			assign default field format for each table field
+		</description>
+		<io>
+			<in>
+			</in>
+			<out>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultTableFieldConfig($fieldConfigList) {
+		// go through each field
+		foreach ( $fieldConfigList as $fieldName => $cfg ) {
+			// table format only
+			if ( isset($cfg['format']) and $cfg['format'] == 'table' and isset($cfg['tableRow']) ) {
+				// fix field of single-field-in-one-cell
+				$cfg['tableRow'] = self::initConfig__defaultEmptyConfig($cfg['tableRow']);
+				$cfg['tableRow'] = self::initConfig__defaultFieldFormat($cfg['tableRow']);
+				$fieldConfigList[$fieldName]['tableRow'] = $cfg['tableRow'];
+				// fix each field of multi-field-in-one-cell
+				foreach ( $fieldConfigList[$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
+					if ( is_numeric($tableCellIndex) ) {
+						$tableCellFieldConfigList = self::initConfig__defaultEmptyConfig($tableCellFieldConfigList);
+						$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
+						$fieldConfigList[$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
+					}
+				} // foreach-tableRow
+			} // if-format-table
+		} // foreach-fieldConfig
 		// done!
 		return $fieldConfigList;
 	}
