@@ -181,10 +181,10 @@ class Webform {
 		if ( $data === null ) return $_SESSION['webform'][self::token()];
 		// when setter
 		// ===> clean-up data
-		// ===> update cache (field-by-field)
+		// ===> merge cached data with argument
 		$data = self::sanitize($data);
 		if ( $data === false ) return false;
-		foreach ( $data as $key => $val ) $_SESSION['webform'][self::token()][$key] = $val;
+		$_SESSION['webform'][self::token()] = array_merge_recursive($_SESSION['webform'][self::token()], $data);
 		// done!
 		return true;
 	}
@@ -1279,6 +1279,13 @@ class Webform {
 			self::$error = ORM::error();
 			return false;
 		}
+
+
+// *** IMPORTANT ***
+// ===> save duplicate record when operation stop at notification & snapshot
+
+
+
 		// send notification (when necessary)
 		if ( !empty(self::$config['notification']) ) {
 			$notified = self::notify($id);
