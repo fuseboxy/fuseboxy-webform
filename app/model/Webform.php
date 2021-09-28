@@ -606,49 +606,37 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			}
 		} // foreach-step
 		// field config : field-name-only to empty-array
-		// ===> when only field-name specified, use field-name as key & apply empty config
-		// ===> when false or null, remove field config
-		// ===> when config is string, use as label
 		self::$config['fieldConfig'] = self::initConfig__fieldNameOnly2emptyArray(self::$config['fieldConfig'] ?? []);
-/*
-		foreach ( $fieldConfigAll as $fieldName => $cfg ) {
-			if ( isset($cfg['tableRow']) ) foreach ( $cfg['tableRow'] as $tableCellFieldName => $tableCellFieldConfig ) {
-				// single field in single cell (field name only)
-				if ( is_numeric($tableCellFieldName) and is_string($tableCellFieldConfig) ) {
-					$tableCellFieldName = $tableCellFieldConfig;
-					$tableCellFieldConfig = array();
-unset(self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellFieldName]);
-self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellFieldConfig] = array();
-				// multiple fields in single cell
-				} elseif ( is_numeric($tableCellFieldName) ) {
-					foreach ( $tableCellFieldConfig as $tableCellSubFieldName => $tableCellSubFieldConfig ) {
-						// only field name specified
-						$tableCellSubFieldName = $tableCellSubFieldConfig;
-						$tableCellSubFieldConfig = array();
-
-
-						if ( is_numeric($tableCellSubFieldName) and $)
-					}
-0 => 'level'
-					$
-				}
-			} // if-isset-tableRow-foreach-tableRow
-		}
-*/
 		// field config : remove [options] when false
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			if ( isset($cfg['options']) and $cfg['options'] === false ) {
 				unset(self::$config['fieldConfig'][$fieldName]['options']);
 			}
 		}
+		// field config : default format
+		self::$config['fieldConfig'] = self::initConfig__defaultFieldFormat(self::$config['fieldConfig']);
+
+
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			// fix field config of [format=table]
+			if ( isset($cfg['format']) and $cfg['format'] == 'table' and isset($cfg['tableRow']) ) {
+				$cfg['tableRow'] = self::initConfig__fieldNameOnly2emptyArray($cfg['tableRow']);
+				$cfg['tableRow'] = self::initConfig__defaultFieldFormat($cfg['tableRow']);
+				self::$config['fieldConfig'][$fieldName]['tableRow'] = $cfg['tableRow'];
+				// fix field config of multi-field-in-one-cell
+				foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
+					if ( is_numeric($tableCellIndex) ) {
+						$tableCellFieldConfigList = self::initConfig__fieldNameOnly2emptyArray($tableCellFieldConfigList);
+						$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
+						self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
+					}
+				} // foreach-tableRow
+			} // if-format-table
+		} // foreach-fieldConfig
+
+
 		// field config : default
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// format : default
-			if ( empty($cfg['format']) and isset($cfg['options']) ) {
-				self::$config['fieldConfig'][$fieldName]['format'] = 'dropdown';
-			} elseif ( empty($cfg['format']) or $cfg['format'] === true ) {
-				self::$config['fieldConfig'][$fieldName]['format'] = 'text';
-			}
 			// label : derived from field name
 			if ( !isset($cfg['label']) or $cfg['label'] === true ) {
 				self::$config['fieldConfig'][$fieldName]['label'] = implode(' ', array_map(function($word){
@@ -751,6 +739,46 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 	/**
 	<fusedoc>
 		<description>
+			assign default format for multiple fields
+		</description>
+		<io>
+			<in>
+				<structure name="$fieldConfigList">
+					<structure name="~fieldName~">
+						<string name="format" optional="yes" />
+						<array name="options" optional="yes" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~">
+					<structure name="~fieldName~">
+						<string name="format" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultFieldFormat($fieldConfigList) {
+		foreach ( $fieldConfigList as $fieldName => $cfg ) {
+			if ( empty($cfg['format']) and isset($cfg['options']) ) {
+				$fieldConfigList[$fieldName]['format'] = 'dropdown';
+			} elseif ( empty($cfg['format']) ) {
+				$fieldConfigList[$fieldName]['format'] = 'text';
+			} elseif ( $cfg['format'] === true ) {
+				$fieldConfigList[$fieldName]['format'] = 'text';
+			}
+		}
+		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			fix field config with field-name specified only
 			===> when only field-name specified, use field-name as key & apply empty config
 			===> when false or null, remove field config
@@ -774,24 +802,24 @@ self::$config['fieldConfig'][$fieldName]['tableRow'][$tableRowIndex][$tableCellF
 		</io>
 	</fusedoc>
 	*/
-	private static function initConfig__fieldNameOnly2emptyArray($fieldConfigList) {
+	public static function initConfig__fieldNameOnly2emptyArray($fieldConfigList) {
 		$result = array();
 		// go through each item
-		foreach ( $fieldConfigList as $fieldName => $fieldConfig ) {
+		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			// when field-name only
 			// ===> assign empty config
-			if ( is_numeric($fieldName) and is_string($fieldConfig) ) {
-				$fieldName = $fieldConfig;
-				$fieldConfig = array();
+			if ( is_numeric($fieldName) and is_string($cfg) ) {
+				$fieldName = $cfg;
+				$cfg = array();
 			}
 			// when config is true   ===> assign empty config
 			// when config is string ===> use as label
-			if ( $fieldConfig === true ) $fieldConfig = array();
-			elseif ( is_string($fieldConfig) ) $fieldConfig = array('label' => $fieldConfig);
+			if ( $cfg === true ) $cfg = array();
+			elseif ( is_string($cfg) ) $cfg = array('label' => $cfg);
 			// when config is not false
 			// ===> (allow empty array)
 			// ===> put into result
-			if ( $fieldConfig !== false and $fieldConfig !== null ) $result[$fieldName] = $fieldConfig;
+			if ( $cfg !== false and $cfg !== null ) $result[$fieldName] = $cfg;
 		}
 		// done!
 		return $result;
