@@ -607,20 +607,16 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		} // foreach-step
 		// field config : field-name-only to empty-array
 		self::$config['fieldConfig'] = self::initConfig__defaultEmptyConfig(self::$config['fieldConfig'] ?? []);
-		// field config : remove [options] when false
-		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			if ( isset($cfg['options']) and $cfg['options'] === false ) {
-				unset(self::$config['fieldConfig'][$fieldName]['options']);
-			}
-		}
 		// field config : default format
 		self::$config['fieldConfig'] = self::initConfig__defaultFieldFormat(self::$config['fieldConfig']);
-		// field config : default label & inline-label & placeholder
+		// field config : default label/inline-label/placeholder
 		self::$config['fieldConfig'] = self::initConfig__defaultFieldLabel(self::$config['fieldConfig']);
+		// field config : default dropdown config
+		self::$config['fieldConfig'] = self::initConfig__defaultDropdownConfig(self::$config['fieldConfig']);
 		// field config : default file config
-		self::$config['fieldConfig'] = self::initConfig__fixFileField(self::$config['fieldConfig']);
+		self::$config['fieldConfig'] = self::initConfig__defaultFileConfig(self::$config['fieldConfig']);
 		// field config : default table config
-		self::$config['fieldConfig'] = self::initConfig__fixTableField(self::$config['fieldConfig']);
+		self::$config['fieldConfig'] = self::initConfig__defaultTableConfig(self::$config['fieldConfig']);
 		// notification : default & fix format
 		if ( !isset(self::$config['notification']) ) self::$config['notification'] = false;
 		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
@@ -670,6 +666,47 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
+			fix field config for dropdown field
+		</description>
+		<io>
+			<in>
+				<structure name="~return~">
+					<structure name="~fieldName~">
+						<string name="format" optional="yes" comments="dropdown|checkbox|radio" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~">
+					<structure name="~fieldName~">
+						<structure name="$options" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultDropdownConfig($fieldConfigList) {
+		// go through config of each field
+		foreach ( $fieldConfigList as $fieldName => $cfg ) {
+			// add empty [options] when not specified
+			if ( !isset($cfg['options']) and isset($cfg['format']) and in_array($cfg['format'], ['dropdown','checkbox','radio']) ) {
+				$fieldConfigList[$fieldName]['options'] = array();
+			// remove [options] when false (but allow empty array)
+			} elseif ( isset($cfg['options']) and ( $cfg['options'] === false or $cfg['options'] === null ) ) {
+				unset($fieldConfigList[$fieldName]['options']);
+			}
+		}
+		// done!
+		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			fix field config with field-name specified only
 			===> when only field-name specified, use field-name as key & apply empty config
 			===> when false or null, remove field config
@@ -695,7 +732,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	*/
 	public static function initConfig__defaultEmptyConfig($fieldConfigList) {
 		$result = array();
-		// go through each item
+		// go through config of each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			// when field-name only
 			// ===> assign empty config
@@ -729,7 +766,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				<structure name="$fieldConfigList">
 					<structure name="~fieldName~">
 						<string name="format" optional="yes" />
-						<array name="options" optional="yes" />
+						<structure name="options" optional="yes" />
 					</structure>
 				</structure>
 			</in>
@@ -743,8 +780,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__fixFileField($fieldConfigList) {
-		// go through each field
+	public static function initConfig__defaultFileConfig($fieldConfigList) {
+		// go through config of each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			// certain format only
 			if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) {
@@ -775,7 +812,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				<structure name="$fieldConfigList">
 					<structure name="~fieldName~">
 						<string name="format" optional="yes" />
-						<array name="options" optional="yes" />
+						<structure name="options" optional="yes" />
 					</structure>
 				</structure>
 			</in>
@@ -790,13 +827,11 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	</fusedoc>
 	*/
 	public static function initConfig__defaultFieldFormat($fieldConfigList) {
-		// go through each field
+		// go through config of each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			if ( empty($cfg['format']) and isset($cfg['options']) ) {
 				$fieldConfigList[$fieldName]['format'] = 'dropdown';
-			} elseif ( empty($cfg['format']) ) {
-				$fieldConfigList[$fieldName]['format'] = 'text';
-			} elseif ( $cfg['format'] === true ) {
+			} elseif ( empty($cfg['format']) or $cfg['format'] === true ) {
 				$fieldConfigList[$fieldName]['format'] = 'text';
 			}
 		}
@@ -820,8 +855,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__fixTableField($fieldConfigList) {
-		// go through each field
+	public static function initConfig__defaultTableConfig($fieldConfigList) {
+		// go through config of each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			// table format only
 			if ( isset($cfg['format']) and $cfg['format'] == 'table' and isset($cfg['tableRow']) ) {
@@ -875,7 +910,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	</fusedoc>
 	*/
 	public static function initConfig__defaultFieldLabel($fieldConfigList) {
-		// go through each field
+		// go through config of each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
 			// force label to be assigned
 			if ( !isset($cfg['label']) ) $cfg['label'] = true;
