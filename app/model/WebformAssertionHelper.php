@@ -22,7 +22,39 @@ class WebformHelper {
 	/**
 	<fusedoc>
 		<description>
-			check agaist in-progress form data
+			determine specific webform cached data to access
+		</description>
+		<io>
+			<in>
+				<string name="$beanType" scope="self" />
+				<number name="$beanID" scope="self" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function init($beanType, $beanID=null)
+		// validation
+		if ( empty($beanType) ) {
+			self::$error = 'Property [beanType] is required';
+			return false;
+		}
+		// set properties
+		self::$beanType = $beanType;
+		self::$beanID = $beanID;
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check agaist unsaved form data
 			===> whether specific field contains certain string
 			===> find in array or find in string
 		</description>
@@ -51,7 +83,7 @@ class WebformHelper {
 	/**
 	<fusedoc>
 		<description>
-			check against in-progress form data
+			check against unsaved form data
 			===> whether specific field equals to certain value
 		</description>
 		<io>
