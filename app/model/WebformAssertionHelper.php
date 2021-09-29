@@ -6,12 +6,11 @@
 	</description>
 </fusedoc>
 */
-class WebformHelper {
+class WebformAssertionHelper {
 
 
-	// essential properties
-	private static $beanType;
-	private static $beanID;
+	// property
+	private static $config = array('beanType' => null, 'beanID' => 0);
 	// get (latest) error message
 	private static $error;
 	public static function error() { return self::$error; }
@@ -35,17 +34,49 @@ class WebformHelper {
 		</io>
 	</fusedoc>
 	*/
-	public static function init($beanType, $beanID=null)
+	public static function init($beanType, $beanID=null) {
 		// validation
 		if ( empty($beanType) ) {
 			self::$error = 'Property [beanType] is required';
 			return false;
 		}
 		// set properties
-		self::$beanType = $beanType;
-		self::$beanID = $beanID;
+		if ( !empty($beanType) ) self::$config['beanType'] = $beanType;
+		if ( !empty($beanID)   ) self::$config['beanID']   = $beanID;
 		// done!
 		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			access cached data of specific webform before init config
+		</description>
+		<io>
+			<in>
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~beanType~:~beanID~" />
+				</structure>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<string name="beanType" />
+					<number name="beanID" />
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function dataUnsaved() {
+		$beanID = !empty($beanID) ? $beanID : 0;
+		$token = self::$config['beanType'].':'.self::$config['beanID'];
+		return $_SESSION['webform'][$token] ?? array();
 	}
 
 
@@ -69,10 +100,9 @@ class WebformHelper {
 		</io>
 	</fusedoc>
 	*/
-	public static function assertContains($fieldName, $compareValue) {
-		$formData = self::data();
-		if ( $formData === false ) throw new Exception(self::error());
-		$fieldValue = self::getNestedArrayValue($formData, $fieldName);
+	public static function fieldContains($fieldName, $compareValue) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
 		if ( is_array($fieldValue) ) return in_array($compareValue, $fieldValue);
 		return ( strpos($fieldValue, $compareValue) !== false );
 	}
@@ -97,68 +127,10 @@ class WebformHelper {
 		</io>
 	</fusedoc>
 	*/
-	public static function assertEqual($fieldName, $compareValue) {
-		$formData = self::data();
-		if ( $formData === false ) throw new Exception(self::error());
-		return ( self::getNestedArrayValue($formData, $fieldName) == $compareValue );
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			check if the helper is ready for assertion
-			===> whether [beanType] and [beanID] specified
-		</description>
-		<io>
-			<in>
-				<string name="$beanType" scope="self" />
-				<number name="$beanID" scope="self" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function assertReady() {
-		if ( empty(self::$beanType) ) {
-			self::$error = 'Property [beanType] is required';
-			return false;
-		}
-		return true;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			access cached data of specific webform before init config
-		</description>
-		<io>
-			<in>
-				<!-- cache -->
-				<structure name="webform" scope="$_SESSION">
-					<structure name="~beanType~:~beanID~" />
-				</structure>
-				<!-- parameter -->
-				<string name="beanType" />
-				<number name="beanID" optional="yes" default="0" />
-			</in>
-			<out>
-				<structure name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function dataUnsaved($beanType, $beanID=null) {
-		$beanID = !empty($beanID) ? $beanID : 0;
-		$token = $beanType.':'.$beanID;
-		return isset($_SESSION['webform'][$token]) ? $_SESSION['webform'][$token] : array();
+	public static function fieldEqual($fieldName, $compareValue) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
+		return ( $fieldValue == $compareValue );
 	}
 
 
@@ -185,7 +157,9 @@ class WebformHelper {
 	</fusedoc>
 	*/
 	public static function fieldValue($fieldName) {
-
+		$data = self::dataUnsaved();
+		if ( $data === false ) return false;
+		return self::getNestedArrayValue($data, $fieldName);
 	}
 
 
@@ -213,6 +187,34 @@ class WebformHelper {
 		$result = &$nestedArray;
 		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
 		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check if the helper is ready for assertion
+			===> whether [beanType] and [beanID] specified
+		</description>
+		<io>
+			<in>
+				<string name="$beanType" scope="self" />
+				<number name="$beanID" scope="self" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function ready() {
+		if ( empty(self::$beanType) ) {
+			self::$error = 'Property [beanType] is required';
+			return false;
+		}
+		return true;
 	}
 
 

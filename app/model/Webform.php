@@ -76,7 +76,8 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function clear() {
-		if ( isset($_SESSION['webform'][self::token()]) ) unset($_SESSION['webform'][self::token()]);
+		$token = self::token();
+		if ( isset($_SESSION['webform'][$token]) ) unset($_SESSION['webform'][$token]);
 		return true;
 	}
 
@@ -1193,9 +1194,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// ===> e.g. [ 'to' => 'foo@bar.com' ]
 		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function() use ($cfg, $formData){
 			$emailField = substr($cfg['to'], 1);
-			$emailFieldValue = WebformHelper::getNestedArrayValue($formData, $emailField);
+			$emailFieldValue = WebformAssertionHelper::getNestedArrayValue($formData, $emailField);
 			if ( $emailFieldValue === false ) {
-				self::$error = WebformHelper::error();
+				self::$error = WebformAssertionHelper::error();
 				return false;
 			}
 			return $emailFieldValue;
@@ -1358,7 +1359,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$dataFieldName = self::fieldName2dataFieldName($fieldName);
 		// determine value to show in field
 		// ===> precedence: defined-value > submitted-value > default-value > empty
-		$fieldValue = $fieldConfig['value'] ?? WebformHelper::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
+		$fieldValue = $fieldConfig['value'] ?? WebformAssertionHelper::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
 		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image','signature']) ) {
 			$xfa['uploadHandler'] = F::command('controller').'.upload';
@@ -1789,7 +1790,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			===> use session to store multiple set of form data and distinguish by token
 			[known issue]
 			===> this is still incapable to open multiple webforms to submit new form
-			===> because both windows will share same session (token=[~beanType~::0])
+			===> because both windows will share same session which [token=~beanType~:0]
 		</description>
 		<io>
 			<in>
@@ -1800,7 +1801,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				</structure>
 			</in>
 			<out>
-				<string name="~return~" value="~beanType~::~beanID~" />
+				<string name="~return~" value="~beanType~:~beanID~" />
 			</out>
 		</io>
 	</fusedoc>
