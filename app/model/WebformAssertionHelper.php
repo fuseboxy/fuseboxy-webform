@@ -85,9 +85,9 @@ class WebformAssertionHelper {
 	/**
 	<fusedoc>
 		<description>
-			check agaist unsaved form data
-			===> whether specific field contains certain string
+			check whether specific field contains certain string
 			===> find in array or find in string
+			===> check against unsaved form data
 		</description>
 		<io>
 			<in>
@@ -113,8 +113,8 @@ class WebformAssertionHelper {
 	/**
 	<fusedoc>
 		<description>
-			check against unsaved form data
-			===> whether specific field equals to certain value
+			check whether specific field equals to certain value
+			===> check against unsaved form data
 		</description>
 		<io>
 			<in>
@@ -128,6 +128,32 @@ class WebformAssertionHelper {
 	</fusedoc>
 	*/
 	public static function fieldEqual($fieldName, $compareValue) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
+		return ( $fieldValue == $compareValue );
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether specific field is one of values in the array
+			===> check against unsaved form data
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
+				<string name="$compareValue" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function fieldInArray($fieldName, $compareValue) {
 		$fieldValue = self::fieldValue($fieldName);
 		if ( $fieldValue === false ) throw new Exception(self::error());
 		return ( $fieldValue == $compareValue );
@@ -187,34 +213,6 @@ class WebformAssertionHelper {
 		$result = &$nestedArray;
 		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
 		return $result;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			check if the helper is ready for assertion
-			===> whether [beanType] and [beanID] specified
-		</description>
-		<io>
-			<in>
-				<string name="$beanType" scope="self" />
-				<number name="$beanID" scope="self" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function ready() {
-		if ( empty(self::$beanType) ) {
-			self::$error = 'Property [beanType] is required';
-			return false;
-		}
-		return true;
 	}
 
 
