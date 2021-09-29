@@ -83,6 +83,36 @@ class WebformHelper {
 	/**
 	<fusedoc>
 		<description>
+			access cached data of specific webform before init config
+		</description>
+		<io>
+			<in>
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~beanType~:~beanID~" />
+				</structure>
+				<!-- parameter -->
+				<string name="beanType" />
+				<number name="beanID" optional="yes" default="0" />
+			</in>
+			<out>
+				<structure name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function dataUnsaved($beanType, $beanID=null) {
+		$beanID = !empty($beanID) ? $beanID : 0;
+		$token = $beanType.':'.$beanID;
+		return isset($_SESSION['webform'][$token]) ? $_SESSION['webform'][$token] : array();
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			access field value in cache
 		</description>
 		<io>
