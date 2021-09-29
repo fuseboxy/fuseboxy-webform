@@ -655,10 +655,18 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				<structure name="$buttonList">
 					<string name="~btnKey~" value="~btnText~" />
 					<structure name="~btnKey~">
+						<string name="text" optional="yes" />
+						<string name="icon" optional="yes" />
 					</structure>
 				</structure>
 			</in>
 			<out>
+				<structure name="~return~">
+					<structure name="~btnKey~">
+						<string name="text" />
+						<string name="icon" />
+					</structure>
+				</structure>
 			</out>
 		</io>
 	</fusedoc>
@@ -666,14 +674,14 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	public static function initConfig__defaultCustomButton($buttonList) {
 		// default config for all possible buttons
 		$result = array(
-			'next' => array('text' => 'Next', 'icon' => 'fa fa-arrow-right ml-2'),
-			'back' => array('text' => 'Back', 'icon' => 'fa fa-arrow-left mr-1'),
-			'edit' => array('text' => 'Edit', 'icon' => 'fa fa-edit mr-1'),
-			'submit' => array('text' => 'Submit', 'icon' => 'fa fa-paper-plane mr-1'),
-			'update' => array('text' => 'Update', 'icon' => 'fa fa-file-import mr-1'),
-			'print' => array('text' => 'Print', 'icon' => 'fa fa-print mr-1'),
-			'autosave' => array('text' => 'Auto-save', 'icon' => false),
-			'chooseFile' => array('text' => 'Choose File', 'icon' => false),
+			'next'          => array('text' => 'Next', 'icon' => 'fa fa-arrow-right ml-2'),
+			'back'          => array('text' => 'Back', 'icon' => 'fa fa-arrow-left mr-1'),
+			'edit'          => array('text' => 'Edit', 'icon' => 'fa fa-edit mr-1'),
+			'print'         => array('text' => 'Print', 'icon' => 'fa fa-print mr-1'),
+			'submit'        => array('text' => 'Submit', 'icon' => 'fa fa-paper-plane mr-1'),
+			'update'        => array('text' => 'Update', 'icon' => 'fa fa-file-import mr-1'),
+			'autosave'      => array('text' => 'Autosave', 'icon' => false),
+			'chooseFile'    => array('text' => 'Choose File', 'icon' => false),
 			'chooseAnother' => array('text' => 'Choose Another File', 'icon' => false),
 		);
 		// go through each (user-defined) button
