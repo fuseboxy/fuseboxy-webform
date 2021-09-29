@@ -77,6 +77,34 @@ class WebformHelper {
 	/**
 	<fusedoc>
 		<description>
+			check if the helper is ready for assertion
+			===> whether [beanType] and [beanID] specified
+		</description>
+		<io>
+			<in>
+				<string name="$beanType" scope="self" />
+				<number name="$beanID" scope="self" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function assertReady() {
+		if ( empty(self::$beanType) ) {
+			self::$error = 'Property [beanType] is required';
+			return false;
+		}
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			access cached data of specific webform before init config
 		</description>
 		<io>
