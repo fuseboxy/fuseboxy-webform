@@ -113,6 +113,31 @@ class WebformAssertionHelper {
 	/**
 	<fusedoc>
 		<description>
+			check whether specific field is empty
+			===> check against unsaved form data
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function fieldEmpty($fieldName) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
+		return empty($fieldValue);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			check whether specific field equals to certain value
 			===> check against unsaved form data
 		</description>
@@ -145,7 +170,7 @@ class WebformAssertionHelper {
 		<io>
 			<in>
 				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
-				<string name="$compareValue" />
+				<array name="$array" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -153,10 +178,10 @@ class WebformAssertionHelper {
 		</io>
 	</fusedoc>
 	*/
-	public static function fieldInArray($fieldName, $compareValue) {
+	public static function fieldInArray($fieldName, $array) {
 		$fieldValue = self::fieldValue($fieldName);
 		if ( $fieldValue === false ) throw new Exception(self::error());
-		return ( $fieldValue == $compareValue );
+		return in_array($fieldValue, $array);
 	}
 
 
