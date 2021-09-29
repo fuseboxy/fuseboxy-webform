@@ -1057,6 +1057,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 						$tableCellFieldConfigList = self::initConfig__defaultEmptyConfig($tableCellFieldConfigList);
 						$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
 						$fieldConfigList[$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
+						// workaround to fix bug of dummy [format] attribute
+						unset($fieldConfigList[$fieldName]['tableRow'][$tableCellIndex]['format']);
 					}
 				} // foreach-tableRow
 			} // if-format-table
