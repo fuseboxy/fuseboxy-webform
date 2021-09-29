@@ -629,15 +629,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// opened & closed : default
 		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
 		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
-		// custom message : default
-		if ( empty(self::$config['customMessage']) ) self::$config['customMessage'] = array();
-		if ( empty(self::$config['customMessage']['closed']) ) self::$config['customMessage']['closed'] = 'Form was closed.';
-		if ( empty(self::$config['customMessage']['completed']) ) self::$config['customMessage']['completed'] = 'Your submission was received.';
-		if ( empty(self::$config['customMessage']['neverSaved']) ) self::$config['customMessage']['neverSaved'] = 'Never saved';
-		if ( empty(self::$config['customMessage']['lastSavedAt']) ) self::$config['customMessage']['lastSavedAt'] = 'Last saved at ';
-		if ( empty(self::$config['customMessage']['lastSavedOn']) ) self::$config['customMessage']['lastSavedOn'] = 'Last saved on ';
-		// custom button : default & fix
+		// custom button : default
 		self::$config['customButton'] = self::initConfig__defaultCustomButton(self::$config['customButton'] ?? []);
+		// custom message : default
+		self::$config['customMessage'] = self::initConfig__defaultCustomMessage(self::$config['customMessage'] ?? []);
 		// done!
 		return true;
 	}
@@ -649,6 +644,60 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	<fusedoc>
 		<description>
 			set default & fix format of custom buttons
+		</description>
+		<io>
+			<in>
+				<structure name="$customButtonList">
+					<string name="~btnKey~" value="~btnText~" />
+					<structure name="~btnKey~">
+						<string name="text" optional="yes" />
+						<string name="icon" optional="yes" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<structure name="~return~">
+					<structure name="~btnKey~">
+						<string name="text" />
+						<string name="icon" />
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultCustomButton($customButtonList) {
+		// all default
+		$result = array(
+			'next'          => array('text' => 'Next', 'icon' => 'fa fa-arrow-right ml-2'),
+			'back'          => array('text' => 'Back', 'icon' => 'fa fa-arrow-left mr-1'),
+			'edit'          => array('text' => 'Edit', 'icon' => 'fa fa-edit mr-1'),
+			'print'         => array('text' => 'Print', 'icon' => 'fa fa-print mr-1'),
+			'submit'        => array('text' => 'Submit', 'icon' => 'fa fa-paper-plane mr-1'),
+			'update'        => array('text' => 'Update', 'icon' => 'fa fa-file-import mr-1'),
+			'autosave'      => array('text' => 'Autosave', 'icon' => false),
+			'chooseFile'    => array('text' => 'Choose File', 'icon' => false),
+			'chooseAnother' => array('text' => 'Choose Another File', 'icon' => false),
+		);
+		// go through each custom button
+		foreach ( $customButtonList as $btnKey => $btnConfig ) {
+			// apply custom text (use as button text when only string specified)
+			if ( isset($btnConfig['text']) ) $result[$btnKey]['text'] = $btnConfig['text'];
+			elseif ( is_string($btnConfig) ) $result[$btnKey]['text'] = $btnConfig;
+			// apply custom icon
+			if ( isset($btnConfig['icon']) ) $result[$btnKey]['icon'] = $btnConfig['icon'];
+		}
+		// done!
+		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			set default of custom messages
 		</description>
 		<io>
 			<in>
@@ -671,26 +720,18 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__defaultCustomButton($buttonList) {
-		// default config for all possible buttons
+	public static function initConfig__defaultCustomMessage($customMessageList) {
+		// all default
 		$result = array(
-			'next'          => array('text' => 'Next', 'icon' => 'fa fa-arrow-right ml-2'),
-			'back'          => array('text' => 'Back', 'icon' => 'fa fa-arrow-left mr-1'),
-			'edit'          => array('text' => 'Edit', 'icon' => 'fa fa-edit mr-1'),
-			'print'         => array('text' => 'Print', 'icon' => 'fa fa-print mr-1'),
-			'submit'        => array('text' => 'Submit', 'icon' => 'fa fa-paper-plane mr-1'),
-			'update'        => array('text' => 'Update', 'icon' => 'fa fa-file-import mr-1'),
-			'autosave'      => array('text' => 'Autosave', 'icon' => false),
-			'chooseFile'    => array('text' => 'Choose File', 'icon' => false),
-			'chooseAnother' => array('text' => 'Choose Another File', 'icon' => false),
+			'closed'      => 'Form was closed.',
+			'completed'   => 'Your submission was received.',
+			'neverSaved'  => 'Never saved',
+			'lastSavedAt' => 'Last saved at ',
+			'lastSavedOn' => 'Last saved on ',
 		);
-		// go through each (user-defined) button
-		foreach ( $buttonList as $btnKey => $btnConfig ) {
-			// apply custom button text (use as button text when only string specified)
-			if ( isset($btnConfig['text']) ) $result[$btnKey]['text'] = $btnConfig['text'];
-			elseif ( is_string($btnConfig) ) $result[$btnKey]['text'] = $btnConfig;
-			// apply custom button icon
-			if ( isset($btnConfig['icon']) ) $result[$btnKey]['icon'] = $btnConfig['icon'];
+		// go through each custom message (and apply)
+		foreach ( $customMessageList as $msgKey => $msgText ) {
+			if ( !empty($msgText) ) $result[$msgKey] = $msgText;
 		}
 		// done!
 		return $result;
