@@ -25,7 +25,7 @@
 			</structure>
 			<structure name="$webform">
 				<structure name="customButton">
-					<structure name="chooseFile|chooseAnotherFile">
+					<structure name="chooseFile|chooseAnother">
 						<string name="text" />
 					</structure>
 				</structure>
@@ -41,7 +41,7 @@
 	</io>
 </fusedoc>
 */
-$btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnotherFile' ]['text'];
+$btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnother' ]['text'];
 ?><div class="webform-input-file"><?php
 	// field
 	if ( !empty($editable) ) :
@@ -76,7 +76,7 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 					data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
 					data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
 					data-button-text="<?php echo $webform['customButton']['chooseFile']['text']; ?>"
-					data-button-alt-text="<?php echo $webform['customButton']['chooseAnotherFile']['text']; ?>"
+					data-button-alt-text="<?php echo $webform['customButton']['chooseAnother']['text']; ?>"
 				><?php echo $btnText; ?></button><?php
 			endif;
 			// preview link

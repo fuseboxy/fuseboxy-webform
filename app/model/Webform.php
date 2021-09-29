@@ -538,7 +538,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					</structure>
 					<!-- default custom button -->
 					<structure name="customButton">
-						<structure name="next|back|edit|submit|update|print|chooseFile|chooseAnotherFile">
+						<structure name="next|back|edit|submit|update|print|autosave|chooseFile|chooseAnother">
 							<string name="icon" />
 							<string name="text" />
 						</structure>
@@ -674,7 +674,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			'print' => array('text' => 'Print', 'icon' => 'fa fa-print mr-1'),
 			'autosave' => array('text' => 'Auto-save', 'icon' => false),
 			'chooseFile' => array('text' => 'Choose File', 'icon' => false),
-			'chooseAnotherFile' => array('text' => 'Choose Another File', 'icon' => false),
+			'chooseAnother' => array('text' => 'Choose Another File', 'icon' => false),
 		);
 		// go through each (user-defined) button
 		foreach ( $buttonList as $btnKey => $btnConfig ) {

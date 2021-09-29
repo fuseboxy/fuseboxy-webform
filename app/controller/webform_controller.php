@@ -98,7 +98,7 @@
 					<string name="lastSavedOn" comments="for autosave only" />
 				</structure>
 				<structure name="customButton">
-					<structure name="next|back|edit|submit|update|print|chooseFile|chooseAnotherFile|autosave">
+					<structure name="next|back|edit|submit|update|print|autosave|chooseFile|chooseAnother">
 						<string name="icon" />
 						<string name="text" />
 					</structure>
