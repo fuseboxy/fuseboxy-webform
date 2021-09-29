@@ -636,28 +636,56 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( empty(self::$config['customMessage']['neverSaved']) ) self::$config['customMessage']['neverSaved'] = 'Never saved';
 		if ( empty(self::$config['customMessage']['lastSavedAt']) ) self::$config['customMessage']['lastSavedAt'] = 'Last saved at ';
 		if ( empty(self::$config['customMessage']['lastSavedOn']) ) self::$config['customMessage']['lastSavedOn'] = 'Last saved on ';
-		// custom button : default & fix format
-		if ( empty(self::$config['customButton']) ) self::$config['customButton'] = array();
-		foreach ( ['next','back','edit','submit','update','print','chooseFile','chooseAnotherFile','autosave'] as $key ) {
-			if ( !isset(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array();
-			// use as button text when only string specified
-			elseif ( is_string(self::$config['customButton'][$key]) ) self::$config['customButton'][$key] = array('text' => self::$config['customButton'][$key]);
-			// default button text
-			if ( !isset(self::$config['customButton'][$key]['text']) ) self::$config['customButton'][$key]['text'] = call_user_func(function() use ($key){
-				if ( $key == 'chooseAnotherFile' ) return 'Choose Another File';
-				elseif ( $key == 'chooseFile' ) return 'Choose File';
-				elseif ( $key == 'autosave' ) return 'Auto-save';
-				return ucfirst($key);
-			});
-		}
-		if ( !isset(self::$config['customButton']['next'  ]['icon']) ) self::$config['customButton']['next'  ]['icon'] = 'fa fa-arrow-right ml-2';
-		if ( !isset(self::$config['customButton']['back'  ]['icon']) ) self::$config['customButton']['back'  ]['icon'] = 'fa fa-arrow-left mr-1';
-		if ( !isset(self::$config['customButton']['edit'  ]['icon']) ) self::$config['customButton']['edit'  ]['icon'] = 'fa fa-edit mr-1';
-		if ( !isset(self::$config['customButton']['submit']['icon']) ) self::$config['customButton']['submit']['icon'] = 'fa fa-paper-plane mr-1';
-		if ( !isset(self::$config['customButton']['update']['icon']) ) self::$config['customButton']['update']['icon'] = 'fa fa-file-import mr-1';
-		if ( !isset(self::$config['customButton']['print' ]['icon']) ) self::$config['customButton']['print' ]['icon'] = 'fa fa-print mr-1';
+		// custom button : default & fix
+		self::$config['customButton'] = self::initConfig__defaultCustomButton(self::$config['customButton'] ?? []);
 		// done!
 		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			set default & fix format of custom buttons
+		</description>
+		<io>
+			<in>
+				<structure name="$buttonList">
+					<string name="~btnKey~" value="~btnText~" />
+					<structure name="~btnKey~">
+					</structure>
+				</structure>
+			</in>
+			<out>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultCustomButton($buttonList) {
+		// default config for all possible buttons
+		$result = array(
+			'next' => array('text' => 'Next', 'icon' => 'fa fa-arrow-right ml-2'),
+			'back' => array('text' => 'Back', 'icon' => 'fa fa-arrow-left mr-1'),
+			'edit' => array('text' => 'Edit', 'icon' => 'fa fa-edit mr-1'),
+			'submit' => array('text' => 'Submit', 'icon' => 'fa fa-paper-plane mr-1'),
+			'update' => array('text' => 'Update', 'icon' => 'fa fa-file-import mr-1'),
+			'print' => array('text' => 'Print', 'icon' => 'fa fa-print mr-1'),
+			'autosave' => array('text' => 'Auto-save', 'icon' => false),
+			'chooseFile' => array('text' => 'Choose File', 'icon' => false),
+			'chooseAnotherFile' => array('text' => 'Choose Another File', 'icon' => false),
+		);
+		// go through each (user-defined) button
+		foreach ( $buttonList as $btnKey => $btnConfig ) {
+			// apply custom button text (use as button text when only string specified)
+			if ( isset($btnConfig['text']) ) $result[$btnKey]['text'] = $btnConfig['text'];
+			elseif ( is_string($btnConfig) ) $result[$btnKey]['text'] = $btnConfig;
+			// apply custom button icon
+			if ( isset($btnConfig['icon']) ) $result[$btnKey]['icon'] = $btnConfig['icon'];
+		}
+		// done!
+		return $result;
 	}
 
 
