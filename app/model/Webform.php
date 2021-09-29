@@ -246,7 +246,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</io>
 	</fusedoc>
 	*/
-	public static function dataInProgress($beanType, $beanID=null) {
+	public static function dataUnsaved($beanType, $beanID=null) {
 		$beanID = !empty($beanID) ? $beanID : 0;
 		$token = $beanType.':'.$beanID;
 		return isset($_SESSION['webform'][$token]) ? $_SESSION['webform'][$token] : array();
