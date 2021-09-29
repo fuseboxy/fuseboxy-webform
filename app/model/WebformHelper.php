@@ -44,9 +44,6 @@ class WebformHelper {
 		if ( is_array($fieldValue) ) return in_array($compareValue, $fieldValue);
 		return ( strpos($fieldValue, $compareValue) !== false );
 	}
-	public static function assertNotContains($fieldName, $compareValue) {
-		return !self::assertContains($fieldName, $compareValue);
-	}
 
 
 
@@ -72,9 +69,6 @@ class WebformHelper {
 		$formData = self::data();
 		if ( $formData === false ) throw new Exception(self::error());
 		return ( self::getNestedArrayValue($formData, $fieldName) == $compareValue );
-	}
-	public static function assertNotEqual($fieldName, $compareValue) {
-		return !self::assertEqual($fieldName, $compareValue);
 	}
 
 
