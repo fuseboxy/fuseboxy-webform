@@ -552,11 +552,11 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// beanID : default
 		// ===> zero stands for submitting new form
 		// ===> non-zero stands for editing submitted form
-		if ( empty(self::$config['beanID']) ) self::$config['beanID'] = 0;
+		self::$config['beanID'] = self::$config['beanID'] ?? 0;
 		// allowEdit : default
-		if ( !isset(self::$config['allowEdit']) ) self::$config['allowEdit'] = false;
+		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
 		// allowPrint : default
-		if ( !isset(self::$config['allowPrint']) ) self::$config['allowPrint'] = false;
+		self::$config['allowPrint'] = self::$config['allowPrint'] ?? false;
 		// set default steps
 		// ===> when none specified
 		// ===> simply use all fields as specified in field-config
