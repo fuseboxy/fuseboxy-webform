@@ -1,8 +1,8 @@
 <?php /*
 <fusedoc>
 	<description>
-		helper component mainly for accessing webform cached data and making assertion
-		===> so that adjustment on webform config could be made according to user input
+		helper component mainly for accessing (yet-to-save) webform cached data and making assertion
+		===> so that adjustment could be made on webform config according to user input
 	</description>
 </fusedoc>
 */
@@ -75,6 +75,60 @@ class WebformHelper {
 	}
 	public static function assertNotEqual($fieldName, $compareValue) {
 		return !self::assertEqual($fieldName, $compareValue);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			access field value in cache
+		</description>
+		<io>
+			<in>
+				<!-- cached form data -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~token~">
+						<mixed name="~fieldName~" comments="could be nested field name" example="fullname|student.email" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<mixed name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function fieldValue($fieldName) {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			access nested-array value (e.g. data[student][name]) by period-delimited-list (e.g. student.name)
+		</description>
+		<io>
+			<in>
+				<array name="$nestedArray" />
+				<list name="$nestedKey" delim="." />
+			</in>
+			<out>
+				<mixed name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function getNestedArrayValue($nestedArray, $nestedKey) {
+		$nestedArray = $nestedArray ?: [];
+		$nestedKey = explode('.', $nestedKey);
+		$result = &$nestedArray;
+		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
+		return $result;
 	}
 
 
