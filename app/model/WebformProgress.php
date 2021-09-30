@@ -21,12 +21,14 @@ class WebformProgress {
 	/**
 	<fusedoc>
 		<description>
-			determine specific webform cached data to access
+			check whether specific field contains certain string
+			===> find in array or find in string
+			===> check against unsaved form data
 		</description>
 		<io>
 			<in>
-				<string name="$beanType" scope="self" />
-				<number name="$beanID" scope="self" />
+				<array_or_string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
+				<string name="$compareValue" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -34,17 +36,88 @@ class WebformProgress {
 		</io>
 	</fusedoc>
 	*/
-	public static function init($beanType, $beanID=null) {
-		// validation
-		if ( empty($beanType) ) {
-			self::$error = 'Property [beanType] is required';
-			return false;
-		}
-		// set properties
-		if ( !empty($beanType) ) self::$config['beanType'] = $beanType;
-		if ( !empty($beanID)   ) self::$config['beanID']   = $beanID;
-		// done!
-		return true;
+	public static function assertContains($fieldName, $compareValue) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
+		if ( is_array($fieldValue) ) return in_array($compareValue, $fieldValue);
+		return ( strpos($fieldValue, $compareValue) !== false );
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether specific field is empty
+			===> check against unsaved form data
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function assertEmpty($fieldName) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
+		return empty($fieldValue);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether specific field equals to certain value
+			===> check against unsaved form data
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
+				<string name="$compareValue" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function assertEqual($fieldName, $compareValue) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
+		return ( $fieldValue == $compareValue );
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether specific field is one of values in the array
+			===> check against unsaved form data
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
+				<array name="$array" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function assertInArray($fieldName, $array) {
+		$fieldValue = self::fieldValue($fieldName);
+		if ( $fieldValue === false ) throw new Exception(self::error());
+		return in_array($fieldValue, $array);
 	}
 
 
@@ -85,14 +158,12 @@ class WebformProgress {
 	/**
 	<fusedoc>
 		<description>
-			check whether specific field contains certain string
-			===> find in array or find in string
-			===> check against unsaved form data
+			determine specific webform cached data to access
 		</description>
 		<io>
 			<in>
-				<array_or_string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
-				<string name="$compareValue" />
+				<string name="$beanType" scope="self" />
+				<number name="$beanID" scope="self" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -100,88 +171,17 @@ class WebformProgress {
 		</io>
 	</fusedoc>
 	*/
-	public static function fieldContains($fieldName, $compareValue) {
-		$fieldValue = self::fieldValue($fieldName);
-		if ( $fieldValue === false ) throw new Exception(self::error());
-		if ( is_array($fieldValue) ) return in_array($compareValue, $fieldValue);
-		return ( strpos($fieldValue, $compareValue) !== false );
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			check whether specific field is empty
-			===> check against unsaved form data
-		</description>
-		<io>
-			<in>
-				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function fieldEmpty($fieldName) {
-		$fieldValue = self::fieldValue($fieldName);
-		if ( $fieldValue === false ) throw new Exception(self::error());
-		return empty($fieldValue);
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			check whether specific field equals to certain value
-			===> check against unsaved form data
-		</description>
-		<io>
-			<in>
-				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
-				<string name="$compareValue" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function fieldEqual($fieldName, $compareValue) {
-		$fieldValue = self::fieldValue($fieldName);
-		if ( $fieldValue === false ) throw new Exception(self::error());
-		return ( $fieldValue == $compareValue );
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			check whether specific field is one of values in the array
-			===> check against unsaved form data
-		</description>
-		<io>
-			<in>
-				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
-				<array name="$array" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function fieldInArray($fieldName, $array) {
-		$fieldValue = self::fieldValue($fieldName);
-		if ( $fieldValue === false ) throw new Exception(self::error());
-		return in_array($fieldValue, $array);
+	public static function init($beanType, $beanID=null) {
+		// validation
+		if ( empty($beanType) ) {
+			self::$error = 'Property [beanType] is required';
+			return false;
+		}
+		// set properties
+		if ( !empty($beanType) ) self::$config['beanType'] = $beanType;
+		if ( !empty($beanID)   ) self::$config['beanID']   = $beanID;
+		// done!
+		return true;
 	}
 
 
