@@ -210,33 +210,13 @@ class WebformAssertionHelper {
 	public static function fieldValue($fieldName) {
 		$data = self::dataUnsaved();
 		if ( $data === false ) return false;
-		return self::getNestedArrayValue($data, $fieldName);
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			access nested-array value (e.g. data[student][name]) by period-delimited-list (e.g. student.name)
-		</description>
-		<io>
-			<in>
-				<array name="$nestedArray" />
-				<list name="$nestedKey" delim="." />
-			</in>
-			<out>
-				<mixed name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function getNestedArrayValue($nestedArray, $nestedKey) {
-		$nestedArray = $nestedArray ?: [];
-		$nestedKey = explode('.', $nestedKey);
-		$result = &$nestedArray;
-		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
+		// search in nested array
+		$result = Webform::getNestedArrayValue($data, $fieldName);
+		if ( $result === false ) {
+			self::$error = Webform::error();
+			return false;
+		}
+		// done!
 		return $result;
 	}
 

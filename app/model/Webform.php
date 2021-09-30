@@ -372,6 +372,33 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
+			access nested-array value (e.g. data[student][name]) by period-delimited-list (e.g. student.name)
+		</description>
+		<io>
+			<in>
+				<array name="$nestedArray" />
+				<list name="$nestedKey" delim="." />
+			</in>
+			<out>
+				<mixed name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function getNestedArrayValue($nestedArray, $nestedKey) {
+		$nestedArray = $nestedArray ?: [];
+		$nestedKey = explode('.', $nestedKey);
+		$result = &$nestedArray;
+		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
+		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			set default & fix config
 		</description>
 		<io>
@@ -1194,12 +1221,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// ===> e.g. [ 'to' => 'foo@bar.com' ]
 		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function() use ($cfg, $formData){
 			$emailField = substr($cfg['to'], 1);
-			$emailFieldValue = WebformAssertionHelper::getNestedArrayValue($formData, $emailField);
-			if ( $emailFieldValue === false ) {
-				self::$error = WebformAssertionHelper::error();
-				return false;
-			}
-			return $emailFieldValue;
+			return self::getNestedArrayValue($formData, $emailField);
 		});
 		// validate recipient email
 		if ( empty($mail['to']) ) {
@@ -1359,7 +1381,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$dataFieldName = self::fieldName2dataFieldName($fieldName);
 		// determine value to show in field
 		// ===> precedence: defined-value > submitted-value > default-value > empty
-		$fieldValue = $fieldConfig['value'] ?? WebformAssertionHelper::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
+		$fieldValue = $fieldConfig['value'] ?? self::getNestedArrayValue($formData, $fieldName) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
 		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image','signature']) ) {
 			$xfa['uploadHandler'] = F::command('controller').'.upload';
