@@ -28,7 +28,7 @@ class WebformProgress {
 		<io>
 			<in>
 				<array_or_string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
-				<string name="$compareValue" />
+				<string name="$needle" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -36,11 +36,11 @@ class WebformProgress {
 		</io>
 	</fusedoc>
 	*/
-	public static function assertContains($fieldName, $compareValue) {
-		$fieldValue = self::fieldValue($fieldName);
-		if ( $fieldValue === false ) throw new Exception(self::error());
-		if ( is_array($fieldValue) ) return in_array($compareValue, $fieldValue);
-		return ( strpos($fieldValue, $compareValue) !== false );
+	public static function assertContains($fieldName, $needle) {
+		$haystack = self::fieldValue($fieldName);
+		if ( $haystack === false ) throw new Exception(self::error());
+		if ( is_array($haystack) ) return in_array($needle, $haystack);
+		return ( strpos($haystack, $needle) !== false );
 	}
 
 
@@ -106,7 +106,7 @@ class WebformProgress {
 		<io>
 			<in>
 				<string name="$fieldName" comments="could be nested field name" example="first_name|student.name" />
-				<array name="$array" />
+				<array name="$haystack" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -114,10 +114,10 @@ class WebformProgress {
 		</io>
 	</fusedoc>
 	*/
-	public static function assertInArray($fieldName, $array) {
-		$fieldValue = self::fieldValue($fieldName);
-		if ( $fieldValue === false ) throw new Exception(self::error());
-		return in_array($fieldValue, $array);
+	public static function assertInArray($fieldName, $haystack) {
+		$needle = self::fieldValue($fieldName);
+		if ( $needle === false ) throw new Exception(self::error());
+		return in_array($needle, $haystack);
 	}
 
 
