@@ -1,12 +1,12 @@
 <?php /*
 <fusedoc>
 	<description>
-		helper component mainly for accessing (yet-to-save) webform cached data and making assertion
+		component to access (yet-to-save) webform cached data and making assertion
 		===> so that adjustment could be made on webform config according to user input
 	</description>
 </fusedoc>
 */
-class WebformAssertionHelper {
+class WebformProgress {
 
 
 	// property
@@ -208,10 +208,11 @@ class WebformAssertionHelper {
 	</fusedoc>
 	*/
 	public static function fieldValue($fieldName) {
-		$data = self::dataUnsaved();
-		if ( $data === false ) return false;
+		// obtain cached data
+		$formData = self::dataUnsaved();
+		if ( $formData === false ) return false;
 		// search in nested array
-		$result = Webform::getNestedArrayValue($data, $fieldName);
+		$result = Webform::nestedArrayGet($fieldName, $formData);
 		if ( $result === false ) {
 			self::$error = Webform::error();
 			return false;

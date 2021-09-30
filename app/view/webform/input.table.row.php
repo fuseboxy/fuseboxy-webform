@@ -68,7 +68,7 @@ $rowID = 'row-'.$rowIndex;
 						foreach ( $tableFieldInSameColumn as $tableFieldName => $tableFieldConfig ) :
 							// determine actual field name (e.g. workexp.0.employer)
 							$actualFieldName = "{$fieldName}.{$rowIndex}.{$tableFieldName}";
-							$tableFieldValue = Webform::getNestedArrayValue($fieldValue, explode('.', $actualFieldName, 2)[1]);
+							$tableFieldValue = Webform::nestedArrayGet(explode('.', $actualFieldName, 2)[1], $fieldValue);
 							// display table field
 							echo Webform::renderField($actualFieldName, $tableFieldConfig, $tableFieldValue);
 						endforeach;
