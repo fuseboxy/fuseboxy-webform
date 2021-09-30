@@ -2113,8 +2113,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			}
 			// check options : checkbox (multiple selection)
 			if ( $cfg['format'] == 'checkbox' and $fieldValue !== '' ) {
-				foreach ( $fieldValue as $selectedItem ) if ( !isset($flattenOptions[$selectedItem]) ) {
-					$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$selectedItem})";
+				foreach ( $fieldValue as $selectedItem ) {
+					if ( !isset($flattenOptions[$selectedItem]) ) {
+						$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$selectedItem})";
+					}
 				}
 			}
 			// check options : dropdown & radio (single selection)
