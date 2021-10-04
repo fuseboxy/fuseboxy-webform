@@ -233,6 +233,11 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</description>
 		<io>
 			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="~fieldName~" optional="yes" />
+				</structure>
+				<!-- parameter -->
 				<string name="$fieldName" />
 			</in>
 			<out>
@@ -249,6 +254,30 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		}
 		// done!
 		return self::$config['fieldConfig'][$fieldName];
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			obtain field format of specific field
+		</description>
+		<io>
+			<in>
+				<string name="$fieldName" />
+			</in>
+			<out>
+				<string name="~return~" example="text|dropdown|file|.." />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function fieldFormat($fieldName) {
+		$fieldConfig = self::fieldConfig($fieldName);
+		if ( $fieldConfig === false ) return false;
+		return $fieldConfig['format'];
 	}
 
 
