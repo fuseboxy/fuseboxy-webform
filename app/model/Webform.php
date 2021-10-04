@@ -1152,9 +1152,42 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$nestedArray = $nestedArray ?: [];
 		$nestedKey = explode('.', $nestedKey);
 		$result = &$nestedArray;
-//var_dump($nestedKey, $nestedArray);
 		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
 		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			update nested-array (e.g. data[student][name]) by period-delimited-list (e.g. student.name)
+		</description>
+		<io>
+			<in>
+				<list name="$nestedKey" delim="." />
+				<array name="&$pointer" comments="nested array; pass by reference" />
+				<mixed name="$newValue" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function nestedArraySet($nestedKey, &$pointer, $newValue) {
+		// reach deeper of pointer according to nested-key
+		$token = strtok($nestedKey, '.');
+		while ( $token !== false ) {
+			if ( !isset($pointer[$token]) ) $pointer[$token] = array();
+			$pointer = &$pointer[$token];
+			$token = strtok('.');
+		}
+		// assign new value
+		$pointer = $newValue;
+		// done!
+		return true;
 	}
 
 
@@ -1615,34 +1648,24 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// load submitted data
 		$formData = self::data();
 		if ( $formData === false ) return false;
-/*
-		// go through each defined field
-		// ===> put into container
-
+		// convert submitted data
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-$fieldValue = self::nestedArrayGet($fieldName, $formData);
-// convert submitted data (when necessary)
-// ===> turn [checkbox] value into list
-// ===> turn [table] value into json
-if ( $cfg['format'] == 'checkbox' ) $bean->{$key} = implode('|', $fieldValue);
-elseif ( $cfg['format'] == 'table' ) $bean->{$key} = json_encode($fieldValue);
-else $bean->{$key} = $val;
+			$fieldValue = self::nestedArrayGet($fieldName, $formData);
+			// when field not appear in submitted data
+			if ( $fieldValue === null ) {
+				// do nothing
+				// (IMPORTANT : do not assign null value to avoid removing data already in database)
+			// turn [checkbox] array-value into list
+			} elseif ( $cfg['format'] == 'checkbox' ) {
+				self::nestedArraySet($fieldName, $formData, implode('|', $fieldValue));
+			// turn [table] complex-value into json
+			} elseif ( $cfg['format'] == 'table' ) {
+				self::nestedArraySet($fieldName, $formData, json_encode(array_values($fieldValue)));
+			}
 		}
-
-		// convert submitted data & put into container
-//var_dump(self::$config['fieldConfig']);
-var_dump(self::$config['fieldConfig']);
-		foreach ( $formData as $key => $val ) {
-var_dump($key);
-$fieldConfig = self::fieldConfig($key);
-if ( $fieldConfig['format'] == 'checkbox' ) $bean->{$key} = implode('|', $val);
-elseif ( $fieldConfig['format'] == 'table' ) $bean->{$key} = json_encode($val);
-else $bean->{$key} = $val;
-		}
-var_dump($formData);
-var_dump($bean);
-die();
-*/
+		// move converted data into container
+		// ===> could not use bean-import to avoid having error when array-value
+		foreach ( $formData as $key => $val ) $bean->{$key} = $val;
 		// add more info
 		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
 		else $bean->updated_on = date('Y-m-d H:i:s');
