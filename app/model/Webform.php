@@ -1123,6 +1123,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$nestedArray = $nestedArray ?: [];
 		$nestedKey = explode('.', $nestedKey);
 		$result = &$nestedArray;
+//var_dump($nestedKey, $nestedArray);
 		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
 		return $result;
 	}
@@ -1582,10 +1583,37 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			self::$error = ORM::error();
 			return false;
 		}
-		// put (updated) form data to container
+		// load submitted data
 		$formData = self::data();
 		if ( $formData === false ) return false;
-		foreach ( $formData as $key => $val ) $bean->{$key} = is_array($val) ? implode('|', $val) : $val;
+/*
+		// go through each defined field
+		// ===> put into container
+
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+$fieldValue = self::nestedArrayGet($fieldName, $formData);
+// convert submitted data (when necessary)
+// ===> turn [checkbox] value into list
+// ===> turn [table] value into json
+if ( $cfg['format'] == 'checkbox' ) $bean->{$key} = implode('|', $fieldValue);
+elseif ( $cfg['format'] == 'table' ) $bean->{$key} = json_encode($fieldValue);
+else $bean->{$key} = $val;
+		}
+
+		// convert submitted data & put into container
+//var_dump(self::$config['fieldConfig']);
+var_dump(self::$config['fieldConfig']);
+		foreach ( $formData as $key => $val ) {
+var_dump($key);
+$fieldConfig = self::fieldConfig($key);
+if ( $fieldConfig['format'] == 'checkbox' ) $bean->{$key} = implode('|', $val);
+elseif ( $fieldConfig['format'] == 'table' ) $bean->{$key} = json_encode($val);
+else $bean->{$key} = $val;
+		}
+var_dump($formData);
+var_dump($bean);
+die();
+*/
 		// add more info
 		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
 		else $bean->updated_on = date('Y-m-d H:i:s');
