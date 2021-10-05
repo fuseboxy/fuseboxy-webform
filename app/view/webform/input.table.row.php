@@ -81,7 +81,7 @@ $rowID = 'row-'.$rowIndex;
 					?><td width="50" class="text-center px-0 py-2">
 						<a 
 							href="<?php echo F::url($xfa['removeRow']); ?>"
-							class="btn btn-sm btn-square btn-danger mt-1"
+							class="btn btn-sm btn-square btn-danger btn-remove-row mt-1"
 							data-toggle="ajax-load"
 							data-target="#<?php echo $rowID; ?>"
 						><i class="fa fa-fw fa-minus small"></i></a>
