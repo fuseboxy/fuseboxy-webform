@@ -66,9 +66,13 @@ $rowID = 'row-'.$rowIndex;
 					?><td class="px-2 pt-2 pb-0" width="<?php echo $colWidth; ?>"><?php
 						// go through each field in same column
 						foreach ( $tableFieldInSameColumn as $tableFieldName => $tableFieldConfig ) :
-							// determine actual field name (e.g. workexp.0.employer)
+							// determine actual field name
+							// ===> e.g. workexp.0.employer
 							$actualFieldName = "{$fieldName}.{$rowIndex}.{$tableFieldName}";
-							$tableFieldValue = Webform::nestedArrayGet(explode('.', $actualFieldName, 2)[1], $fieldValue);
+							// create data container with correct structure
+							// ===> e.g. [ 'work' => [ 'exp' => [ 0 => ... ] ] ]
+							$tableFieldValue = array();
+							Webform::nestedArraySet($fieldName, $tableFieldValue, $fieldValue);
 							// display table field
 							echo Webform::renderField($actualFieldName, $tableFieldConfig, $tableFieldValue);
 						endforeach;
