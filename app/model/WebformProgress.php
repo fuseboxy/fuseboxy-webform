@@ -21,6 +21,44 @@ class WebformProgress {
 	/**
 	<fusedoc>
 		<description>
+			determine specific webform cached data to access
+		</description>
+		<io>
+			<in>
+				<string name="$beanType" />
+				<number name="$beanID" />
+			</in>
+			<out>
+				<!-- properties -->
+				<structure name="$config" scope="self">
+					<string name="beanType" />
+					<number name="beanID" />
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function init($beanType, $beanID=null) {
+		// validation
+		if ( empty($beanType) ) {
+			self::$error = 'Property [beanType] is required';
+			return false;
+		}
+		// set properties
+		if ( !empty($beanType) ) self::$config['beanType'] = $beanType;
+		if ( !empty($beanID)   ) self::$config['beanID']   = $beanID;
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			check whether specific field contains certain string
 			===> find in array or find in string
 			===> check against unsaved form data
@@ -150,38 +188,6 @@ class WebformProgress {
 		$beanID = !empty($beanID) ? $beanID : 0;
 		$token = self::$config['beanType'].':'.self::$config['beanID'];
 		return $_SESSION['webform'][$token] ?? array();
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			determine specific webform cached data to access
-		</description>
-		<io>
-			<in>
-				<string name="$beanType" scope="self" />
-				<number name="$beanID" scope="self" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function init($beanType, $beanID=null) {
-		// validation
-		if ( empty($beanType) ) {
-			self::$error = 'Property [beanType] is required';
-			return false;
-		}
-		// set properties
-		if ( !empty($beanType) ) self::$config['beanType'] = $beanType;
-		if ( !empty($beanID)   ) self::$config['beanID']   = $beanID;
-		// done!
-		return true;
 	}
 
 

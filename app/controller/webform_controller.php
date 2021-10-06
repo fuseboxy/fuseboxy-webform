@@ -149,7 +149,7 @@ switch ( $fusebox->action ) :
 	// submit new form
 	case 'new':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		F::error('Config [beanID] is invalid', !empty($webform['beanID']));
+		F::error('Config [beanID] must be empty', !empty($webform['beanID']));
 		// set form mode
 		Webform::mode('new');
 		// default step
@@ -347,7 +347,7 @@ switch ( $fusebox->action ) :
 
 	// view submitted form
 	case 'view':
-		F::error('Config [beanID] is invalid', empty($webform['beanID']));
+		F::error('Config [beanID] is required', empty($webform['beanID']));
 		// get record
 		$bean = ORM::get($webform['beanType'], $webform['beanID']);
 		F::error(ORM::error(), $bean === false);
