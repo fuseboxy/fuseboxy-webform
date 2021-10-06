@@ -1397,7 +1397,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// display multiple steps
 		ob_start();
 		foreach ( $all as $step => $fieldLayout ) {
-			foreach ( $fieldLayout as $key => $val ) echo Webform::renderStepRow($key, $val);
+			foreach ( $fieldLayout as $key => $val ) echo Webform::renderRow($key, $val);
 			if ( $step != array_key_last($all) ) echo '<br /><br />';
 		}
 		$formBody = ob_get_clean();
@@ -1467,6 +1467,82 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
+			render row in step
+		</description>
+		<io>
+			<in>
+				<string name="$stepRow" />
+				<string name="$colWidth" optional="yes" example="2|2|8" />
+			</in>
+			<out>
+				<string name="~return~" comments="display row in corresponding format" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function renderRow($stepRow, $colWidth=null) {
+		$type = self::stepRowType($stepRow);
+		if ( $type === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
+		// fix variables
+		$stepRow  = trim($stepRow);
+		$colWidth = trim($colWidth);
+		// determine method to invoke
+		$class  = __CLASS__;
+		$method = __FUNCTION__.'__'.$type;
+		// done!
+		return $class::$method($stepRow, $colWidth);
+	}
+	// heading
+	// ===> (e.g.) ### Personal Details
+	public static function renderRow__heading($stepRow) {
+		$size = 'h'.(strlen($stepRow)-strlen(ltrim($stepRow, '#')));
+		$text = trim(ltrim($stepRow, '#'));
+		return "<div class='{$size}'>{$text}</div>";
+	}
+	// direct output
+	// ===> (e.g.) ~~<br>
+	public static function renderRow__output($stepRow) {
+		return '<div>'.trim(ltrim(trim($stepRow), '~')).'</div>';
+	}
+	// horizontal line
+	// ===> (e.g.) ---
+	public static function renderRow__line($stepRow) {
+		return '<hr />';
+	}
+	// field list
+	// ===> (e.g.) aaa|bbb|ccc|ddd,eee|x.y.z
+	public static function renderRow__fields($fieldNameList, $fieldWidthList) {
+		// fix variables
+		$fieldNameList = explode('|', $fieldNameList);
+		if ( !is_array($fieldWidthList) ) $fieldWidthList = explode('|', $fieldWidthList);
+		// capture output
+		ob_start();
+		?><div class="form-row"><?php
+			foreach ( $fieldNameList as $i => $fieldNameSubList ) :
+				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
+				// determine column class
+				// ===> example : "foo,bar,ab_cd,x.y.z"
+				// ===> result  : "webform-col-foo-bar-ab_cd-x-y-z"
+				$colClassName = 'webform-col-'.str_replace([',','.'], '-', $fieldNameSubList);
+				// display column
+				// ===> for example : "ddd,eee"
+				// ===> show [ddd] and [eee] fields in same column vertically
+				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
+					$fieldNameSubList = explode(',', $fieldNameSubList);
+					foreach ( $fieldNameSubList as $fieldName ) echo self::renderField($fieldName);
+				?></div><?php
+			endforeach; // foreach-fieldNameList
+		?></div><?php
+		// done!
+		return ob_get_clean();
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			render form of specific step
 		</description>
 		<io>
@@ -1508,88 +1584,12 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$formStep = $step;
 		// display single step
 		ob_start();
-		foreach ( self::$config['steps'][$step] as $key => $val ) echo Webform::renderStepRow($key, $val);
+		foreach ( self::$config['steps'][$step] as $key => $val ) echo Webform::renderRow($key, $val);
 		$formBody = ob_get_clean();
 		// done!
 		ob_start();
 		include F::appPath('view/webform/form.php');
 		include F::appPath('view/webform/autosave.php');
-		return ob_get_clean();
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			render step row key according to type
-		</description>
-		<io>
-			<in>
-				<string name="$stepRow" />
-				<string name="$colWidth" optional="yes" example="2|2|8" />
-			</in>
-			<out>
-				<string name="~return~" comments="display row in corresponding format" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function renderStepRow($stepRow, $colWidth=null) {
-		$type = self::stepRowType($stepRow);
-		if ( $type === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
-		// fix variables
-		$stepRow  = trim($stepRow);
-		$colWidth = trim($colWidth);
-		// determine method to invoke
-		$class  = __CLASS__;
-		$method = __FUNCTION__.'__'.$type;
-		// done!
-		return $class::$method($stepRow, $colWidth);
-	}
-	// heading
-	// ===> (e.g.) ### Personal Details
-	public static function renderStepRow__heading($stepRow) {
-		$size = 'h'.(strlen($stepRow)-strlen(ltrim($stepRow, '#')));
-		$text = trim(ltrim($stepRow, '#'));
-		return "<div class='{$size}'>{$text}</div>";
-	}
-	// direct output
-	// ===> (e.g.) ~~<br>
-	public static function renderStepRow__output($stepRow) {
-		return '<div>'.trim(ltrim(trim($stepRow), '~')).'</div>';
-	}
-	// horizontal line
-	// ===> (e.g.) ---
-	public static function renderStepRow__line($stepRow) {
-		return '<hr />';
-	}
-	// field list
-	// ===> (e.g.) aaa|bbb|ccc|ddd,eee|x.y.z
-	public static function renderStepRow__fields($fieldNameList, $fieldWidthList) {
-		// fix variables
-		$fieldNameList = explode('|', $fieldNameList);
-		if ( !is_array($fieldWidthList) ) $fieldWidthList = explode('|', $fieldWidthList);
-		// capture output
-		ob_start();
-		?><div class="form-row"><?php
-			foreach ( $fieldNameList as $i => $fieldNameSubList ) :
-				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
-				// determine column class
-				// ===> example : "foo,bar,ab_cd,x.y.z"
-				// ===> result  : "webform-col-foo-bar-ab_cd-x-y-z"
-				$colClassName = 'webform-col-'.str_replace([',','.'], '-', $fieldNameSubList);
-				// display column
-				// ===> for example : "ddd,eee"
-				// ===> show [ddd] and [eee] fields in same column vertically
-				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
-					$fieldNameSubList = explode(',', $fieldNameSubList);
-					foreach ( $fieldNameSubList as $fieldName ) echo self::renderField($fieldName);
-				?></div><?php
-			endforeach; // foreach-fieldNameList
-		?></div><?php
-		// done!
 		return ob_get_clean();
 	}
 
