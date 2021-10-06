@@ -402,6 +402,8 @@ switch ( $fusebox->action ) :
 		// more essential variables
 		$fieldName = $arguments['fieldName'];
 		$fieldValue = array();
+		// button
+		$xfa['removeRow'] = F::command('controller').'.removeRow';
 		// display
 		include F::appPath('view/webform/input.table.row.php');
 		break;
