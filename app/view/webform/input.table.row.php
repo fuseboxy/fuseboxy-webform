@@ -36,7 +36,7 @@
 $rowIndex = $rowIndex ?? Util::uuid();
 $rowID = 'row-'.$rowIndex;
 ?><div id="<?php echo $rowID; ?>" class="webform-input-table-row">
-	<table class="table table-bordered small mb-0">
+	<table class="table table-bordered table-hover small mb-0">
 		<tbody class="bg-white">
 			<tr><?php
 				// display each field
