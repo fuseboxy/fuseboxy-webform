@@ -1396,7 +1396,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// display multiple steps
 		ob_start();
 		foreach ( $all as $step => $fieldLayout ) {
-			foreach ( $fieldLayout as $key => $val ) echo Webform::renderRow($key, $val);
+			foreach ( $fieldLayout as $key => $val ) echo self::renderRow($key, $val);
 			if ( $step != array_key_last($all) ) echo '<br /><br />';
 		}
 		$formBody = ob_get_clean();
@@ -1583,7 +1583,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$formStep = $step;
 		// display single step
 		ob_start();
-		foreach ( self::$config['steps'][$step] as $key => $val ) echo Webform::renderRow($key, $val);
+		foreach ( self::$config['steps'][$step] as $key => $val ) echo self::renderRow($key, $val);
 		$formBody = ob_get_clean();
 		// done!
 		ob_start();
