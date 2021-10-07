@@ -1656,10 +1656,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				// do nothing
 				// (IMPORTANT : do not assign null value to avoid removing data already in database)
 			// turn [checkbox] array-value into list
-			} elseif ( $cfg['format'] == 'checkbox' ) {
+			} elseif ( $cfg['format'] == 'checkbox' and !empty($fieldValue) ) {
 				self::nestedArraySet($fieldName, $formData, implode('|', $fieldValue));
 			// turn [table] complex-value into json
-			} elseif ( $cfg['format'] == 'table' ) {
+			} elseif ( $cfg['format'] == 'table' and !empty($fieldValue) ) {
 				self::nestedArraySet($fieldName, $formData, json_encode(array_values($fieldValue)));
 			}
 		}
