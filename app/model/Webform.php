@@ -1149,10 +1149,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	</fusedoc>
 	*/
 	public static function nestedArrayGet($nestedKey, $nestedArray) {
-		$nestedArray = $nestedArray ?: [];
 		$nestedKey = explode('.', $nestedKey);
-		$result = &$nestedArray;
-		foreach ( $nestedKey as $key ) $result = &$result[$key] ?? null;
+		$result = $nestedArray;
+		foreach ( $nestedKey as $key ) $result = $result[$key] ?? null;
 		return $result;
 	}
 
