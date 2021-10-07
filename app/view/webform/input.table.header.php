@@ -29,14 +29,14 @@
 */ ?>
 <div class="webform-input-table-header">
 	<table class="table table-bordered small mb-0">
-		<thead class="bg-light"><?php
+		<thead><?php
 			// check whether to show button
 			$showAppendButton = ( !empty($xfa['appendRow']) and !empty($fieldConfig['appendRow']) );
 			// table title
 			if ( !empty($fieldConfig['tableTitle']) ) :
 				$columnCount = count($fieldConfig['tableHeader'] ?? []);
 				if ( $showAppendButton ) $columnCount++;
-				?><tr><th colspan="<?php echo $columnCount; ?>" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th></tr><?php
+				?><tr class="thead-light"><th colspan="<?php echo $columnCount; ?>" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th></tr><?php
 			endif;
 			// table header
 			?><tr class="text-center bg-white"><?php
