@@ -38,7 +38,7 @@
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
 		/><?php
 		// calendar icon
-		?><div class="input-group-append"><span class="input-group-text bg-transparent px-2 bl-0"><i class="far fa-calendar-alt op-30"></i></span></div><?php
+		?><div class="input-group-append"><span class="input-group-text bg-white px-2 bl-0"><i class="far fa-calendar-alt op-30"></i></span></div><?php
 	// readonly
 	elseif ( $fieldValue !== '' ) :
 		?><div class="form-control-plaintext text-primary"><strong><?php echo $fieldValue; ?></strong></div><?php
