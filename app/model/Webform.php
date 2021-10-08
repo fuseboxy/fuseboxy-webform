@@ -23,7 +23,8 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			load record from database according to config and load record data to session cache
+			load record from database to [self-bean] property (as original record data)
+			load record data to session cache (for on-going changes)
 		</description>
 		<io>
 			<in>
@@ -128,6 +129,7 @@ class Webform {
 	*/
 	public static function clear() {
 		$token = self::token();
+		if ( $token === false ) return false;
 		if ( isset($_SESSION['webform'][$token]) ) unset($_SESSION['webform'][$token]);
 		return true;
 	}

@@ -1,16 +1,10 @@
 <?php /*
 <fusedoc>
 	<description>
-		multiple ways to define [bean] config
-		1. string
-		   - new  : 'foo'
-		   - edit : 'foo:123'
-		2. array
-		   - new  : array('type' => 'foo')
-		   - edit : array('type' => 'foo', 'id' => 123)
-		3. object
-		   - new  : ORM::new('foo')
-		   - edit : ORM::get('foo', 123)
+		Different ways to define [bean] config
+		1. string : 'foo:123'
+		2. array  : array('type' => 'foo', 'id' => 123)
+		3. object : ORM::get('foo', 123)
 	</description>
 	<io>
 		<in>
@@ -140,13 +134,13 @@ F::error(Webform::error(), $valid === false);
 switch ( $fusebox->action ) :
 
 
-	// init form
+	// reset form
 	case 'index':
 	case 'start':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-// reset form data
-//$started = Webform::start();
-//F::error(Webform::error(), $started === false);
+		// clear any changes made
+		$cleared = Webform::clear();
+		F::error(Webform::error(), $cleared === false);
 		// new or view
 		F::redirect("{$fusebox->controller}.new", empty(Webform::$bean->id));
 		F::redirect("{$fusebox->controller}.view");
@@ -160,8 +154,8 @@ switch ( $fusebox->action ) :
 		// set form mode
 		Webform::mode('new');
 // pre-load data (if any)
-//$started = Webform::start();
-//F::error(Webform::error(), $started === false);
+$started = Webform::start();
+F::error(Webform::error(), $started === false);
 		// default step
 		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
 		F::error(Webform::error(), $arguments['step'] === false);
@@ -221,6 +215,7 @@ switch ( $fusebox->action ) :
 
 	// view submitted form
 	case 'view':
+Webform::init();
 		F::error('ID of [bean] is required', empty(Webform::$bean->id));
 // pre-load data (if any)
 //$started = Webform::start();
