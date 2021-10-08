@@ -1,13 +1,24 @@
 <?php /*
 <fusedoc>
+	<description>
+		multiple ways to define [bean] config
+		1. string
+		   - new  :  'foo'
+		   - edit :  'foo:123'
+		2. array
+		   - new  :  array('type' => 'foo')
+		   - edit :  array('type' => 'foo', 'id' => 123)
+		3. object
+		   - new  :  ORM::new('foo')
+		   - edit :  ORM::get('foo', 123)
+	</description>
 	<io>
 		<in>
 			<structure name="$webform" comments="config">
 				<!-- essential config -->
-				<string name="beanType" />
+				<mixed name="bean" />
 				<string name="layoutPath" />
 				<!-- edit submitted form -->
-				<number name="beanID" optional="yes" default="0" comments="zero indicates new record" />
 				<boolean name="allowEdit" optional="false" comments="user can view submitted form but cannot modify" />
 				<boolean name="allowPrint" optional="false" comments="user can print submitted form" />
 				<!-- steps of form -->
@@ -137,10 +148,10 @@ switch ( $fusebox->action ) :
 	case 'index':
 	case 'start':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		// pre-load data (if any)
+		// reset form data
 		$started = Webform::start();
 		F::error(Webform::error(), $started === false);
-		// go to form
+		// new or view
 		F::redirect("{$fusebox->controller}.new", empty($webform['beanID']));
 		F::redirect("{$fusebox->controller}.view");
 		break;
@@ -152,6 +163,11 @@ switch ( $fusebox->action ) :
 		F::error('Config [beanID] must be empty', !empty($webform['beanID']));
 		// set form mode
 		Webform::mode('new');
+/*
+// pre-load data (if any)
+$started = Webform::start();
+F::error(Webform::error(), $started === false);
+*/
 		// default step
 		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
 		F::error(Webform::error(), $arguments['step'] === false);
@@ -181,6 +197,11 @@ switch ( $fusebox->action ) :
 		F::error('Config [beanID] is required', empty($webform['beanID']));
 		// set form mode
 		Webform::mode('edit');
+/*
+// pre-load data (if any)
+$started = Webform::start();
+F::error(Webform::error(), $started === false);
+*/
 		// default step
 		$firstStep = Webform::firstStep();
 		if ( empty($arguments['step']) ) $arguments['step'] = $firstStep;
@@ -199,6 +220,27 @@ switch ( $fusebox->action ) :
 		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
+		F::error(Webform::error(), $layout['content'] === false);
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
+		break;
+
+
+	// view submitted form
+	case 'view':
+		F::error('Config [beanID] is required', empty($webform['beanID']));
+/*
+// pre-load data (if any)
+$started = Webform::start();
+F::error(Webform::error(), $started === false);
+*/
+		// exit point : edit
+		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
+		// exit point : print
+		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
+		// display form
+		$layout['content'] = Webform::renderAll( $xfa ?? [] );
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -342,25 +384,6 @@ switch ( $fusebox->action ) :
 	// print submitted form
 	case 'print':
 		F::error('under construction');
-		break;
-
-
-	// view submitted form
-	case 'view':
-		F::error('Config [beanID] is required', empty($webform['beanID']));
-		// get record
-		$bean = ORM::get($webform['beanType'], $webform['beanID']);
-		F::error(ORM::error(), $bean === false);
-		// exit point : edit
-		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
-		// exit point : print
-		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
-		// display form
-		$layout['content'] = Webform::renderAll( $xfa ?? [] );
-		F::error(Webform::error(), $layout['content'] === false);
-		// layout
-		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
-		else echo $layout['content'];
 		break;
 
 
