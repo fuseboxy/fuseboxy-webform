@@ -48,7 +48,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function init() {
+	public static function initData() {
 		// load from database (when necessary)
 		// ===> self-bean could be already assigned
 		// ===> (when object was passed as config-bean)
@@ -58,12 +58,16 @@ class Webform {
 			if ( self::$bean === false ) return ORM::error();
 		}
 		// move bean data into container
-		// ===> only need relevant fields
-		// ===> (no need for all fields of own bean)
-		$beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
-		foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
+// ===> only need relevant fields (???)
+// ===> (no need for all fields of own bean ???)
+// $beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
+// ===> nested-array field make this statement not working
+// foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
+
+$formData = !empty(self::$bean->id) ? self::$bean->export() : [];
+
 		// put into cache
-		self::data($formData);
+//		self::data($formData);
 		// done!
 		return true;
 	}
@@ -127,7 +131,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function clear() {
+	public static function clearData() {
 		$token = self::token();
 		if ( $token === false ) return false;
 		if ( isset($_SESSION['webform'][$token]) ) unset($_SESSION['webform'][$token]);
@@ -1542,8 +1546,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$fieldConfig = $fieldConfig ?? self::fieldConfig($fieldName);
 		if ( $fieldConfig === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// load data from cache
-		$formData = $formData ?? self::data();
-		if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
+$formData = $formData ?? self::data();
+if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// more essential variables
 		$webform = self::$config;
 		$fieldID = self::fieldName2fieldID($fieldName);
@@ -1866,7 +1870,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	public static function start() {
 		$formData = array();
 		// clear cache (if any)
-		$cleared = self::clear();
+		$cleared = self::clearData();
 		if ( $cleared === false ) return false;
 		// load from database (when necessary)
 		// ===> self-bean could be already assigned
