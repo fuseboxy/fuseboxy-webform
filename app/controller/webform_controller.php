@@ -95,10 +95,6 @@
 				<boolean_or_string name="autosave" optional="yes" deafult="false" comments="simply true to save to {autosave} table; or specify table name to save" />
 				<boolean name="opened" optional="yes" default="true" comments="whether the form is opened" />
 				<boolean name="closed" optional="yes" default="false" comments="whether the form is closed" />
-				<!-- advanced -->
-				<structure name="otherData" optional="yes" comments="load other data to webform when start">
-					<mixed name="~otherFieldName~" />
-				</structure>
 				<!-- customization -->
 				<structure name="customMessage">
 					<string name="opened" />

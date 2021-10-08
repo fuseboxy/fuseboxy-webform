@@ -1801,9 +1801,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					<structure name="fieldConfig">
 						<structure name="~fieldName~" />
 					</structure>
-					<structure name="otherData" optional="yes">
-						<mixed name="~otherFieldName~" />
-					</structure>
 				</structure>
 			</in>
 			<out>
@@ -1821,7 +1818,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$cleared = self::clear();
 		if ( $cleared === false ) return false;
 		// load from database (when necessary)
-		// ===> property-bean could be already assigned (when object config-bean was passed in)
+		// ===> self-bean could be already assigned (when config-bean was passed in)
 		// ===> refer to [initConfig__fixBeanConfig] method
 		if ( empty(self::$bean) ) {
 			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
@@ -1833,9 +1830,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// ===> (no need for all fields of own bean)
 		$beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
 		foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
-		// move other data into container (when necessary)
-		$otherData = !empty(self::$config['otherData']) ? self::$config['otherData'] : [];
-		foreach ( $otherData as $key => $val ) $formData[$key] = $val;
 		// put into cache
 		self::data($formData);
 		// done!
