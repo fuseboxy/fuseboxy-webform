@@ -2432,7 +2432,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			} // is-fieldLayout
 		} // foreach-step
 		// get columns of database table
-		$columns = ORM::columns( Bean::type(self::$bean) );
+		$columns = ORM::columns(self::$config['bean']['type']);
 		if ( $columns === false ) {
 			self::$error = ORM::error();
 			return false;
