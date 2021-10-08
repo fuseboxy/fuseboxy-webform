@@ -412,7 +412,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				<boolean name="~return~" />
 				<!-- fixed config -->
 				<structure name="$config" scope="self">
-					<number name="beanID" default="0" />
+					<object name="bean" />
+					<!-- permission -->
 					<boolean name="allowEdit" default="false" />
 					<boolean name="allowPrint" default="false" />
 					<!-- default steps (when unspecified) -->
@@ -461,10 +462,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	</fusedoc>
 	*/
 	public static function initConfig() {
-		// beanID : default
-		// ===> zero stands for submitting new form
-		// ===> non-zero stands for editing submitted form
-		self::$config['beanID'] = self::$config['beanID'] ?? 0;
+		// bean : load record
+		self::$config['bean'] = self::initConfig__loadBean(self::$config['bean'] ?? '');
 		// allowEdit : default
 		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
 		// allowPrint : default
@@ -977,6 +976,40 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		} // foreach-fieldConfig
 		// done!
 		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			determine record to process
+			===> string : 'foo:123'
+			===> array  : [ 'type' => 'foo', 'id' => 123 ]
+		</description>
+		<io>
+			<in>
+				<mixed name="$beanConfig" />
+			</in>
+			<out>
+				<object name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__loadBean($beanConfig) {
+		// do nothing when malformed
+		if ( ( is_string($beanConfig) and empty($beanConfig) ) or ( is_array($beanConfig) and empty($beanConfig['type']) ) ) return $beanConfig;
+		// do nothing when already object
+		if ( is_object($beanConfig) ) return $beanConfig;
+		// parse string (when necessary)
+		if ( is_string($beanConfig) ) {
+			$beanConfig = explode(':', $beanConfig);
+			$beanConfig = array('type' => $beanConfig[0], 'id' => $beanConfig[1] ?? null);
+		}
+		// done!
+		return empty($beanConfig['id']) ? ORM::new($beanConfig['type']) : ORM::get($beanConfig['type'], $beanConfig['id']);
 	}
 
 
