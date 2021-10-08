@@ -24,20 +24,28 @@
 		</out>
 	</io>
 </fusedoc>
-*/ ?>
-<div class="webform-input form-group"><?php
-	// label (when necessary)
-	if ( !empty($fieldConfig['label']) ) :
-		?><label for="<?php echo $fieldID; ?>"><?php
-			echo $fieldConfig['label'];
-			if ( !empty($fieldConfig['required']) and empty($fieldConfig['inline-label']) ) echo '<span class="text-danger ml-1">*</span>';
-		?></label><?php
-	endif;
-	// field
-	if ( $fieldConfig['format'] == 'custom' ) include $fieldConfig['customScript'];
-	else include F::appPath('view/webform/input.'.$fieldConfig['format'].'.php');
-	// help
-	if ( !empty($fieldConfig['help']) ) :
-		?><small class="form-text text-muted"><?php echo $fieldConfig['help']; ?></small><?php
-	endif;
-?></div>
+*/
+// do not show wrapper when hidden field
+if ( $fieldConfig['format'] == 'hidden' ) :
+	include F::appPath('view/webform/input.hidden.php');
+
+// otherwise, show field with wrapper
+else :
+	?><div class="webform-input form-group"><?php
+		// label (when necessary)
+		if ( !empty($fieldConfig['label']) ) :
+			?><label for="<?php echo $fieldID; ?>"><?php
+				echo $fieldConfig['label'];
+				if ( !empty($fieldConfig['required']) and empty($fieldConfig['inline-label']) ) echo '<span class="text-danger ml-1">*</span>';
+			?></label><?php
+		endif;
+		// field
+		if ( $fieldConfig['format'] == 'custom' ) include $fieldConfig['customScript'];
+		else include F::appPath('view/webform/input.'.$fieldConfig['format'].'.php');
+		// help
+		if ( !empty($fieldConfig['help']) ) :
+			?><small class="form-text text-muted"><?php echo $fieldConfig['help']; ?></small><?php
+		endif;
+	?></div><?php
+
+endif;
