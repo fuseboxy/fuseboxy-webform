@@ -466,7 +466,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	*/
 	public static function initConfig() {
 		// bean : load record
-		self::$config['bean'] = self::initConfig__loadBean(self::$config['bean'] ?? '');
+		self::$config['bean'] = self::initConfig__fixBeanConfig(self::$config['bean'] ?? '');
 		if ( self::$config['bean'] === false ) return false;
 		// allowEdit : default
 		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
@@ -988,7 +988,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
-			load object to property and convert config to array (e.g. ['type' => 'foo', 'id' => 123])
+			convert config to array (e.g. ['type' => 'foo', 'id' => 123])
 		</description>
 		<io>
 			<in>
@@ -1001,7 +1001,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			</in>
 			<out>
 				<!-- property -->
-				<object name="$bean" scope="self" />
+				<object name="$bean" scope="self" optional="yes" />
 				<!-- return value (for config) -->
 				<structure name="~return~">
 					<string name="type" />
@@ -1011,23 +1011,24 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__loadBean($beanConfig) {
+	public static function initConfig__fixBeanConfig($beanConfig) {
 		// validation
 		if ( empty($beanConfig) ) {
 			self::$error = 'Webform config [bean] cannot be empty';
 			return false;
-		// parse string (when necessary)
+		// when string
+		// ===> parse config
 		} elseif ( is_string($beanConfig) ) {
 			$beanConfig = explode(':', $beanConfig);
 			$beanConfig = array('type' => $beanConfig[0], 'id' => $beanConfig[1] ?? 0);
-		// extract from object
+		// when (bean) object
+		// ===> extract info from object
+		// ===> assign object to property as is
+		// ===> (do NOT load from database because the object might be manipulated already)
 		} elseif ( is_object($beanConfig) ) {
 			self::$bean = $beanConfig;
 			$beanConfig = array('type' => Bean::type(self::$bean), 'id' => self::$bean->id);
 		}
-		// load object to property (when necessary)
-		if ( empty(self::$bean) and empty($beanConfig['id']) ) self::$bean = ORM::new($beanConfig['type']);
-		elseif ( empty(self::$bean) ) self::$bean = ORM::get($beanConfig['type'], $beanConfig['id']);
 		// done!
 		return $beanConfig;
 	}
@@ -1790,7 +1791,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		<io>
 			<in>
 				<!-- property -->
-				<object name="$bean" scope="self" />
+				<object name="$bean" scope="self" optional="yes" />
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<structure name="bean">
@@ -1806,6 +1807,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				</structure>
 			</in>
 			<out>
+				<!-- property -->
+				<object name="$bean" scope="self" />
+				<!-- return value -->
 				<boolean name="~return~" />
 			</out>
 		</io>
@@ -1816,16 +1820,14 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// clear cache (if any)
 		$cleared = self::clear();
 		if ( $cleared === false ) return false;
-// load from database (when necessary)
-/*
-if ( !empty(self::$config['beanID']) ) {
-	$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
-	if ( $bean === false ) {
-		self::$error = ORM::error();
-		return false;
-	}
-}
-*/
+		// load from database (when necessary)
+		// ===> property-bean could be already assigned (when object config-bean was passed in)
+		// ===> refer to [initConfig__fixBeanConfig] method
+		if ( empty(self::$bean) ) {
+			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
+			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
+			if ( self::$bean === false ) return ORM::error();
+		}
 		// move bean data into container
 		// ===> only need relevant fields
 		// ===> (no need for all fields of own bean)
