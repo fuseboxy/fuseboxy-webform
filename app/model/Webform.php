@@ -23,6 +23,55 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			load record from database according to config and load record data to session cache
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<!-- property -->
+				<object name="$bean" scope="self" />
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~token~" />
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function init() {
+		// load from database (when necessary)
+		// ===> self-bean could be already assigned
+		// ===> (when object was passed as config-bean)
+		if ( empty(self::$bean) ) {
+			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
+			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
+			if ( self::$bean === false ) return ORM::error();
+		}
+		// move bean data into container
+		// ===> only need relevant fields
+		// ===> (no need for all fields of own bean)
+		$beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
+		foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
+		// put into cache
+		self::data($formData);
+		// done!
+		return true;
+	}
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			save in-progress form data into database
 			===> no data validation is needed
 		</description>
@@ -1020,7 +1069,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// ===> parse config
 		} elseif ( is_string($beanConfig) ) {
 			$beanConfig = explode(':', $beanConfig);
-			$beanConfig = array('type' => $beanConfig[0], 'id' => $beanConfig[1] ?? 0);
+			$beanConfig = array('type' => $beanConfig[0], 'id' => (int) $beanConfig[1] ?? 0);
 		// when (bean) object
 		// ===> extract info from object
 		// ===> assign object to property as is
@@ -1818,8 +1867,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$cleared = self::clear();
 		if ( $cleared === false ) return false;
 		// load from database (when necessary)
-		// ===> self-bean could be already assigned (when config-bean was passed in)
-		// ===> refer to [initConfig__fixBeanConfig] method
+		// ===> self-bean could be already assigned
+		// ===> (when object was passed as config-bean)
 		if ( empty(self::$bean) ) {
 			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
 			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
