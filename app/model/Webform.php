@@ -2,6 +2,8 @@
 class Webform {
 
 
+	// property : record to process
+	public static $bean;
 	// property : webform config
 	public static $config;
 	// property : webform working mode
@@ -412,7 +414,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				<boolean name="~return~" />
 				<!-- fixed config -->
 				<structure name="$config" scope="self">
-					<object name="bean" />
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" optional="yes" />
+					</structure>
 					<!-- permission -->
 					<boolean name="allowEdit" default="false" />
 					<boolean name="allowPrint" default="false" />
@@ -433,8 +438,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 							<list name="filetype" delim="," default="gif,jpg,jpeg,png,txt,doc,docx,pdf,ppt,pptx,xls,xlsx" />
 							<string name="filesizeError" default="File cannot exceed {FILE_SIZE}" />
 							<string name="filetypeError" default="Only file of {FILE_TYPE} is allowed" />
-							<!-- attribute -->
-							<string name="value" optional="yes" oncondition="when [beanID] specified" comments="force filling with this value even if field has value" />
 						</structure>
 					</structure>
 					<!-- others settings -->
@@ -464,6 +467,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	public static function initConfig() {
 		// bean : load record
 		self::$config['bean'] = self::initConfig__loadBean(self::$config['bean'] ?? '');
+		if ( self::$config['bean'] === false ) return false;
 		// allowEdit : default
 		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
 		// allowPrint : default
@@ -984,32 +988,48 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
-			determine record to process
-			===> string : 'foo:123'
-			===> array  : [ 'type' => 'foo', 'id' => 123 ]
+			load object to property and convert config to array (e.g. ['type' => 'foo', 'id' => 123])
 		</description>
 		<io>
 			<in>
-				<mixed name="$beanConfig" />
+				<string name="$beanConfig" optional="yes" example="foo:123" />
+				<structure name="$beanConfig" optional="yes">
+					<string name="type" />
+					<string name="id" />
+				</structure>
+				<object name="$beanConfig" optional="yes" />
 			</in>
 			<out>
-				<object name="~return~" />
+				<!-- property -->
+				<object name="$bean" scope="self" />
+				<!-- return value (for config) -->
+				<structure name="~return~">
+					<string name="type" />
+					<number name="id" optional="yes" />
+				</structure>
 			</out>
 		</io>
 	</fusedoc>
 	*/
 	public static function initConfig__loadBean($beanConfig) {
-		// do nothing when malformed
-		if ( ( is_string($beanConfig) and empty($beanConfig) ) or ( is_array($beanConfig) and empty($beanConfig['type']) ) ) return $beanConfig;
-		// do nothing when already object
-		if ( is_object($beanConfig) ) return $beanConfig;
+		// validation
+		if ( empty($beanConfig) ) {
+			self::$error = 'Webform config [bean] cannot be empty';
+			return false;
 		// parse string (when necessary)
-		if ( is_string($beanConfig) ) {
+		} elseif ( is_string($beanConfig) ) {
 			$beanConfig = explode(':', $beanConfig);
-			$beanConfig = array('type' => $beanConfig[0], 'id' => $beanConfig[1] ?? null);
+			$beanConfig = array('type' => $beanConfig[0], 'id' => $beanConfig[1] ?? 0);
+		// extract from object
+		} elseif ( is_object($beanConfig) ) {
+			self::$bean = $beanConfig;
+			$beanConfig = array('type' => Bean::type(self::$bean), 'id' => self::$bean->id);
 		}
+		// load object to property (when necessary)
+		if ( empty(self::$bean) and empty($beanConfig['id']) ) self::$bean = ORM::new($beanConfig['type']);
+		elseif ( empty(self::$bean) ) self::$bean = ORM::get($beanConfig['type'], $beanConfig['id']);
 		// done!
-		return empty($beanConfig['id']) ? ORM::new($beanConfig['type']) : ORM::get($beanConfig['type'], $beanConfig['id']);
+		return $beanConfig;
 	}
 
 
@@ -1091,7 +1111,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				</structure>
 				<!-- config -->
 				<structure name="$config" scope="self">
-					<string name="beanType" />
+					<structure name="bean">
+						<string name="type" />
+					</structure>
 					<stucture name="fieldConfig">
 						<structure name="~fieldName~">
 							<string name="format" comments="file|image|signature" />
@@ -1138,7 +1160,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					$sourcePath = str_ireplace($uploadUrl, $uploadDir, $sourceUrl);
 					$sourceDir  = dirname($sourcePath);
 					// prepare url & server location of destination
-					$targetUrl  = $uploadUrl.self::$config['beanType'].'/'.$fieldName.'/'.basename($sourceUrl);
+					$targetUrl  = $uploadUrl.self::$config['bean']['type'].'/'.$fieldName.'/'.basename($sourceUrl);
 					$targetPath = str_ireplace($uploadUrl, $uploadDir, $targetUrl);
 					$targetDir  = dirname($targetPath);
 					// create directory (when necessary)
@@ -1270,7 +1292,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			<in>
 				<!-- config -->
 				<structure name="$config" scope="self">
-					<string name="beanType" />
+					<object name="bean" />
 					<structure name="notification">
 						<string name="fromName" />
 						<string name="from" />
@@ -1342,7 +1364,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( !empty(self::$config['writeLog']) ) {
 			$logged = Log::write([
 				'action'      => 'SEND_NOTIFICATION',
-				'entity_type' => self::$config['beanType'],
+				'entity_type' => Bean::type(self::$bean),
 				'entity_id'   => $entityID,
 				'remark'      => $mail,
 			]);
@@ -1640,8 +1662,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			<in>
 				<!-- config -->
 				<structure name="$config" scope="self">
-					<string name="beanType" />
-					<number name="beanID" />
+					<object name="bean" />
 					<structure name="notification" optional="yes" />
 					<boolean_or_string name="writeLog" optional="yes" />
 					<string name="snapshot" optional="yes" comments="table name for snapshot" />
@@ -1670,13 +1691,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// ===> form data will be updated accordingly
 		$moved = self::moveFileToPerm();
 		if ( $moved === false ) return false;
-		// create empty container or load from database
-		if ( empty(self::$config['beanID']) ) $bean = ORM::new(self::$config['beanType']);
-		else $bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
-		if ( $bean === false ) {
-			self::$error = ORM::error();
-			return false;
-		}
 		// load submitted data
 		$formData = self::data();
 		if ( $formData === false ) return false;
@@ -1697,13 +1711,13 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		}
 		// move converted data into container
 		// ===> could not use bean-import to avoid having error when array-value
-		foreach ( $formData as $key => $val ) $bean->{$key} = $val;
+		foreach ( $formData as $key => $val ) self::$bean->{$key} = $val;
 		// add more info
-		if ( empty($bean->created_on) ) $bean->created_on = date('Y-m-d H:i:s');
-		else $bean->updated_on = date('Y-m-d H:i:s');
-		$bean->disabled = false;
+		if ( empty(self::$bean->created_on) ) self::$bean->created_on = date('Y-m-d H:i:s');
+		else self::$bean->updated_on = date('Y-m-d H:i:s');
+		self::$bean->disabled = false;
 		// save to database
-		$id = ORM::save($bean);
+		$id = ORM::save(self::$bean);
 		if ( $id === false ) {
 			self::$error = ORM::error();
 			return false;
@@ -1724,7 +1738,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( !empty(self::$config['snapshot']) ) {
 			$snapshotBean = ORM::new(self::$config['snapshot'], [
 				'datetime'    => date('Y-m-d H:i:s'),
-				'entity_type' => self::$config['beanType'],
+				'entity_type' => self::$config['bean']['type'],
 				'entity_id'   => $id,
 				'snapshot'    => call_user_func(function(){
 					$original = self::$mode;
@@ -1751,9 +1765,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					// user-specified action name
 					if ( is_string(self::$config['writeLog']) ) return self::$config['writeLog'];
 					// default action name
-					return empty(self::$config['beanID']) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM';
+					return empty(self::$bean->id) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM';
 				}),
-				'entity_type' => self::$config['beanType'],
+				'entity_type' => self::$config['bean']['type'],
 				'entity_id' => $id,
 			]);
 			if ( $logged === false ) {
@@ -1775,10 +1789,14 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</description>
 		<io>
 			<in>
+				<!-- property -->
+				<object name="$bean" scope="self" />
 				<!-- config -->
 				<structure name="$config" scope="self">
-					<string name="beanType" />
-					<number name="beanID" />
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" />
+					</structure>
 					<structure name="fieldConfig">
 						<structure name="~fieldName~" />
 					</structure>
@@ -1798,18 +1816,20 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// clear cache (if any)
 		$cleared = self::clear();
 		if ( $cleared === false ) return false;
-		// load from database (when necessary)
-		if ( !empty(self::$config['beanID']) ) {
-			$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
-			if ( $bean === false ) {
-				self::$error = ORM::error();
-				return false;
-			}
-		}
+// load from database (when necessary)
+/*
+if ( !empty(self::$config['beanID']) ) {
+	$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
+	if ( $bean === false ) {
+		self::$error = ORM::error();
+		return false;
+	}
+}
+*/
 		// move bean data into container
 		// ===> only need relevant fields
 		// ===> (no need for all fields of own bean)
-		$beanData = !empty($bean->id) ? $bean->export() : [];
+		$beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
 		foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
 		// move other data into container (when necessary)
 		$otherData = !empty(self::$config['otherData']) ? self::$config['otherData'] : [];
@@ -1930,8 +1950,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			<in>
 				<!-- config -->
 				<structure name="$config" scope="self">
-					<string name="beanType" />
-					<number name="beanID" />
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" />
+					</structure>
 				</structure>
 			</in>
 			<out>
@@ -1941,7 +1963,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	</fusedoc>
 	*/
 	public static function token() {
-		return self::$config['beanType'].':'.self::$config['beanID'];
+		return self::$config['bean']['type'].':'.self::$config['bean']['id'];
 	}
 
 
@@ -1966,7 +1988,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				</structure>
 				<!-- config -->
 				<structure name="$config" scope="self">
-					<string name="beanType" />
+					<structure name="bean">
+						<string name="type" />
+					</structure>
 					<structure name="fieldConfig">
 						<structure name="~fieldName~">
 							<string name="format" />
@@ -2326,9 +2350,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			<in>
 				<!-- webform config -->
 				<structure name="$config" scope="self">
-					<string name="beanType" />
+					<mixed name="bean" />
 					<string name="layoutPath" comments="can be false but cannot be null" />
-					<number name="beanID" />
 					<structure name="fieldConfig">
 						<structure name="~fieldName~" />
 					</structure>
@@ -2363,12 +2386,12 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				if ( isset($cfg['format']) and in_array($cfg['format'], ['file','image','signature']) ) $hasFileField = true;
 			}
 		}
-		// check bean type
-		if ( empty(self::$config['beanType']) ) {
-			self::$error = 'Webform config [beanType] is required';
+		// check bean config
+		if ( empty(self::$config['bean']) ) {
+			self::$error = 'Webform config [bean] is required';
 			return false;
-		} elseif ( strpos(self::$config['beanType'], '_') !== false ) {
-			self::$error = 'Webform config [beanType] cannot contain underscore';
+		} elseif ( strpos(self::$config['bean']['type'], '_') !== false ) {
+			self::$error = 'Type of [bean] cannot contain underscore';
 			return false;
 		// check layout path (false is allowed)
 		} elseif ( !isset(self::$config['layoutPath']) ) {
@@ -2396,14 +2419,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			self::$error = 'Class [Util] is required';
 			return false;
 		}
-		// check bean ID
-		if ( !empty(self::$config['beanID']) ) {
-			$bean = ORM::get(self::$config['beanType'], self::$config['beanID']);
-			if ( empty($bean->id) ) {
-				self::$error = 'Record not found (id='.self::$config['beanID'].')';
-				return false;
-			}
-		}
 		// check field config : any missing
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			if ( is_array($fieldLayout) ) {
@@ -2421,7 +2436,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			} // is-fieldLayout
 		} // foreach-step
 		// get columns of database table
-		$columns = ORM::columns(self::$config['beanType']);
+		$columns = ORM::columns( Bean::type(self::$bean) );
 		if ( $columns === false ) {
 			self::$error = ORM::error();
 			return false;
