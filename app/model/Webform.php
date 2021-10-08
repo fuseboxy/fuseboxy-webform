@@ -49,15 +49,17 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function initData() {
-		// load from database (when necessary)
-		// ===> self-bean could be already assigned
+		// use data of [self-bean] when already assigned
 		// ===> (when object was passed as config-bean)
+		// ===> otherwise, load from database
 		if ( empty(self::$bean) ) {
 			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
 			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
 			if ( self::$bean === false ) return ORM::error();
 		}
-		// move bean data into container
+		// move [self-bean] data into form
+
+
 // ===> only need relevant fields (???)
 // ===> (no need for all fields of own bean ???)
 // $beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
@@ -67,7 +69,7 @@ class Webform {
 $formData = !empty(self::$bean->id) ? self::$bean->export() : [];
 
 		// put into cache
-//		self::data($formData);
+//		self::progressData($formData);
 		// done!
 		return true;
 	}
@@ -170,7 +172,7 @@ $formData = !empty(self::$bean->id) ? self::$bean->export() : [];
 		</io>
 	</fusedoc>
 	*/
-	public static function data($data=null) {
+	public static function progressData($data=null) {
 		$token = self::token();
 		// init container
 		$_SESSION['webform'][$token] = $_SESSION['webform'][$token] ?? array();
@@ -1203,7 +1205,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( substr($uploadDir, -1) != '/' ) $uploadDir .= '/';
 		if ( substr($uploadUrl, -1) != '/' ) $uploadUrl .= '/';
 		// load form data
-		$formData = self::data();
+		$formData = self::progressData();
 		if ( $formData === false ) return false;
 		// go through each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
@@ -1234,7 +1236,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			} // if-file-at-format
 		} // foreach-fieldConfig
 		// update data in cache
-		$cached = self::data($formData);
+		$cached = self::progressData($formData);
 		if ( $cached === false ) return false;
 		// done!
 		return true;
@@ -1378,7 +1380,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			return false;
 		}
 		// load form data
-		$formData = self::data();
+		$formData = self::progressData();
 		if ( $formData === false ) return false;
 		// prepare mail
 		$mail = array(
@@ -1546,7 +1548,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		$fieldConfig = $fieldConfig ?? self::fieldConfig($fieldName);
 		if ( $fieldConfig === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// load data from cache
-$formData = $formData ?? self::data();
+$formData = $formData ?? self::progressData();
 if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// more essential variables
 		$webform = self::$config;
@@ -1748,7 +1750,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		$moved = self::moveFileToPerm();
 		if ( $moved === false ) return false;
 		// load submitted data
-		$formData = self::data();
+		$formData = self::progressData();
 		if ( $formData === false ) return false;
 		// convert submitted data
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
@@ -1886,7 +1888,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		$beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
 		foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
 		// put into cache
-		self::data($formData);
+		self::progressData($formData);
 		// done!
 		return true;
 	}
@@ -2189,7 +2191,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		if ( substr($uploadDir, -1) != '/' ) $uploadDir .= '/';
 		if ( substr($uploadUrl, -1) != '/' ) $uploadUrl .= '/';
 		// load form data
-		$formData = self::data();
+		$formData = self::progressData();
 		if ( $formData === false ) return false;
 		// go through each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
@@ -2224,7 +2226,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 			} // if-signature
 		} // foreach-fieldConfig
 		// update form data
-		$updated = self::data($formData);
+		$updated = self::progressData($formData);
 		if ( $updated === false ) return false;
 		// done!
 		return true;
@@ -2367,7 +2369,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	</fusedoc>
 	*/
 	public static function validateAll(&$err=[]) {
-		$data = self::data();
+		$data = self::progressData();
 		if ( $data === false ) return false;
 		// go through all steps
 		foreach ( array_keys(self::$config['steps']) as $stepName ) {

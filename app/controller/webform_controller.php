@@ -138,22 +138,24 @@ switch ( $fusebox->action ) :
 	case 'index':
 	case 'start':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		// clear any changes made
-		$cleared = Webform::clear();
+		// clear any changes & start over
+		$cleared = Webform::clearData();
 		F::error(Webform::error(), $cleared === false);
 		// new or view
-		F::redirect("{$fusebox->controller}.new", empty(Webform::$bean->id));
+		F::redirect("{$fusebox->controller}.new", empty($webform['bean']['id']));
 		F::redirect("{$fusebox->controller}.view");
 		break;
 
 
 	// submit new form
+	// ===> should show form data in session
 	case 'new':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		F::error('ID of [bean] must be empty', !empty(Webform::$bean->id));
+		F::error('ID of [bean] must be empty', !empty($webform['bean']['id']));
 		// set form mode
-		Webform::mode('new');
-// pre-load data (if any)
+Webform::mode('new');
+// pre-load data (when necessary)
+$loaded = Webform::initData();
 $started = Webform::start();
 F::error(Webform::error(), $started === false);
 		// default step
@@ -180,14 +182,15 @@ F::error(Webform::error(), $started === false);
 
 
 	// edit submitted form
+	// ===> should show form data in session
 	case 'edit':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		F::error('ID of [bean] is required', empty(Webform::$bean->id));
+// pre-load data (when necessary)
+$loaded = Webform::initData();
+F::error(Webform::error(), $loaded === false);
+		F::error('ID of [bean] is required', empty($webform['bean']['id']));
 		// set form mode
 		Webform::mode('edit');
-// pre-load data (if any)
-//$started = Webform::start();
-//F::error(Webform::error(), $started === false);
 		// default step
 		$firstStep = Webform::firstStep();
 		if ( empty($arguments['step']) ) $arguments['step'] = $firstStep;
@@ -214,9 +217,12 @@ F::error(Webform::error(), $started === false);
 
 
 	// view submitted form
+	// ===> should show data of config-bean
 	case 'view':
-Webform::init();
-		F::error('ID of [bean] is required', empty(Webform::$bean->id));
+var_dump(Webform::$bean);
+Webform::initData();
+var_dump(Webform::$bean->export());
+		F::error('ID of [bean] is required', empty($webform['bean']['id']));
 // pre-load data (if any)
 //$started = Webform::start();
 //F::error(Webform::error(), $started === false);
@@ -238,11 +244,11 @@ Webform::init();
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		F::error('Confirmation is not required', empty($webform['steps']['confirm']));
 		// exit point : back
-		$operation = empty(Webform::$bean->id) ? 'new' : 'edit';
+		$operation = empty($webform['bean']['id']) ? 'new' : 'edit';
 		$prevStep = Webform::prevStep($fusebox->action);
 		$xfa['back'] = "{$fusebox->controller}.{$operation}&step={$prevStep}";
 		// exit point : save
-		$btnKey = empty(Webform::$bean->id) ? 'submit' : 'update';
+		$btnKey = empty($webform['bean']['id']) ? 'submit' : 'update';
 		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
 		// display form
 		$layout['content'] = Webform::renderStep('confirm', $xfa);
@@ -263,10 +269,11 @@ Webform::init();
 		// validate & retain data (when necessary)
 		$validated = true;
 		if ( isset($arguments['data']) ) {
+			// check data just submitted
 			$validated = Webform::validate($arguments['step'], $arguments['data']);
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
-			// retain data
-			$cached = Webform::data($arguments['data']);
+			// retain data to session
+			$cached = Webform::progressData($arguments['data']);
 			F::error(Webform::error(), $cached === false);
 		}
 		// validate captcha (when last step)
@@ -275,7 +282,7 @@ Webform::init();
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Captcha::error()));
 		}
 		// return to current step (when error)
-		$action = empty(Webform::$bean->id) ? 'new' : 'edit';
+		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
 		F::redirect("{$fusebox->controller}.{$action}&step={$arguments['step']}", $validated === false);
 		// go to next step (thru an intermediate action)
 		F::redirect("{$fusebox->controller}.nextStep&step={$arguments['step']}");
@@ -288,7 +295,7 @@ Webform::init();
 	case 'nextStep':
 		F::error('Argument [step] is required', empty($arguments['step']));
 		// determine action
-		$action = empty(Webform::$bean->id) ? 'new' : 'edit';
+		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
 		// obtain last step
 		$lastStep = Webform::lastStep();
 		F::error(Webform::error(), $lastStep === false);
@@ -330,7 +337,7 @@ Webform::init();
 		// commit to save
 		$saved = Webform::save();
 		if ( $saved === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
-		$action = empty(Webform::$bean->id) ? 'new' : 'edit';
+		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
 		F::redirect("{$fusebox->controller}.{$action}&step={$lastStep}", $saved === false);
 		// clear cache
 		$cleared = Webform::clear();
@@ -402,7 +409,7 @@ Webform::init();
 	case 'appendRow':
 		F::error('Argument [fieldName] is required', empty($arguments['fieldName']));
 		// set form mode
-		Webform::mode( empty(Webform::$bean->id) ? 'new' : 'edit' );
+		Webform::mode( empty($webform['bean']['id']) ? 'new' : 'edit' );
 		// load config
 		$fieldConfig = Webform::fieldConfig($arguments['fieldName']);
 		F::error(Webform::error(), $fieldConfig === false);
