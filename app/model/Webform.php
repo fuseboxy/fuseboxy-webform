@@ -23,61 +23,6 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			load record from [config-bean] (or database) to [self-bean] property (as original data)
-			load record data to session cache (as progress data)
-		</description>
-		<io>
-			<in>
-				<structure name="$config" scope="self">
-					<structure name="bean">
-						<string name="type" />
-						<number name="id" />
-					</structure>
-				</structure>
-			</in>
-			<out>
-				<!-- property -->
-				<object name="$bean" scope="self" />
-				<!-- cache -->
-				<structure name="webform" scope="$_SESSION">
-					<structure name="~token~" />
-				</structure>
-				<!-- return value -->
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function initData() {
-		$formData = array();
-		// use data of [self-bean] when already assigned
-		// ===> (when object was passed as config-bean)
-		// ===> otherwise, load from database
-		if ( empty(self::$bean) ) {
-			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
-			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
-			if ( self::$bean === false ) return ORM::error();
-		}
-		// move [self-bean] data into form
-		// ===> only move those specified in [fieldConig] (instead of full bean data)
-		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// for field name of nested-key (e.g. exam.TOEFL.xxx)
-			// ===> simply copy data of top level (e.g. exam)
-			$fieldName = explode('.', $fieldName)[0];
-			// copy from bean if data exists
-			if ( !empty(self::$bean->{$fieldName}) ) {
-				$formData = self::$bean->{$fieldName};
-			}
-		}
-		// retain data & done!
-		return self::progressData($formData);
-	}
-
-
-
-	/**
-	<fusedoc>
-		<description>
 			save in-progress form data into database
 			===> no data validation is needed
 		</description>
@@ -136,57 +81,6 @@ class Webform {
 		$token = self::token();
 		if ( $token === false ) return false;
 		if ( isset($_SESSION['webform'][$token]) ) unset($_SESSION['webform'][$token]);
-		return true;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			getter & setter of form data
-			===> regardless of step because field-names are unique
-			===> use token to handle multiple webforms when user open more than one window
-		</description>
-		<io>
-			<in>
-				<!-- cache -->
-				<structure name="webform" scope="$_SESSION">
-					<structure name="~token~">
-						<mixed name="~fieldName~" optional="yes" />
-					</structure>
-				</structure>
-				<!-- parameter -->
-				<structure name="$data" optional="yes" oncondition="setter" />
-			</in>
-			<out>
-				<!-- setter -->
-				<boolean name="~return~" optional="yes" value="true" />
-				<!-- getter -->
-				<structure name="~return~" optional="yes" comments="cached form data">
-					<mixed name="~fieldName~" optional="yes" />
-				</structure>
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function progressData($data=null) {
-		$token = self::token();
-		// init container
-		$_SESSION['webform'][$token] = $_SESSION['webform'][$token] ?? array();
-		// when getter
-		// ===> return cached data right away
-		if ( $data === null ) return $_SESSION['webform'][$token];
-		// when setter
-		// ===> clean-up data just submitted
-		// ===> merge cached data with data just submitted
-		$data = self::dataSanitize($data);
-		if ( $data === false ) return false;
-		$data = self::dataMerge($_SESSION['webform'][$token], $data);
-		if ( $data === false ) return false;
-		$_SESSION['webform'][$token] = $data;
-		// done!
 		return true;
 	}
 
@@ -1110,6 +1004,62 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
+			load record from [config-bean] (or database) to [self-bean] property (as original data)
+			load record data to session cache (as progress data)
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<!-- property -->
+				<object name="$bean" scope="self" />
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~token~" />
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initData() {
+		$formData = array();
+		// use data of [self-bean] when already assigned
+		// ===> (when object was passed as config-bean)
+		// ===> otherwise, load from database
+		if ( empty(self::$bean) ) {
+			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
+			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
+			if ( self::$bean === false ) return ORM::error();
+		}
+		// move [self-bean] data into form
+		// ===> only move those specified in [fieldConig] (instead of full bean data)
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			// for field name of nested-key (e.g. exam.TOEFL.xxx)
+			// ===> simply copy data of top level (e.g. exam)
+			$fieldName = explode('.', $fieldName)[0];
+			// copy from bean if data exists
+			if ( !empty(self::$bean->{$fieldName}) ) {
+				$formData = self::$bean->{$fieldName};
+			}
+		}
+		// retain data & done!
+		return self::progressData($formData);
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			obtain last step name
 		</description>
 		<io>
@@ -1492,6 +1442,57 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
+			getter & setter of form data
+			===> regardless of step because field-names are unique
+			===> use token to handle multiple webforms when user open more than one window
+		</description>
+		<io>
+			<in>
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~token~">
+						<mixed name="~fieldName~" optional="yes" />
+					</structure>
+				</structure>
+				<!-- parameter -->
+				<structure name="$data" optional="yes" oncondition="setter" />
+			</in>
+			<out>
+				<!-- setter -->
+				<boolean name="~return~" optional="yes" value="true" />
+				<!-- getter -->
+				<structure name="~return~" optional="yes" comments="cached form data">
+					<mixed name="~fieldName~" optional="yes" />
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function progressData($data=null) {
+		$token = self::token();
+		// init container
+		$_SESSION['webform'][$token] = $_SESSION['webform'][$token] ?? array();
+		// when getter
+		// ===> return cached data right away
+		if ( $data === null ) return $_SESSION['webform'][$token];
+		// when setter
+		// ===> clean-up data just submitted
+		// ===> merge cached data with data just submitted
+		$data = self::dataSanitize($data);
+		if ( $data === false ) return false;
+		$data = self::dataMerge($_SESSION['webform'][$token], $data);
+		if ( $data === false ) return false;
+		$_SESSION['webform'][$token] = $data;
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			render all steps at once
 		</description>
 		<io>
@@ -1849,62 +1850,6 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		}
 		// done!
 		return $id;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			clear cache & pre-load data to webform
-		</description>
-		<io>
-			<in>
-				<!-- property -->
-				<object name="$bean" scope="self" optional="yes" />
-				<!-- config -->
-				<structure name="$config" scope="self">
-					<structure name="bean">
-						<string name="type" />
-						<number name="id" />
-					</structure>
-					<structure name="fieldConfig">
-						<structure name="~fieldName~" />
-					</structure>
-				</structure>
-			</in>
-			<out>
-				<!-- property -->
-				<object name="$bean" scope="self" />
-				<!-- return value -->
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function start() {
-		$formData = array();
-		// clear cache (if any)
-		$cleared = self::clearData();
-		if ( $cleared === false ) return false;
-		// load from database (when necessary)
-		// ===> self-bean could be already assigned
-		// ===> (when object was passed as config-bean)
-		if ( empty(self::$bean) ) {
-			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
-			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
-			if ( self::$bean === false ) return ORM::error();
-		}
-		// move bean data into container
-		// ===> only need relevant fields
-		// ===> (no need for all fields of own bean)
-		$beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
-		foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
-		// put into cache
-		self::progressData($formData);
-		// done!
-		return true;
 	}
 
 
