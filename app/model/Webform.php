@@ -1081,7 +1081,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			$beanConfig = explode(':', self::$config['bean']);
 			self::$config['bean'] = array(
 				'type' => $beanConfig[0],
-				'id'   => (int)( $beanConfig[1] ?? 0 ),
+				'id' => (int)( $beanConfig[1] ?? 0 ),
 			);
 		// when (bean) object
 		// ===> extract info from object
@@ -1090,6 +1090,15 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		} elseif ( is_object(self::$config['bean']) ) {
 			self::$bean = self::$config['bean'];
 			self::$config['bean'] = array('type' => Bean::type(self::$bean), 'id' => self::$bean->id);
+		// when array
+		// ===> convert nothing
+		// ===> assign empty type & id (when necessary)
+		} elseif ( is_array(self::$config['bean']) ) {
+			$beanConfig = self::$config['bean'];
+			self::$config['bean'] = array(
+				'type' => $beanConfig['type'] ?? '',
+				'id' => (int)( $beanConfig['id'] ?? 0 ),
+			);
 		}
 		// done!
 		return true;
