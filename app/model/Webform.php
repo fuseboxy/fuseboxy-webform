@@ -23,8 +23,8 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			load record from database to [self-bean] property (as original record data)
-			load record data to session cache (for on-going changes)
+			load record from [config-bean] (or database) to [self-bean] property (as original data)
+			load record data to session cache (as progress data)
 		</description>
 		<io>
 			<in>
@@ -49,6 +49,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function initData() {
+		$formData = array();
 		// use data of [self-bean] when already assigned
 		// ===> (when object was passed as config-bean)
 		// ===> otherwise, load from database
@@ -58,20 +59,18 @@ class Webform {
 			if ( self::$bean === false ) return ORM::error();
 		}
 		// move [self-bean] data into form
-
-
-// ===> only need relevant fields (???)
-// ===> (no need for all fields of own bean ???)
-// $beanData = !empty(self::$bean->id) ? self::$bean->export() : [];
-// ===> nested-array field make this statement not working
-// foreach ( $beanData as $key => $val ) if ( isset(self::$config['fieldConfig'][$key]) ) $formData[$key] = $val;
-
-$formData = !empty(self::$bean->id) ? self::$bean->export() : [];
-
-		// put into cache
-//		self::progressData($formData);
-		// done!
-		return true;
+		// ===> only move those specified in [fieldConig] (instead of full bean data)
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			// for field name of nested-key (e.g. exam.TOEFL.xxx)
+			// ===> simply copy data of top level (e.g. exam)
+			$fieldName = explode('.', $fieldName)[0];
+			// copy from bean if data exists
+			if ( !empty(self::$bean->{$fieldName}) ) {
+				$formData = self::$bean->{$fieldName};
+			}
+		}
+		// retain data & done!
+		return self::progressData($formData);
 	}
 
 
@@ -180,13 +179,13 @@ $formData = !empty(self::$bean->id) ? self::$bean->export() : [];
 		// ===> return cached data right away
 		if ( $data === null ) return $_SESSION['webform'][$token];
 		// when setter
-		// ===> clean-up data
-		// ===> merge cached data with argument
-		$sanitized = self::dataSanitize($data);
-		if ( $sanitized === false ) return false;
-		$merged = self::dataMerge($_SESSION['webform'][$token], $sanitized);
-		if ( $merged === false ) return false;
-		$_SESSION['webform'][$token] = $merged;
+		// ===> clean-up data just submitted
+		// ===> merge cached data with data just submitted
+		$data = self::dataSanitize($data);
+		if ( $data === false ) return false;
+		$data = self::dataMerge($_SESSION['webform'][$token], $data);
+		if ( $data === false ) return false;
+		$_SESSION['webform'][$token] = $data;
 		// done!
 		return true;
 	}
