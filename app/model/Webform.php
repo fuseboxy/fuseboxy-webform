@@ -522,8 +522,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	*/
 	public static function initConfig() {
 		// bean : load record
-		self::$config['bean'] = self::initConfig__fixBeanConfig(self::$config['bean'] ?? '');
-		if ( self::$config['bean'] === false ) return false;
+		if ( self::initConfig__fixBeanConfig() === false ) return false;
 		// allowEdit : default
 		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
 		// allowPrint : default
@@ -1048,45 +1047,52 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</description>
 		<io>
 			<in>
-				<string name="$beanConfig" optional="yes" example="foo:123" />
-				<structure name="$beanConfig" optional="yes">
-					<string name="type" />
-					<string name="id" />
+				<structure name="$config" scope="self">
+					<structure name="bean" optional="yes">
+						<string name="type" />
+						<string name="id" />
+					</structure>
+					<string name="bean" optional="yes" example="foo:123" />
+					<object name="bean" optional="yes" />
 				</structure>
-				<object name="$beanConfig" optional="yes" />
 			</in>
 			<out>
 				<!-- property -->
 				<object name="$bean" scope="self" optional="yes" />
-				<!-- return value (for config) -->
-				<structure name="~return~">
+				<!-- config -->
+				<structure name="$config" scope="self">
 					<string name="type" />
 					<number name="id" optional="yes" />
 				</structure>
+				<!-- return value -->
+				<boolean name="true" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__fixBeanConfig($beanConfig) {
+	public static function initConfig__fixBeanConfig() {
 		// validation
-		if ( empty($beanConfig) ) {
+		if ( empty(self::$config['bean']) ) {
 			self::$error = 'Webform config [bean] cannot be empty';
 			return false;
 		// when string
 		// ===> parse config
-		} elseif ( is_string($beanConfig) ) {
-			$beanConfig = explode(':', $beanConfig);
-			$beanConfig = array('type' => $beanConfig[0], 'id' => (int) $beanConfig[1] ?? 0);
+		} elseif ( is_string(self::$config['bean']) ) {
+			$beanConfig = explode(':', self::$config['bean']);
+			self::$config['bean'] = array(
+				'type' => $beanConfig[0],
+				'id'   => (int)( $beanConfig[1] ?? 0 ),
+			);
 		// when (bean) object
 		// ===> extract info from object
 		// ===> assign object to property as is
 		// ===> (do NOT load from database because the object might be manipulated already)
-		} elseif ( is_object($beanConfig) ) {
-			self::$bean = $beanConfig;
-			$beanConfig = array('type' => Bean::type(self::$bean), 'id' => self::$bean->id);
+		} elseif ( is_object(self::$config['bean']) ) {
+			self::$bean = self::$config['bean'];
+			self::$config['bean'] = array('type' => Bean::type(self::$bean), 'id' => self::$bean->id);
 		}
 		// done!
-		return $beanConfig;
+		return true;
 	}
 
 
