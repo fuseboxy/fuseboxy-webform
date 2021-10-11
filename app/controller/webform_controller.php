@@ -134,14 +134,10 @@ F::error(Webform::error(), $valid === false);
 switch ( $fusebox->action ) :
 
 
-	// reset form
+	// determine landing page
 	case 'index':
 	case 'start':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		// clear any changes & start over
-		$cleared = Webform::clearData();
-		F::error(Webform::error(), $cleared === false);
-		// new or view
 		F::redirect("{$fusebox->controller}.new", empty($webform['bean']['id']));
 		F::redirect("{$fusebox->controller}.view");
 		break;
@@ -153,14 +149,19 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
 		F::error('ID of [bean] must be empty', !empty($webform['bean']['id']));
 		// set form mode
-Webform::mode('new');
-// pre-load data (when necessary)
-$loaded = Webform::initData();
-$started = Webform::start();
-F::error(Webform::error(), $started === false);
-		// default step
-		if ( empty($arguments['step']) ) $arguments['step'] = Webform::firstStep();
-		F::error(Webform::error(), $arguments['step'] === false);
+		Webform::mode('new');
+		// set first step
+		// ===> when no step specified
+		// ===> considered as just enter (instead of looping this action with new step)
+		// ===> reset form data accordingly
+		if ( empty($arguments['step']) ) {
+			$arguments['step'] = Webform::firstStep();
+			F::error(Webform::error(), $arguments['step'] === false);
+			$cleared = Webform::clearData();
+			F::error(Webform::error(), $cleared === false);
+			$loaded = Webform::initData();
+			F::error(Webform::error(), $loaded === false);
+		}
 		// go to confirmation (when necessary)
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point : back
@@ -185,16 +186,21 @@ F::error(Webform::error(), $started === false);
 	// ===> should show form data in session
 	case 'edit':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-// pre-load data (when necessary)
-$loaded = Webform::initData();
-F::error(Webform::error(), $loaded === false);
 		F::error('ID of [bean] is required', empty($webform['bean']['id']));
 		// set form mode
 		Webform::mode('edit');
-		// default step
-		$firstStep = Webform::firstStep();
-		if ( empty($arguments['step']) ) $arguments['step'] = $firstStep;
-		F::error(Webform::error(), $arguments['step'] === false);
+		// set first step
+		// ===> when no step specified
+		// ===> considered as just enter (instead of looping this action with new step)
+		// ===> reset form data accordingly
+		if ( empty($arguments['step']) ) {
+			$arguments['step'] = $firstStep = Webform::firstStep();
+			F::error(Webform::error(), $arguments['step'] === false);
+			$cleared = Webform::clearData();
+			F::error(Webform::error(), $cleared === false);
+			$loaded = Webform::initData();
+			F::error(Webform::error(), $loaded === false);
+		}
 		// go to confirmation (when necessary)
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point : back
