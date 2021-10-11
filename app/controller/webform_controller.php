@@ -225,6 +225,7 @@ switch ( $fusebox->action ) :
 	// view submitted form
 	// ===> should show data of config-bean
 	case 'view':
+F::error('Refactor in progress (soley rely on config-bean for display)');
 var_dump(Webform::$bean);
 Webform::initData();
 var_dump(Webform::$bean->export());
