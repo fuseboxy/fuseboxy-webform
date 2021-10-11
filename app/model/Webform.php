@@ -1726,6 +1726,29 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	/**
 	<fusedoc>
 		<description>
+			clear & init progress data
+		</description>
+		<io>
+			<in />
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function resetData() {
+		if ( self::clearData() === false ) return false;
+		if ( self::initData() === false ) return false;
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			save submitted data into database
 			===> send notification
 			===> take snapshot

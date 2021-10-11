@@ -157,10 +157,8 @@ switch ( $fusebox->action ) :
 		if ( empty($arguments['step']) ) {
 			$arguments['step'] = Webform::firstStep();
 			F::error(Webform::error(), $arguments['step'] === false);
-			$cleared = Webform::clearData();
-			F::error(Webform::error(), $cleared === false);
-			$loaded = Webform::initData();
-			F::error(Webform::error(), $loaded === false);
+			$reset = Webform::resetData();
+			F::error(Webform::error(), $reset === false);
 		}
 		// go to confirmation (when necessary)
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
@@ -196,10 +194,8 @@ switch ( $fusebox->action ) :
 		if ( empty($arguments['step']) ) {
 			$arguments['step'] = $firstStep = Webform::firstStep();
 			F::error(Webform::error(), $arguments['step'] === false);
-			$cleared = Webform::clearData();
-			F::error(Webform::error(), $cleared === false);
-			$loaded = Webform::initData();
-			F::error(Webform::error(), $loaded === false);
+			$reset = Webform::resetData();
+			F::error(Webform::error(), $reset === false);
 		}
 		// go to confirmation (when necessary)
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
