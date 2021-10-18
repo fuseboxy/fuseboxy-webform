@@ -420,8 +420,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	public static function initConfig() {
 		// bean : load record
 		if ( self::initConfig__fixBeanConfig() === false ) return false;
-		// permission : default
-		if ( self::initConfig__defaultPermission() === false ) return false;
+		// form permission : edit & print
+		if ( self::initConfig__defaultFormPermission() === false ) return false;
+		// form state : opened & closed
+		if ( self::initConfig__defaultFormState() === false ) return false;
 		// steps : default & fix
 		self::$config['steps'] = self::initConfig__defaultSteps(self::$config['steps'] ?? [], self::$config['fieldConfig'] ?? []);
 		// field config : field-name-only to empty-array
@@ -442,9 +444,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) self::$config['snapshot'] = 'snapshot';
 		// autosave : default table name
 		if ( isset(self::$config['autosave']) and self::$config['autosave'] === true ) self::$config['autosave'] = 'autosave';
-		// opened & closed : default
-		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
-		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
 		// custom button : default
 		if ( self::initConfig__defaultCustomButton() === false ) return false;
 		// custom message : default
@@ -803,6 +802,74 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	/**
 	<fusedoc>
 		<description>
+			determine default form permission
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<boolean name="allowEdit" optional="yes" />
+					<boolean name="allowPrint" optional="yes" />
+				</structure>
+			</in>
+			<out>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<boolean name="allowEdit" />
+					<boolean name="allowPrint" />
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultFormPermission() {
+		self::$config['allowEdit' ] = self::$config['allowEdit' ] ?? false;
+		self::$config['allowPrint'] = self::$config['allowPrint'] ?? false;
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			determine default form state
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<boolean name="opened" optional="yes" />
+					<boolean name="closed" optional="yes" />
+				</structure>
+			</in>
+			<out>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<boolean name="opened" />
+					<boolean name="closed" />
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultFormState() {
+		self::$config['opened'] = self::$config['opened'] ?? true;
+		self::$config['closed'] = self::$config['closed'] ?? false;
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			set default & fix notification settings
 		</description>
 		<io>
@@ -835,40 +902,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) {
 			self::$config['notification']['to'] = ':email';
 		}
-		// done!
-		return true;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			assign default permissions
-		</description>
-		<io>
-			<in>
-				<structure name="$config" scope="self">
-					<boolean name="allowEdit" optional="yes" />
-					<boolean name="allowPrint" optional="yes" />
-				</structure>
-			</in>
-			<out>
-				<!-- config -->
-				<structure name="$config" scope="self">
-					<boolean name="allowEdit" />
-					<boolean name="allowPrint" />
-				</structure>
-				<!-- return value -->
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function initConfig__defaultPermission() {
-		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
-		self::$config['allowPrint'] = self::$config['allowPrint'] ?? false;
 		// done!
 		return true;
 	}
