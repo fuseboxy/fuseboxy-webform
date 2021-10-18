@@ -401,6 +401,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					<structure name="customMessage">
 						<string name="closed" />
 						<string name="completed" />
+						<string name="neverSaved" />
+						<string name="lastSavedAt" />
+						<string name="lastSavedOn" />
 					</structure>
 					<!-- default custom button -->
 					<structure name="customButton">
@@ -448,9 +451,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		if ( !isset(self::$config['opened']) ) self::$config['opened'] = true;
 		if ( !isset(self::$config['closed']) ) self::$config['closed'] = false;
 		// custom button : default
-		self::$config['customButton'] = self::initConfig__defaultCustomButton(self::$config['customButton'] ?? []);
+		if ( self::initConfig__defaultCustomButton() === false ) return false;
 		// custom message : default
-		self::$config['customMessage'] = self::initConfig__defaultCustomMessage(self::$config['customMessage'] ?? []);
+		if ( self::initConfig__defaultCustomMessage() === false ) return false;
 		// done!
 		return true;
 	}
@@ -465,28 +468,36 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</description>
 		<io>
 			<in>
-				<structure name="$customButtonList">
-					<string name="~btnKey~" value="~btnText~" />
-					<structure name="~btnKey~">
-						<string name="text" optional="yes" />
-						<string name="icon" optional="yes" />
+				<structure name="$config" scope="self">
+					<structure name="customButton">
+						<string name="~btnKey~" value="~btnText~" />
+						<structure name="~btnKey~">
+							<string name="text" optional="yes" comments="allow {false} to show no text" />
+							<string name="icon" optional="yes" comments="allow {false} to show no icon" />
+						</structure>
 					</structure>
 				</structure>
 			</in>
 			<out>
-				<structure name="~return~">
-					<structure name="~btnKey~">
-						<string name="text" />
-						<string name="icon" />
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="customButton">
+						<structure name="~btnKey~">
+							<string name="text" />
+							<string name="icon" />
+						</structure>
 					</structure>
 				</structure>
+				<!-- return value -->
+				<boolean name="true" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__defaultCustomButton($customButtonList) {
+	public static function initConfig__defaultCustomButton() {
+		self::$config['customButton'] = self::$config['customButton'] ?? [];
 		// all default
-		$result = array(
+		$default = array(
 			'next'          => array('text' => 'Next', 'icon' => 'fa fa-arrow-right ml-2'),
 			'back'          => array('text' => 'Back', 'icon' => 'fa fa-arrow-left mr-1'),
 			'edit'          => array('text' => 'Edit', 'icon' => 'fa fa-edit mr-1'),
@@ -497,16 +508,23 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			'chooseFile'    => array('text' => 'Choose File', 'icon' => false),
 			'chooseAnother' => array('text' => 'Choose Another File', 'icon' => false),
 		);
-		// go through each custom button
-		foreach ( $customButtonList as $btnKey => $btnConfig ) {
-			// apply custom text (use as button text when only string specified)
-			if ( isset($btnConfig['text']) ) $result[$btnKey]['text'] = $btnConfig['text'];
-			elseif ( is_string($btnConfig) ) $result[$btnKey]['text'] = $btnConfig;
-			// apply custom icon
-			if ( isset($btnConfig['icon']) ) $result[$btnKey]['icon'] = $btnConfig['icon'];
+		// apply default (if not specified)
+		foreach ( $default as $btnKey => $btnConfig ) {
+			self::$config['customButton'][$btnKey] = self::$config['customButton'][$btnKey] ?? $btnConfig;
+		}
+		// check each custom button
+		foreach ( self::$config['customButton'] as $btnKey => $btnConfig ) {
+			// fix button config format (use as button text when string)
+			if ( is_string($btnConfig) ) $btnConfig = array('text' => $btnConfig);
+			// apply default button text (when not specified)
+			if ( !isset($btnConfig['text']) ) $btnConfig['text'] = $default[$btnKey]['text'];
+			// apply custom icon (when not specified)
+			if ( !isset($btnConfig['icon']) ) $btnConfig['icon'] = $default[$btnKey]['icon'];
+			// put into result
+			self::$config['customButton'][$btnKey] = $btnConfig;
 		}
 		// done!
-		return $result;
+		return true;
 	}
 
 
@@ -519,40 +537,41 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</description>
 		<io>
 			<in>
-				<structure name="$buttonList">
-					<string name="~btnKey~" value="~btnText~" />
-					<structure name="~btnKey~">
-						<string name="text" optional="yes" />
-						<string name="icon" optional="yes" />
+				<structure name="$config" scope="self">
+					<structure name="customMessage">
+						<string name="closed|completed|neverSaved|lastSavedAt|lastSavedOn" optional="yes" />
 					</structure>
 				</structure>
 			</in>
 			<out>
-				<structure name="~return~">
-					<structure name="~btnKey~">
-						<string name="text" />
-						<string name="icon" />
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="customMessage">
+						<string name="closed|completed|neverSaved|lastSavedAt|lastSavedOn" />
 					</structure>
 				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__defaultCustomMessage($customMessageList) {
+	public static function initConfig__defaultCustomMessage() {
+		self::$config['customMessage'] = self::$config['customMessage'] ?? [];
 		// all default
-		$result = array(
+		$default = array(
 			'closed'      => 'Form was closed.',
 			'completed'   => 'Your submission was received.',
 			'neverSaved'  => 'Never saved',
 			'lastSavedAt' => 'Last saved at ',
 			'lastSavedOn' => 'Last saved on ',
 		);
-		// go through each custom message (and apply)
-		foreach ( $customMessageList as $msgKey => $msgText ) {
-			if ( !empty($msgText) ) $result[$msgKey] = $msgText;
+		// apply default (when necessary)
+		foreach ( $default as $msgKey => $msgText ) {
+			if ( empty(self::$config['customMessage'][$msgKey]) ) self::$config['customMessage'][$msgKey] = $msgText;
 		}
 		// done!
-		return $result;
+		return true;
 	}
 
 
