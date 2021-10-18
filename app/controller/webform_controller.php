@@ -12,7 +12,7 @@
 				<!-- essential config -->
 				<mixed name="bean" />
 				<string name="layoutPath" />
-				<!-- edit submitted form -->
+				<!-- permission -->
 				<boolean name="allowEdit" optional="false" comments="user can view submitted form but cannot modify" />
 				<boolean name="allowPrint" optional="false" comments="user can print submitted form" />
 				<!-- steps of form -->
@@ -230,9 +230,9 @@ var_dump(Webform::$bean->export());
 //$started = Webform::start();
 //F::error(Webform::error(), $started === false);
 		// exit point : edit
-		if ( !empty($webform['allowEdit']) and empty($webform['closed']) ) $xfa['edit'] = "{$fusebox->controller}.edit";
+		if ( $webform['allowEdit'] and !$webform['closed'] ) $xfa['edit'] = "{$fusebox->controller}.edit";
 		// exit point : print
-		if ( !empty($webform['allowPrint']) ) $xfa['print'] = "{$fusebox->controller}.print";
+		if ( $webform['allowPrint'] ) $xfa['print'] = "{$fusebox->controller}.print";
 		// display form
 		$layout['content'] = Webform::renderAll( $xfa ?? [] );
 		F::error(Webform::error(), $layout['content'] === false);
@@ -342,8 +342,8 @@ var_dump(Webform::$bean->export());
 		if ( $saved === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
 		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
 		F::redirect("{$fusebox->controller}.{$action}&step={$lastStep}", $saved === false);
-		// clear cache
-		$cleared = Webform::clear();
+		// clear retained form data
+		$cleared = Webform::clearData();
 		F::error(Webform::error(), $cleared === false);
 		// done!
 		F::redirect("{$fusebox->controller}.completed");
