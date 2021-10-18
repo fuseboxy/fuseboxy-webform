@@ -371,6 +371,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 					<!-- permission -->
 					<boolean name="allowEdit" default="false" />
 					<boolean name="allowPrint" default="false" />
+					<boolean name="allowBack" default="true" />
+					<boolean name="allowNext" default="true" />
 					<!-- default steps (when unspecified) -->
 					<structure name="steps">
 						<structure name="default" />
@@ -809,6 +811,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				<structure name="$config" scope="self">
 					<boolean name="allowEdit" optional="yes" />
 					<boolean name="allowPrint" optional="yes" />
+					<boolean name="allowBack" optional="yes" />
+					<boolean name="allowNext" optional="yes" />
 				</structure>
 			</in>
 			<out>
@@ -816,6 +820,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 				<structure name="$config" scope="self">
 					<boolean name="allowEdit" />
 					<boolean name="allowPrint" />
+					<boolean name="allowBack" />
+					<boolean name="allowNext" />
 				</structure>
 				<!-- return value -->
 				<boolean name="~return~" />
@@ -824,8 +830,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	</fusedoc>
 	*/
 	public static function initConfig__defaultFormPermission() {
-		self::$config['allowEdit' ] = self::$config['allowEdit' ] ?? false;
+		self::$config['allowEdit']  = self::$config['allowEdit']  ?? false;
 		self::$config['allowPrint'] = self::$config['allowPrint'] ?? false;
+		self::$config['allowBack']  = self::$config['allowBack']  ?? true;
+		self::$config['allowNext']  = self::$config['allowNext']  ?? true;
 		// done!
 		return true;
 	}

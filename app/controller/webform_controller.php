@@ -164,15 +164,15 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
-		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.new&step={$prevStep}";
+		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.new&step={$prevStep}";
 		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		else $xfa['submit'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		elseif ( !$nextStep ) $xfa['submit'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		// exit point : autosave
 		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
 		// display form
-		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
+		$layout['content'] = Webform::renderStep($arguments['step'], $xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -201,16 +201,16 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
-		if ( $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit&step={$prevStep}";
-		elseif ( $arguments['step'] == $firstStep ) $xfa['back'] = "{$fusebox->controller}.start";
+		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit&step={$prevStep}";
+		elseif ( $webform['allowBack'] and $arguments['step'] == $firstStep ) $xfa['back'] = "{$fusebox->controller}.start";
 		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		else $xfa['update'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		elseif ( empty($nextStep) ) $xfa['update'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
 		// exit point : autosave
 		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
 		// display form
-		$layout['content'] = Webform::renderStep($arguments['step'], $xfa);
+		$layout['content'] = Webform::renderStep($arguments['step'], $xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
