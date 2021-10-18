@@ -74,7 +74,7 @@
 					</structure>
 				</structure>
 				<!-- email notification settings -->
-				<boolean_or_structure name="notification" optional="yes" default="false" comments="set to false to send no email">
+				<boolean_or_structure name="notification" optional="yes" default="false" comments="set to {false} to send no email">
 					<string name="fromName" />
 					<string name="from" />
 					<list name="to" delim=";," />

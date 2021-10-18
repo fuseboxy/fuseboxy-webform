@@ -420,10 +420,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	public static function initConfig() {
 		// bean : load record
 		if ( self::initConfig__fixBeanConfig() === false ) return false;
-		// allowEdit : default
-		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
-		// allowPrint : default
-		self::$config['allowPrint'] = self::$config['allowPrint'] ?? false;
+		// permission : default
+		if ( self::initConfig__defaultPermission() === false ) return false;
 		// steps : default & fix
 		self::$config['steps'] = self::initConfig__defaultSteps(self::$config['steps'] ?? [], self::$config['fieldConfig'] ?? []);
 		// field config : field-name-only to empty-array
@@ -438,11 +436,8 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		self::$config['fieldConfig'] = self::initConfig__defaultFileConfig(self::$config['fieldConfig']);
 		// field config : default table config
 		self::$config['fieldConfig'] = self::initConfig__defaultTableConfig(self::$config['fieldConfig']);
-		// notification : default & fix format
-		if ( !isset(self::$config['notification']) ) self::$config['notification'] = false;
-		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
-		// notification : default [to] setting
-		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) self::$config['notification']['to'] = ':email';
+		// notification : default
+		if ( self::initConfig__defaultNotification() === false ) return false;
 		// snapshot : default table name
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) self::$config['snapshot'] = 'snapshot';
 		// autosave : default table name
@@ -800,6 +795,82 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		}
 		// done!
 		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			set default & fix notification settings
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<structure name="notification">
+						<list name="to" delim=";," optional="yes" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="notification">
+						<list name="to" />
+					</structure>
+				</structure>
+				<!-- return value -->
+				<boolean name="true" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultNotification() {
+		self::$config['notification'] = self::$config['notification'] ?? false;
+		// fix format (when necessary)
+		if ( self::$config['notification'] === true ) self::$config['notification'] = array();
+		// default [to] setting
+		// ===> send to value of [email] field
+		if ( !empty(self::$config['notification']) and !isset(self::$config['notification']['to']) ) {
+			self::$config['notification']['to'] = ':email';
+		}
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			assign default permissions
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<boolean name="allowEdit" optional="yes" />
+					<boolean name="allowPrint" optional="yes" />
+				</structure>
+			</in>
+			<out>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<boolean name="allowEdit" />
+					<boolean name="allowPrint" />
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultPermission() {
+		self::$config['allowEdit'] = self::$config['allowEdit'] ?? false;
+		self::$config['allowPrint'] = self::$config['allowPrint'] ?? false;
+		// done!
+		return true;
 	}
 
 
