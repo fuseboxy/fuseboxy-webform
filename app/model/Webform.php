@@ -420,12 +420,10 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 	public static function initConfig() {
 		// bean : load record
 		if ( self::initConfig__fixBeanConfig() === false ) return false;
-		// form permission : edit & print
+		// form permission : edit & print : default
 		if ( self::initConfig__defaultFormPermission() === false ) return false;
-		// form state : opened & closed
+		// form state : opened & closed : default
 		if ( self::initConfig__defaultFormState() === false ) return false;
-		// steps : default & fix
-		self::$config['steps'] = self::initConfig__defaultSteps(self::$config['steps'] ?? [], self::$config['fieldConfig'] ?? []);
 		// field config : field-name-only to empty-array
 		self::$config['fieldConfig'] = self::initConfig__defaultEmptyConfig(self::$config['fieldConfig'] ?? []);
 		// field config : default format
@@ -438,7 +436,9 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		self::$config['fieldConfig'] = self::initConfig__defaultFileConfig(self::$config['fieldConfig']);
 		// field config : default table config
 		self::$config['fieldConfig'] = self::initConfig__defaultTableConfig(self::$config['fieldConfig']);
-		// notification : default
+		// steps : default & fix
+		if ( self::initConfig__defaultSteps() === false ) return false;
+		// notification : default & fix
 		if ( self::initConfig__defaultNotification() === false ) return false;
 		// snapshot : default table name
 		if ( isset(self::$config['snapshot']) and self::$config['snapshot'] === true ) self::$config['snapshot'] = 'snapshot';
@@ -916,40 +916,45 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		</description>
 		<io>
 			<in>
-				<structure name="$steps">
-					<structure name="~stepName~" />
-				</structure>
-				<structure name="$fieldConfigList">
-					<structure name="~fieldName~" />
+				<structure name="$config" scope="self">
+					<structure name="steps">
+						<structure name="~stepName~" optional="yes" />
+					</structure>
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
+					</structure>
 				</structure>
 			</in>
 			<out>
+				<!-- config -->
 				<structure name="~return~">
-					<structure name="~stepName~">
-
-					</structure>
+					<structure name="~stepName~" />
 				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__defaultSteps($steps, $fieldConfigList) {
+	public static function initConfig__defaultSteps() {
+		self::$config['steps'] = self::$config['steps'] ?? [];
 		// set default steps
 		// ===> when none specified
 		// ===> simply use all fields as specified in field-config
-		if ( empty($steps) and !empty($fieldConfigList) ) {
-			$steps = array('default' => array_keys($fieldConfigList));
+		if ( empty(self::$config['steps']) and !empty(self::$config['fieldConfig']) ) {
+			self::$config['steps']['default'] = array_keys(self::$config['fieldConfig']);
 		}
 		// default having [confirm] step
-		$steps['confirm'] = $steps['confirm'] ?? true;
+		// ===> allow {false} to skip [confirm] step
+		self::$config['steps']['confirm'] = self::$config['steps']['confirm'] ?? true;
 		// fix [heading|line|output] of each step
-		// ===> append space to make sure it is unique
+		// ===> add trailing space to make sure it is unique
 		// ===> avoid being overridden after convert to key
-		foreach ( $steps as $stepName => $fieldLayout ) {
+		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			if ( is_array($fieldLayout) ) {
 				foreach ( $fieldLayout as $i => $stepRow ) {
 					if ( self::stepRowType($stepRow) != 'fields' ) {
-						$steps[$stepName][$i] = $stepRow.str_repeat(' ', $i);
+						self::$config['steps'][$stepName][$i] = $stepRow.str_repeat(' ', $i);
 					}
 				}
 			}
@@ -957,29 +962,29 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 		// fix field-layout of each step
 		// ===> when only field-name-list specified
 		// ===> use field-name-list as key & apply empty field-width-list
-		foreach ( $steps as $stepName => $fieldLayout ) {
+		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
 			// turn string into array
 			// ===> e.g. [ 'declare' => 'col_1|col_2' ]  >>>  [ 'declare' => array('col_1|col_2' => '') ]
 			if ( is_string($fieldLayout) ) {
-				$steps[$stepName] = array($fieldLayout => '');
+				self::$config['steps'][$stepName] = array($fieldLayout => '');
 			// go through well-formatted field-layout
 			// ===> make sure field-name-list is key & field-width-list is value
 			// ===> e.g. [ 'my-step' => array('a|b|c', 'x|y|z' => '6|3|3') ]  >>>  [ 'my-step' => array('a|b|c' => '', 'x|y|z' => '6|3|3') ]
 			} elseif ( is_array($fieldLayout) ) {
-				$steps[$stepName] = array();
+				self::$config['steps'][$stepName] = array();
 				foreach ( $fieldLayout as $fieldNameList => $fieldWidthList ) {
 					if ( is_numeric($fieldNameList) ) list($fieldNameList, $fieldWidthList) = array($fieldWidthList, '');
-					$steps[$stepName][$fieldNameList] = $fieldWidthList;
+					self::$config['steps'][$stepName][$fieldNameList] = $fieldWidthList;
 				}
 			// remove empty step
 			// ===> e.g. [ 'my-step' => array() ]  >>>  (remove)
 			// ===> e.g. [ 'confirm' => false   ]  >>>  (remove)
 			} elseif ( empty($fieldLayout) ) {
-				unset($steps[$stepName]);
+				unset(self::$config['steps'][$stepName]);
 			}
 		} // foreach-step
 		// done!
-		return $steps;
+		return true;
 	}
 
 
