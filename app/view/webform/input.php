@@ -31,14 +31,17 @@ if ( $fieldConfig['format'] == 'hidden' ) :
 
 // otherwise, show field with wrapper
 else :
+	$hasLabel = !empty($fieldConfig['label']);
+	$hasInlineLabel = !empty($fieldConfig['inline-label']);
+	$hasRequiredMark = !empty($fieldConfig['required']);
 	?><div class="webform-input form-group"><?php
 		// label (when necessary)
-		if ( !empty($fieldConfig['label']) or ( !empty($fieldConfig['required']) and empty($fieldConfig['inline-label']) ) ) :
+		if ( $hasLabel or ( !$hasInlineLabel and $hasRequiredMark ) ) :
 			?><label for="<?php echo $fieldID; ?>"><?php
 				// label text
-				if ( !empty($fieldConfig['label']) ) echo $fieldConfig['label'];
+				if ( $hasLabel ) echo $fieldConfig['label'];
 				// required mark
-				if ( !empty($fieldConfig['required']) and empty($fieldConfig['inline-label']) ) :
+				if ( !$hasInlineLabel and $hasRequiredMark ) :
 					?><span class="text-danger ml-1">*</span><?php
 				endif;
 			?></label><?php
