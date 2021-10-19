@@ -2065,7 +2065,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		if ( is_array(self::$config['steps'][$step]) ) {
 			foreach ( self::$config['steps'][$step] as $fieldNameList => $fieldWidthList ) {
 				if ( self::stepRowType($fieldNameList) == 'fields' ) {
-					$fieldNameList = explode('|', $fieldNameList);
+					$fieldNameList = explode('|', str_replace(',', '|', $fieldNameList));
 					foreach ( $fieldNameList as $fieldName ) {
 						$fieldConfig = isset(self::$config['fieldConfig'][$fieldName]) ? self::$config['fieldConfig'][$fieldName] : array();
 						if ( isset($fieldConfig['format']) and $fieldConfig['format'] != 'output' ) $result[$fieldName] = $fieldConfig;
