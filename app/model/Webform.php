@@ -2397,7 +2397,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		if ( $fieldConfig === false ) return false;
 		// go through each field in specific step
 		foreach ( $fieldConfig as $fieldName => $cfg ) {
-			$fieldValue = isset($data[$fieldName]) ? $data[$fieldName] : '';
+			$fieldValue = self::nestedArrayGet($fieldName, $data);
 			// flatten options (when necessary)
 			if ( !empty($cfg['options']) ) {
 				$flattenOptions = array();
