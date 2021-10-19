@@ -94,15 +94,9 @@ class Webform {
 		</description>
 		<io>
 			<in>
-				<!-- cache -->
-				<structure name="webform" scope="$_SESSION">
-					<structure name="~token~">
-						<mixed name="~fieldName~" />
-					</structure>
-				</structure>
-				<!-- parameter -->
-				<structure name="$baseData" />
-				<structure name="$newData" />
+				<structure name="$baseData" comments="base data to merge into; can be nested array" />
+				<structure name="$newData" comments="new data to merge; can be nested array" />
+				<string name="$parentKey" comments="determine nested key in order to find corresponding field format" />
 			</in>
 			<out>
 				<structure name="~return~" />
@@ -110,12 +104,22 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function dataMerge($baseData, $newData) {
+	public static function dataMerge($baseData, $newData, $parentKey=null) {
 		// go through each item in submitted data
 		foreach ( $newData as $key => $val ) {
-			// when array value  ===> keep merging recursively
-			// when simple value ===> simply overwrite (or append)
-			$baseData[$key] = is_array($val) ? self::dataMerge($baseData[$key], $val) : $val;
+			// determine field name & field format
+			$fieldName = implode('.', array_filter([$parentKey, $key]));
+			$fieldFormat = self::fieldFormat($fieldName);
+			// when field is table format
+			// ===> simply overwrite
+			// ===> make sure no removed table row retained
+			if ( $fieldFormat == 'table' ) $baseData[$key] = $val;
+			// when simple value
+			// ===> simply overwrite
+			elseif ( !is_array($val) ) $baseData[$key] = $val;
+			// when array value
+			// ===> keep merging recursively
+			else $baseData[$key] = self::dataMerge($baseData[$key], $val, $fieldName);
 		}
 		// done!
 		return $baseData;
