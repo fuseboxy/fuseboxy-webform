@@ -33,10 +33,14 @@ if ( $fieldConfig['format'] == 'hidden' ) :
 else :
 	?><div class="webform-input form-group"><?php
 		// label (when necessary)
-		if ( !empty($fieldConfig['label']) ) :
+		if ( !empty($fieldConfig['label']) or ( !empty($fieldConfig['required']) and empty($fieldConfig['inline-label']) ) ) :
 			?><label for="<?php echo $fieldID; ?>"><?php
-				echo $fieldConfig['label'];
-				if ( !empty($fieldConfig['required']) and empty($fieldConfig['inline-label']) ) echo '<span class="text-danger ml-1">*</span>';
+				// label text
+				if ( !empty($fieldConfig['label']) ) echo $fieldConfig['label'];
+				// required mark
+				if ( !empty($fieldConfig['required']) and empty($fieldConfig['inline-label']) ) :
+					?><span class="text-danger ml-1">*</span><?php
+				endif;
 			?></label><?php
 		endif;
 		// field
