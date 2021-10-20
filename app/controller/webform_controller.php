@@ -272,12 +272,14 @@ var_dump(Webform::$bean->export());
 		// validate & retain data (when necessary)
 		$validated = true;
 		if ( isset($arguments['data']) ) {
+			// retain data before validation
+			// ===> so that when stop at current step due to validation error
+			// ===> the form can still show data just submitted (instead of nothing changed)
+			$cached = Webform::progressData($arguments['data']);
+			F::error(Webform::error(), $cached === false);
 			// check data just submitted
 			$validated = Webform::validateStep($arguments['step'], $arguments['data']);
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
-			// retain data to session
-			$cached = Webform::progressData($arguments['data']);
-			F::error(Webform::error(), $cached === false);
 		}
 		// validate captcha (when last step)
 		if ( $validated and $arguments['step'] == $lastStep and !empty(F::config('captcha')) ) {
