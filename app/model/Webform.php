@@ -120,7 +120,7 @@ class Webform {
 			// when array value
 			// ===> for field with nested field name (e.g. student.hkid)
 			// ===> keep merging recursively
-			elseif ( is_array($val) ) $baseData[$key] = self::dataMerge($baseData[$key], $val, $fieldName);
+			elseif ( is_array($val) ) $baseData[$key] = self::dataMerge($baseData[$key] ?? [], $val, $fieldName);
 			// when simple value
 			// ===> simply overwrite
 			else $baseData[$key] = $val;
@@ -2639,6 +2639,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 			}
 			// check options : checkbox (multiple selection)
 			if ( $cfg['format'] == 'checkbox' and $fieldValue !== '' ) {
+				$fieldValue = is_array($fieldValue) ? $fieldValue : explode('|', $fieldValue);
 				foreach ( $fieldValue as $selectedItem ) {
 					if ( !isset($flattenOptions[$selectedItem]) ) {
 						$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$selectedItem})";
