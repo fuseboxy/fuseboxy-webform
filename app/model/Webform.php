@@ -1191,7 +1191,7 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			$fieldName = explode('.', $fieldName)[0];
 			// copy from bean if data exists
 			if ( !empty(self::$bean->{$fieldName}) ) {
-				$formData = self::$bean->{$fieldName};
+				$formData[$fieldName] = self::$bean->{$fieldName};
 			}
 		}
 		// retain data & done!
