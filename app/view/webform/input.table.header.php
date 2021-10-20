@@ -10,7 +10,6 @@
 			</structure>
 			<string name="$fieldName" />
 			<structure name="$fieldConfig">
-				<string name="tableTitle" optional="yes" />
 				<structure name="tableHeader" optional="yes">
 					<string name="~headerText~" value="~columnWidth~" />
 				</structure>
@@ -32,12 +31,6 @@
 		<thead><?php
 			// check whether to show button
 			$showAppendButton = ( !empty($xfa['appendRow']) and !empty($fieldConfig['appendRow']) );
-			// table title
-			if ( !empty($fieldConfig['tableTitle']) ) :
-				$columnCount = count($fieldConfig['tableHeader'] ?? []);
-				if ( $showAppendButton ) $columnCount++;
-				?><tr class="thead-light"><th colspan="<?php echo $columnCount; ?>" class="bb-0"><?php echo $fieldConfig['tableTitle']; ?></th></tr><?php
-			endif;
 			// table header
 			?><tr class="text-center bg-white"><?php
 				// column name

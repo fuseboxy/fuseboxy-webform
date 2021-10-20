@@ -16,12 +16,17 @@
 if ( !empty($fieldConfig['icon']) or !empty($fieldConfig['inline-label']) ) :
 	?><div class="input-group-prepend">
 		<span class="input-group-text <?php if ( empty($editable) ) echo 'rounded mr-3'; ?>"><?php
+			// icon
 			if ( !empty($fieldConfig['icon']) ) :
 				?><i class="<?php echo $fieldConfig['icon']; ?>"></i><?php
 			endif;
+			// label text
 			if ( !empty($fieldConfig['inline-label']) ) :
 				?><small><?php echo $fieldConfig['inline-label']; ?></small><?php
-				if ( !empty($fieldConfig['required']) ) echo '<span class="text-danger ml-1">*</span>';
+				// required mark
+				if ( !empty($fieldConfig['required']) ) :
+					?><span class="text-danger ml-1">*</span><?php
+				endif;
 			endif;
 		?></span>
 	</div><?php

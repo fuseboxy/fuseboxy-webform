@@ -13,18 +13,32 @@
 	</io>
 </fusedoc>
 */
-$hasLabel = !empty($fieldConfig['label']);
+// useful variables
+$reqMark        = '<span class="text-danger ml-1">*</span>';
+$isTable        = ( $fieldConfig['format'] == 'table' );
+$isRequired     = !empty($fieldConfig['required']);
+$hasLabel       = !empty($fieldConfig['label']);
 $hasInlineLabel = !empty($fieldConfig['inline-label']);
-$hasRequiredMark = !empty($fieldConfig['required']);
 
-// normal label
-if ( $hasLabel or ( !$hasInlineLabel and $hasRequiredMark ) ) :
+
+// table-header-style label (when necessary)
+if ( $isTable and $hasLabel ) :
+	?><table class="table table-bordered small mb-0">
+		<thead class="thead-light">
+			<tr><th class="bb-0"><?php
+				if ( $hasLabel ) echo $fieldConfig['label'];
+				if ( $isRequired ) echo $reqMark;
+			?></th></tr>
+		</thead>
+	</table><?php
+
+
+// normal-style label (when necessary)
+elseif ( $hasLabel or ( $isRequired and !$hasInlineLabel ) ) :
 	?><label for="<?php echo $fieldID; ?>"><?php
-		// label text
 		if ( $hasLabel ) echo $fieldConfig['label'];
-		// required mark
-		if ( !$hasInlineLabel and $hasRequiredMark ) :
-			?><span class="text-danger ml-1">*</span><?php
-		endif;
+		if ( !$hasInlineLabel and $isRequired ) echo $reqMark;
 	?></label><?php
+
+
 endif;
