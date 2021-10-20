@@ -114,9 +114,6 @@ class Webform {
 			// ===> simply overwrite
 			// ===> make sure no removed table row retained
 			if ( $fieldFormat == 'table' ) $baseData[$key] = $val;
-			// when field [format=checkbox]
-			// ===> convert array value into list
-			elseif ( $fieldFormat == 'checkbox' ) $baseData[$key] = implode('|', $val);
 			// when array value
 			// ===> for field with nested field name (e.g. student.hkid)
 			// ===> keep merging recursively
@@ -1939,8 +1936,9 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 			$fieldValue = self::nestedArrayGet($fieldName, $formData);
 			// when field not appear in submitted data
 			if ( $fieldValue === null ) {
-				// do nothing
-				// (IMPORTANT : do not assign null value to avoid removing data already in database)
+				// *IMPORTANT*
+				// ===> do not assign null value to avoid removing data already in database
+				// ===> simply do nothing
 			// turn [checkbox] array-value into list
 			} elseif ( $cfg['format'] == 'checkbox' and !empty($fieldValue) ) {
 				self::nestedArraySet($fieldName, $formData, implode('|', $fieldValue));
@@ -1956,6 +1954,8 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		if ( empty(self::$bean->created_on) ) self::$bean->created_on = date('Y-m-d H:i:s');
 		else self::$bean->updated_on = date('Y-m-d H:i:s');
 		self::$bean->disabled = false;
+
+
 		// save to database
 		$id = ORM::save(self::$bean);
 		if ( $id === false ) {
@@ -1988,6 +1988,8 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 					return $output;
 				}),
 			]);
+var_dump($snapshotBean);
+die();
 			if ( $snapshotBean === false ) {
 				self::$error = ORM::error();
 				return false;
@@ -2015,6 +2017,9 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 				return false;
 			}
 		}
+
+
+
 		// done!
 		return $id;
 	}
