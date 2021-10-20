@@ -2397,6 +2397,10 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	</fusedoc>
 	*/
 	public static function validate($step, $data, &$err=[]) {
+		// consider fields specified in field-layout
+		// ===> instead of consider fields specified in field-config
+		// ===> to avoid checking fields which were not submitted
+		// ===> (for convenience, some fields have field-config specified but hide by field-layout)
 		$fieldConfig = self::stepFields($step);
 		if ( $fieldConfig === false ) return false;
 		// go through each field in specific step
