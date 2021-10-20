@@ -42,6 +42,12 @@
 <div id="<?php echo $fieldID; ?>" class="webform-input-table">
 	<header><?php include F::appPath('view/webform/input.table.header.php'); ?></header>
 	<fieldset><?php
+		// empty hidden field (when necessary)
+		// ===> avoid nothing submitted when no row
+		// ===> for the scenario which user remove all rows and submit the change
+		if ( !empty($editable) ) :
+			?><input type="hidden" name="<?php echo $dataFieldName; ?>" value="" /><?php
+		endif;
 		// table content
 		if ( !empty($fieldValue) ) :
 			foreach ( $fieldValue as $rowIndex => $rowItem ) :
