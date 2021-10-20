@@ -184,7 +184,7 @@ class WebformProgress {
 		</io>
 	</fusedoc>
 	*/
-	public static function dataUnsaved() {
+	public static function data() {
 		$beanID = !empty($beanID) ? $beanID : 0;
 		$token = self::$config['beanType'].':'.self::$config['beanID'];
 		return $_SESSION['webform'][$token] ?? array();
@@ -215,7 +215,7 @@ class WebformProgress {
 	*/
 	public static function fieldValue($fieldName) {
 		// obtain cached data
-		$formData = self::dataUnsaved();
+		$formData = self::data();
 		if ( $formData === false ) return false;
 		// search in nested array
 		$result = Webform::nestedArrayGet($fieldName, $formData);
