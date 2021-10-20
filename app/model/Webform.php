@@ -2360,116 +2360,6 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	/**
 	<fusedoc>
 		<description>
-			validate data of specific step
-		</description>
-		<io>
-			<in>
-				<!-- config -->
-				<structure name="$config" scope="self">
-					<structure name="fieldConfig">
-						<structure name="~fieldName~">
-							<string name="format" comments="email|date|dropdown|radio|checkbox" />
-							<boolean name="required" />
-							<structure name="options" />
-							<number name="maxlength" />
-							<number name="minlength" />
-							<number name="max" />
-							<number name="min" />
-						</structure>
-					</structure>
-				<!-- parameter -->
-				<string name="$step" />
-				<structure name="$data">
-					<mixed name="~fieldName~" />
-				</structure>
-				<!-- reference -->
-				<structure name="&$err" comments="more error info" />
-			</in>
-			<out>
-				<!-- return value -->
-				<boolean name="~return~" />
-				<!-- more error info -->
-				<structure name="$more">
-					<string name="~fieldName~" comments="error message" />
-				</structure>
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function validate($step, $data, &$err=[]) {
-		// consider fields specified in field-layout
-		// ===> instead of consider fields specified in field-config
-		// ===> to avoid checking fields which were not submitted
-		// ===> (for convenience, some fields have field-config specified but hide by field-layout)
-		$fieldConfig = self::stepFields($step);
-		if ( $fieldConfig === false ) return false;
-		// go through each field in specific step
-		foreach ( $fieldConfig as $fieldName => $cfg ) {
-			$fieldValue = self::nestedArrayGet($fieldName, $data);
-			// flatten options (when necessary)
-			if ( !empty($cfg['options']) ) {
-				$flattenOptions = array();
-				foreach ( $cfg['options'] as $optValue => $optText ) {
-					if ( is_array($optText) ) foreach ( $optText as $key => $val ) $flattenOptions[$key] = $val;
-					else $flattenOptions[$optValue] = $optText;
-				}
-			}
-			// check required
-			if ( !empty($cfg['required']) and empty($fieldValue) and $fieldValue !== 0 ) {
-				$err[$fieldName] = "Field [{$fieldName}] is required";
-			}
-			// check format : email
-			if ( $cfg['format'] == 'email' and !empty($fieldValue) and !filter_var($fieldValue, FILTER_VALIDATE_EMAIL) ) {
-				$err[$fieldName] = "Invalid email format in [{$fieldName}] ({$fieldValue})";
-			}
-			// check format : date
-			if ( $cfg['format'] == 'date' and !empty($fieldValue) and DateTime::createFromFormat('Y-m-d', $fieldValue) === false ) {
-				$err[$fieldName] = "Invalid date format in [{$fieldName}] ({$fieldValue})";
-			}
-			// check options : checkbox (multiple selection)
-			if ( $cfg['format'] == 'checkbox' and $fieldValue !== '' ) {
-				foreach ( $fieldValue as $selectedItem ) {
-					if ( !isset($flattenOptions[$selectedItem]) ) {
-						$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$selectedItem})";
-					}
-				}
-			}
-			// check options : dropdown & radio (single selection)
-			if ( in_array($cfg['format'], ['dropdown','radio']) and $fieldValue !== '' and !isset($flattenOptions[$fieldValue]) ) {
-				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
-			}
-			// check length : max
-			if ( !empty($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
-				$err[$fieldName] = "Length of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
-			}
-			// check length : min
-			if ( !empty($cfg['minlength']) and strlen($fieldValue) > $cfg['minlength'] ) {
-				$err[$fieldName] = "Length of [{$fieldName}] is too short (min={$cfg['minlength']},now=".strlen($fieldValue).")";
-			}
-			// check value : max
-			if ( !empty($cfg['max']) and strlen($fieldValue) > $cfg['max'] ) {
-				$err[$fieldName] = "Value of [{$fieldName}] is too large (max={$cfg['max']},now=".strlen($fieldValue).")";
-			}
-			// check value : min
-			if ( !empty($cfg['min']) and strlen($fieldValue) > $cfg['min'] ) {
-				$err[$fieldName] = "Value of [{$fieldName}] is too small (min={$cfg['min']},now=".strlen($fieldValue).")";
-			}
-		} // foreach-fieldConfig
-		// check if any error
-		if ( !empty($err) ) {
-			self::$error = implode(PHP_EOL, $err);
-			return false;
-		}
-		// done!
-		return true;
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
 			validate all data in cache
 		</description>
 		<io>
@@ -2500,7 +2390,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		// go through all steps
 		foreach ( array_keys(self::$config['steps']) as $stepName ) {
 			// validate each step
-			$validated = self::validate($stepName, $data, $stepErr);
+			$validated = self::validateStep($stepName, $data, $stepErr);
 			// group error by step
 			if ( $validated === false ) $err[$stepName] = $stepErr;
 		}
@@ -2666,6 +2556,116 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 				self::$error = "Webform notification config [{$item}] is required";
 				return false;
 			}
+		}
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			validate data of specific step
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" comments="email|date|dropdown|radio|checkbox" />
+							<boolean name="required" />
+							<structure name="options" />
+							<number name="maxlength" />
+							<number name="minlength" />
+							<number name="max" />
+							<number name="min" />
+						</structure>
+					</structure>
+				<!-- parameter -->
+				<string name="$step" />
+				<structure name="$data">
+					<mixed name="~fieldName~" />
+				</structure>
+				<!-- reference -->
+				<structure name="&$err" comments="more error info" />
+			</in>
+			<out>
+				<!-- return value -->
+				<boolean name="~return~" />
+				<!-- more error info -->
+				<structure name="$more">
+					<string name="~fieldName~" comments="error message" />
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function validateStep($step, $data, &$err=[]) {
+		// consider fields specified in field-layout
+		// ===> instead of consider fields specified in field-config
+		// ===> to avoid checking fields which were not submitted
+		// ===> (for convenience, some fields have field-config specified but hide by field-layout)
+		$fieldConfig = self::stepFields($step);
+		if ( $fieldConfig === false ) return false;
+		// go through each field in specific step
+		foreach ( $fieldConfig as $fieldName => $cfg ) {
+			$fieldValue = self::nestedArrayGet($fieldName, $data);
+			// flatten options (when necessary)
+			if ( !empty($cfg['options']) ) {
+				$flattenOptions = array();
+				foreach ( $cfg['options'] as $optValue => $optText ) {
+					if ( is_array($optText) ) foreach ( $optText as $key => $val ) $flattenOptions[$key] = $val;
+					else $flattenOptions[$optValue] = $optText;
+				}
+			}
+			// check required
+			if ( !empty($cfg['required']) and empty($fieldValue) and $fieldValue !== 0 ) {
+				$err[$fieldName] = "Field [{$fieldName}] is required";
+			}
+			// check format : email
+			if ( $cfg['format'] == 'email' and !empty($fieldValue) and !filter_var($fieldValue, FILTER_VALIDATE_EMAIL) ) {
+				$err[$fieldName] = "Invalid email format in [{$fieldName}] ({$fieldValue})";
+			}
+			// check format : date
+			if ( $cfg['format'] == 'date' and !empty($fieldValue) and DateTime::createFromFormat('Y-m-d', $fieldValue) === false ) {
+				$err[$fieldName] = "Invalid date format in [{$fieldName}] ({$fieldValue})";
+			}
+			// check options : checkbox (multiple selection)
+			if ( $cfg['format'] == 'checkbox' and $fieldValue !== '' ) {
+				foreach ( $fieldValue as $selectedItem ) {
+					if ( !isset($flattenOptions[$selectedItem]) ) {
+						$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$selectedItem})";
+					}
+				}
+			}
+			// check options : dropdown & radio (single selection)
+			if ( in_array($cfg['format'], ['dropdown','radio']) and $fieldValue !== '' and !isset($flattenOptions[$fieldValue]) ) {
+				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
+			}
+			// check length : max
+			if ( !empty($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
+				$err[$fieldName] = "Length of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
+			}
+			// check length : min
+			if ( !empty($cfg['minlength']) and strlen($fieldValue) > $cfg['minlength'] ) {
+				$err[$fieldName] = "Length of [{$fieldName}] is too short (min={$cfg['minlength']},now=".strlen($fieldValue).")";
+			}
+			// check value : max
+			if ( !empty($cfg['max']) and strlen($fieldValue) > $cfg['max'] ) {
+				$err[$fieldName] = "Value of [{$fieldName}] is too large (max={$cfg['max']},now=".strlen($fieldValue).")";
+			}
+			// check value : min
+			if ( !empty($cfg['min']) and strlen($fieldValue) > $cfg['min'] ) {
+				$err[$fieldName] = "Value of [{$fieldName}] is too small (min={$cfg['min']},now=".strlen($fieldValue).")";
+			}
+		} // foreach-fieldConfig
+		// check if any error
+		if ( !empty($err) ) {
+			self::$error = implode(PHP_EOL, $err);
+			return false;
 		}
 		// done!
 		return true;

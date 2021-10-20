@@ -273,7 +273,7 @@ var_dump(Webform::$bean->export());
 		$validated = true;
 		if ( isset($arguments['data']) ) {
 			// check data just submitted
-			$validated = Webform::validate($arguments['step'], $arguments['data']);
+			$validated = Webform::validateStep($arguments['step'], $arguments['data']);
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
 			// retain data to session
 			$cached = Webform::progressData($arguments['data']);
