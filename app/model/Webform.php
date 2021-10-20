@@ -110,16 +110,20 @@ class Webform {
 			// determine field name & field format
 			$fieldName = implode('.', array_filter([$parentKey, $key]));
 			$fieldFormat = self::fieldFormat($fieldName);
-			// when field is table format
+			// when field [format=table]
 			// ===> simply overwrite
 			// ===> make sure no removed table row retained
 			if ( $fieldFormat == 'table' ) $baseData[$key] = $val;
+			// when field [format=checkbox]
+			// ===> convert array value into list
+			elseif ( $fieldFormat == 'checkbox' ) $baseData[$key] = implode('|', $val);
+			// when array value
+			// ===> for field with nested field name (e.g. student.hkid)
+			// ===> keep merging recursively
+			elseif ( is_array($val) ) $baseData[$key] = self::dataMerge($baseData[$key], $val, $fieldName);
 			// when simple value
 			// ===> simply overwrite
-			elseif ( !is_array($val) ) $baseData[$key] = $val;
-			// when array value
-			// ===> keep merging recursively
-			else $baseData[$key] = self::dataMerge($baseData[$key], $val, $fieldName);
+			else $baseData[$key] = $val;
 		}
 		// done!
 		return $baseData;
