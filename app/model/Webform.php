@@ -164,18 +164,22 @@ class Webform {
 			// determine field name & field format
 			$fieldName = implode('.', array_filter([$parentKey, $key]));
 			$fieldFormat = self::fieldFormat($fieldName);
-			// when array value  ===> clean-up recursively
-			// when simple value ===> do the clean-up
-			$data[$key] = is_array($val) ? self::dataSanitize($val, $key) : call_user_func(function() use ($key, $val){
+			// when array value
+			// ===> clean-up recursively
+			if ( is_array($val) ) {
+				$data[$key] = self::dataSanitize($val, $key);
+			// when simple value
+			// ===> do the clean-up
+			} else {
 				// trim space & remove tab
 				$val = str_replace("\t", ' ', trim($val));
 				// convert html tag (to avoid cross-site scripting)
 				// ===> make the tag be visible but harmless
 				// ===> do NOT perform the replace on signature field (in order to keep SVG data)
 				if ( $fieldFormat != 'signature' ) $val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
-				// cleansed
-				return $val;
-			});
+				// put into result
+				$data[$key] = $val;
+			}
 		}
 		// done!
 		return $data;
