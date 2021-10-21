@@ -1882,23 +1882,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		// send notification
 		if ( self::sendNotification($id) === false ) $result['warning'][] = self::error();
 		// take snapshot (when necessary)
-		if ( !empty(self::$config['snapshot']) ) {
-			$snapshotBean = ORM::new(self::$config['snapshot'], [
-				'datetime'    => date('Y-m-d H:i:s'),
-				'entity_type' => self::$config['bean']['type'],
-				'entity_id'   => $id,
-				'snapshot'    => call_user_func(function(){
-					$original = self::$mode;
-					self::$mode = 'view';
-					$output = self::renderAll();
-					self::$mode = $original;
-					return $output;
-				}),
-			]);
-			// check if any error...
-			if ( $snapshotBean === false ) $result['warning'][] = ORM::error();
-			elseif ( ORM::save($snapshotBean) === false ) $result['warning'][] = ORM::error();
-		}
+		if ( self::takeSnapshot($id) === false ) $result['warning'][] = self::error();
 		// write log (when necessary)
 		if ( !empty(self::$config['writeLog']) ) {
 			if ( Log::write([
@@ -2109,6 +2093,58 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		if ( strlen($stepRow) and $stepRow[0] === '~' ) return 'output';
 		if ( strlen($stepRow) and trim($stepRow, '=-') === '' ) return 'line';
 		return 'fields';
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			take snapshot of specific entity
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<string name="type" />
+					</structure>
+					<boolean_or_string name="snapshot" comments="table to save the snapshot; do not take snapshot when false" />
+				</structure>
+				<!-- parameter -->
+				<number name="$entityID" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function takeSnapshot($entityID) {
+		// when snapshot suppressed
+		// ===> simply quit & do nothing
+		if ( empty(self::$config['snapshot']) ) return true;
+		// create container with snapshot output
+		$snapshotBean = ORM::new(self::$config['snapshot'], [
+			'datetime'    => date('Y-m-d H:i:s'),
+			'entity_type' => self::$config['bean']['type'],
+			'entity_id'   => $entityID,
+			'snapshot'    => call_user_func(function(){
+				$original = self::$mode;
+				self::$mode = 'view';
+				$output = self::renderAll();
+				self::$mode = $original;
+				return $output;
+			}),
+		]);
+		// save & check if any error
+		if ( $snapshotBean === false or ORM::save($snapshotBean) === false ) {
+			self::$error = ORM::error();
+			return false;
+		}
+		// done!
+		return true;
 	}
 
 
