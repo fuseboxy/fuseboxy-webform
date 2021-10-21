@@ -146,12 +146,13 @@ class Webform {
 				</structure>
 				<!-- parameter -->
 				<structure name="$data" comments="data before cleansing">
-					<mixed name="~fieldName~" />
+					<mixed name="~key~" />
 				</struture>
+				<string name="$parentKey" comments="determine nested key in order to find corresponding field format" />
 			</in>
 			<out>
 				<structure name="~return~" comments="data after cleansed">
-					<mixed name="~fieldName~" />
+					<mixed name="~key~" />
 				</structure>
 			</out>
 		</io>
@@ -160,19 +161,19 @@ class Webform {
 	private static function dataSanitize($data) {
 		// go through each item
 		foreach ( $data as $key => $val ) {
+			// determine field name & field format
+			$fieldName = implode('.', array_filter([$parentKey, $key]));
+			$fieldFormat = self::fieldFormat($fieldName);
 			// when array value  ===> clean-up recursively
 			// when simple value ===> do the clean-up
-			$data[$key] = is_array($val) ? self::dataSanitize($val) : call_user_func(function() use ($key, $val){
+			$data[$key] = is_array($val) ? self::dataSanitize($val, $key) : call_user_func(function() use ($key, $val){
 				// trim space & remove tab
 				$val = str_replace("\t", ' ', trim($val));
-/***** IMPORTANT *****/
-// this doesn't work when signature field is nested field name (e.g. student.signature)
-// convert html tag (make it visible but harmless)
-// ===> except signature field (in order to keep SVG data)
-if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][$key]['format'] != 'signature' ) {
-	$val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
-}
-				// cleaned
+				// convert html tag (to avoid cross-site scripting)
+				// ===> make the tag be visible but harmless
+				// ===> do NOT perform the replace on signature field (in order to keep SVG data)
+				if ( $fieldFormat != 'signature' ) $val = preg_replace ('/<([^>]*)>/', '[$1]', $val);
+				// cleansed
 				return $val;
 			});
 		}
@@ -1804,9 +1805,6 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<object name="bean" />
-					<boolean_or_structure name="notification" optional="yes" comments="config of notification; false when no notification needed" />
-					<boolean_or_string name="writeLog" optional="yes" comments="action of log; false when not log needed" />
-					<boolean_or_string name="snapshot" optional="yes" comments="table name for snapshot; false when no snapshot needed" />
 					<structure name="customMessage">
 						<string name="completed" />
 					</structure>
@@ -1890,6 +1888,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		// done!
 		return $result;
 	}
+
 
 
 
