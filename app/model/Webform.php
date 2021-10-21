@@ -1509,15 +1509,17 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 			if ( $cfg['to'][0] == ':' ) self::$error .= " ({$cfg['to']})";
 			return false;
 		}
+/*
 		// prepare mapping of mask & data
 		$masks = array();
-		foreach ( $formData as $key => $val ) $masks["[[{$key}]]"] = $val;
+		foreach ( $formData as $key => $val ) $masks['{{'.$key.'}}'] = $val;
 		// replace mask in subject & body
 		foreach ( $masks as $key => $val ) {
 			if ( is_array($val) ) $val = implode('|', $val);  // checkbox value
 			$mail['subject'] = str_ireplace($key, $val, $mail['subject']);
 			$mail['body']    = str_ireplace($key, $val, $mail['body']);
 		}
+*/
 		// send email
 		if ( Util::mail($mail) === false ) {
 			self::$error = Util::error();
@@ -1900,9 +1902,12 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<object name="bean" />
-					<structure name="notification" optional="yes" />
-					<boolean_or_string name="writeLog" optional="yes" />
-					<string name="snapshot" optional="yes" comments="table name for snapshot" />
+					<boolean_or_structure name="notification" optional="yes" comments="config of notification; false when no notification needed" />
+					<boolean_or_string name="writeLog" optional="yes" comments="action of log; false when not log needed" />
+					<boolean_or_string name="snapshot" optional="yes" comments="table name for snapshot; false when no snapshot needed" />
+					<structure name="customMessage">
+						<string name="completed" />
+					</structure>
 				</structure>
 				<!-- cache -->
 				<structure name="webform" scope="$_SESSION">
@@ -1912,7 +1917,13 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 				</structure>
 			</in>
 			<out>
-				<number name="~return~" comments="last insert ID" />
+				<structure name="$result">
+					<string name="success" />
+					<array name="warning" optional="yes">
+						<string name="+" />
+					</array>
+					<number name="lastInsertID" />
+				</structure>
 			</out>
 		</io>
 	</fusedoc>
@@ -1954,25 +1965,22 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		if ( empty(self::$bean->created_on) ) self::$bean->created_on = date('Y-m-d H:i:s');
 		else self::$bean->updated_on = date('Y-m-d H:i:s');
 		self::$bean->disabled = false;
-
-
 		// save to database
 		$id = ORM::save(self::$bean);
 		if ( $id === false ) {
 			self::$error = ORM::error();
 			return false;
 		}
-
-
-// *** IMPORTANT ***
-// ===> save duplicate record when operation stop at notification & snapshot
-
-
-
+		// put into result
+		$result = array(
+			'lastInsertID' => $id,
+			'success' => self::$config['customMessage']['completed'],
+			'warning' => array(),
+		);
 		// send notification (when necessary)
 		if ( !empty(self::$config['notification']) ) {
-			$notified = self::notify($id);
-			if ( $notified === false ) return false;
+			// check if any error...
+			if ( self::notify($id) === false ) $result['warning'][] = self::error();
 		}
 		// take snapshot (when necessary)
 		if ( !empty(self::$config['snapshot']) ) {
@@ -1988,21 +1996,13 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 					return $output;
 				}),
 			]);
-var_dump($snapshotBean);
-die();
-			if ( $snapshotBean === false ) {
-				self::$error = ORM::error();
-				return false;
-			}
-			$snapshotID = ORM::save($snapshotBean);
-			if ( $snapshotID === false ) {
-				self::$error = ORM::error();
-				return false;
-			}
+			// check if any error...
+			if ( $snapshotBean === false ) $result['warning'][] = ORM::error();
+			elseif ( ORM::save($snapshotBean) === false ) $result['warning'][] = ORM::error();
 		}
 		// write log (when necessary)
 		if ( !empty(self::$config['writeLog']) ) {
-			$logged = Log::write([
+			if ( Log::write([
 				'action' => call_user_func(function(){
 					// user-specified action name
 					if ( is_string(self::$config['writeLog']) ) return self::$config['writeLog'];
@@ -2011,17 +2011,12 @@ die();
 				}),
 				'entity_type' => self::$config['bean']['type'],
 				'entity_id' => $id,
-			]);
-			if ( $logged === false ) {
-				self::$error = Log::error();
-				return false;
-			}
+			]) === false ) $result['warning'][] = Log::error();
 		}
-
-
-
+		// clean-up
+		if ( empty($result['warning']) ) unset($result['warning']);
 		// done!
-		return $id;
+		return $result;
 	}
 
 
