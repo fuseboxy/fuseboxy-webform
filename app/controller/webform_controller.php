@@ -340,21 +340,23 @@ var_dump(Webform::$bean->export());
 		$lastStep = Webform::lastStep();
 		F::error(Webform::error(), $lastStep === false);
 		// commit to save
-		$saved = Webform::save();
-		if ( $saved === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
+		$saveResult = Webform::save();
+		if ( $saveResult === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
 		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
-		F::redirect("{$fusebox->controller}.{$action}&step={$lastStep}", $saved === false);
+		F::redirect("{$fusebox->controller}.{$action}&step={$lastStep}", $saveResult === false);
 		// clear retained form data
 		$cleared = Webform::clearData();
 		F::error(Webform::error(), $cleared === false);
 		// done!
-		F::redirect("{$fusebox->controller}.completed");
+		F::redirect("{$fusebox->controller}.completed&r=".base64_encode(http_build_query($saveResult)));
 		break;
 
 
 	// thank you page
 	case 'completed':
 		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		// transform result (if any)
+		if ( !empty($arguments['r']) ) parse_str(base64_decode($arguments['r']), $result);
 		// display
 		ob_start();
 		include F::appPath('view/webform/completed.php');
