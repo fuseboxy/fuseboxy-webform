@@ -34,7 +34,7 @@
 </fusedoc>
 */
 $rowIndex = $rowIndex ?? Util::uuid();
-$rowID = 'row-'.$rowIndex;
+$rowID = 'row-'.str_replace('.', '-', $fieldName).'-'.$rowIndex;
 ?><div id="<?php echo $rowID; ?>" class="webform-input-table-row">
 	<table class="table table-bordered table-hover small mb-0">
 		<tbody class="bg-white">
