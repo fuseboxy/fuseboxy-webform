@@ -1884,18 +1884,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		// take snapshot (when necessary)
 		if ( self::takeSnapshot($id) === false ) $result['warning'][] = self::error();
 		// write log (when necessary)
-		if ( !empty(self::$config['writeLog']) ) {
-			if ( Log::write([
-				'action' => call_user_func(function(){
-					// user-specified action name
-					if ( is_string(self::$config['writeLog']) ) return self::$config['writeLog'];
-					// default action name
-					return empty(self::$bean->id) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM';
-				}),
-				'entity_type' => self::$config['bean']['type'],
-				'entity_id' => $id,
-			]) === false ) $result['warning'][] = Log::error();
-		}
+		if ( self::writeSaveLog($id) === false ) $result['warning'][] = self::error();
 		// clean-up
 		if ( empty($result['warning']) ) unset($result['warning']);
 		// done!
@@ -2706,6 +2695,53 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		// check if any error
 		if ( !empty($err) ) {
 			self::$error = implode(PHP_EOL, $err);
+			return false;
+		}
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			write log after save
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<string name="type" />
+					</structure>
+					<boolean_or_string name="writeLog" comments="custom action name; do not write log when false" />
+				</structure>
+				<!-- parameter -->
+				<number name="$entityID" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function writeSaveLog($entityID) {
+		// when log suppressed
+		// ===> simply quit & do nothing
+		if ( empty(self::$config['writeLog']) ) return true;
+		// create container for log
+		$log = array(
+			'entity_type' => self::$config['bean']['type'],
+			'entity_id' => $entityID,
+		);
+		// apply custom action or default action
+		if ( is_string(self::$config['writeLog']) ) $log['action'] = self::$config['writeLog'];
+		else $log['action'] = empty(self::$bean->id) ? 'SUBMIT_WEBFORM' : 'UPDATE_WEBFORM';
+		// save & check if any error
+		if ( Log::write($log) === false ) {
+			self::$error = Log::error();
 			return false;
 		}
 		// done!
