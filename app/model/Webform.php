@@ -1446,104 +1446,6 @@ if ( isset(self::$config['fieldConfig'][$key]) and self::$config['fieldConfig'][
 
 
 
-	/**
-	<fusedoc>
-		<description>
-			send notification email
-		</description>
-		<io>
-			<in>
-				<!-- config -->
-				<structure name="$config" scope="self">
-					<object name="bean" />
-					<structure name="notification">
-						<string name="fromName" />
-						<string name="from" />
-						<list name="to" delim=";," />
-						<list name="cc" delim=";," />
-						<list name="bcc" delim=";," />
-						<string name="subject" />
-						<string name="body" />
-					</structure>
-					<boolean name="writeLog" />
-				</structure>
-				<!-- parameter -->
-				<number name="$entityID" />
-			</in>
-			<out>
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function notify($entityID) {
-		// get config
-		$cfg = self::$config['notification'];
-		// validate recipient
-		if ( empty($cfg['to']) ) {
-			self::$error = 'Notification recipient not specified';
-			return false;
-		}
-		// load form data
-		$formData = self::progressData();
-		if ( $formData === false ) return false;
-		// prepare mail
-		$mail = array(
-			'from_name' => !empty($cfg['fromName']) ? $cfg['fromName'] : null,
-			'from'      => !empty($cfg['from']) ? $cfg['from'] : null,
-			'cc'        => !empty($cfg['cc']) ? $cfg['cc'] : null,
-			'bcc'       => !empty($cfg['bcc']) ? $cfg['bcc'] : null,
-			'subject'   => $cfg['subject'],
-			'body'      => $cfg['body'],
-		);
-		// send to recipient (by email field or custom value)
-		// ===> e.g. [ 'to' => ':email' ]
-		// ===> e.g. [ 'to' => 'foo@bar.com' ]
-		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function() use ($cfg, $formData){
-			$emailField = substr($cfg['to'], 1);
-			return self::nestedArrayGet($emailField, $formData);
-		});
-		// validate recipient email
-		if ( empty($mail['to']) ) {
-			self::$error = 'Email recipient not specified';
-			if ( $cfg['to'][0] == ':' ) self::$error .= " ({$cfg['to']})";
-			return false;
-		}
-/*
-		// prepare mapping of mask & data
-		$masks = array();
-		foreach ( $formData as $key => $val ) $masks['{{'.$key.'}}'] = $val;
-		// replace mask in subject & body
-		foreach ( $masks as $key => $val ) {
-			if ( is_array($val) ) $val = implode('|', $val);  // checkbox value
-			$mail['subject'] = str_ireplace($key, $val, $mail['subject']);
-			$mail['body']    = str_ireplace($key, $val, $mail['body']);
-		}
-*/
-		// send email
-		if ( Util::mail($mail) === false ) {
-			self::$error = Util::error();
-			return false;
-		}
-		// write log
-		if ( !empty(self::$config['writeLog']) ) {
-			$logged = Log::write([
-				'action'      => 'SEND_NOTIFICATION',
-				'entity_type' => Bean::type(self::$bean),
-				'entity_id'   => $entityID,
-				'remark'      => $mail,
-			]);
-			if ( $logged === false ) {
-				self::$error = Log::error();
-				return false;
-			}
-		}
-		// done!
-		return true;
-	}
-
-
-
 
 	/**
 	<fusedoc>
@@ -1977,11 +1879,8 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 			'success' => self::$config['customMessage']['completed'],
 			'warning' => array(),
 		);
-		// send notification (when necessary)
-		if ( !empty(self::$config['notification']) ) {
-			// check if any error...
-			if ( self::notify($id) === false ) $result['warning'][] = self::error();
-		}
+		// send notification
+		if ( self::sendNotification($id) === false ) $result['warning'][] = self::error();
 		// take snapshot (when necessary)
 		if ( !empty(self::$config['snapshot']) ) {
 			$snapshotBean = ORM::new(self::$config['snapshot'], [
@@ -2017,6 +1916,107 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		if ( empty($result['warning']) ) unset($result['warning']);
 		// done!
 		return $result;
+	}
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			send notification email
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<object name="bean" />
+					<structure name="notification">
+						<string name="fromName" />
+						<string name="from" />
+						<list name="to" delim=";," />
+						<list name="cc" delim=";," />
+						<list name="bcc" delim=";," />
+						<string name="subject" />
+						<string name="body" />
+					</structure>
+					<boolean name="writeLog" />
+				</structure>
+				<!-- parameter -->
+				<number name="$entityID" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function sendNotification($entityID) {
+		// when notification suppressed
+		// ===> simply quit & do nothing
+		if ( empty(self::$config['notification']) ) return true;
+		// get config
+		$cfg = self::$config['notification'];
+		// validate recipient
+		if ( empty($cfg['to']) ) {
+			self::$error = 'Notification recipient not specified';
+			return false;
+		}
+		// load form data
+		$formData = self::progressData();
+		if ( $formData === false ) return false;
+		// prepare mail
+		$mail = array(
+			'from_name' => !empty($cfg['fromName']) ? $cfg['fromName'] : null,
+			'from'      => !empty($cfg['from']) ? $cfg['from'] : null,
+			'cc'        => !empty($cfg['cc']) ? $cfg['cc'] : null,
+			'bcc'       => !empty($cfg['bcc']) ? $cfg['bcc'] : null,
+			'subject'   => $cfg['subject'],
+			'body'      => $cfg['body'],
+		);
+		// send to recipient (by email field or custom value)
+		// ===> e.g. [ 'to' => ':email' ]
+		// ===> e.g. [ 'to' => 'foo@bar.com' ]
+		$mail['to'] = ( $cfg['to'][0] != ':' ) ? $cfg['to'] : call_user_func(function() use ($cfg, $formData){
+			$emailField = substr($cfg['to'], 1);
+			return self::nestedArrayGet($emailField, $formData);
+		});
+		// validate recipient email
+		if ( empty($mail['to']) ) {
+			self::$error = 'Email recipient not specified';
+			if ( $cfg['to'][0] == ':' ) self::$error .= " ({$cfg['to']})";
+			return false;
+		}
+/*
+		// prepare mapping of mask & data
+		$masks = array();
+		foreach ( $formData as $key => $val ) $masks['{{'.$key.'}}'] = $val;
+		// replace mask in subject & body
+		foreach ( $masks as $key => $val ) {
+			if ( is_array($val) ) $val = implode('|', $val);  // checkbox value
+			$mail['subject'] = str_ireplace($key, $val, $mail['subject']);
+			$mail['body']    = str_ireplace($key, $val, $mail['body']);
+		}
+*/
+		// send email
+		if ( Util::mail($mail) === false ) {
+			self::$error = Util::error();
+			return false;
+		}
+		// write log
+		if ( !empty(self::$config['writeLog']) ) {
+			$logged = Log::write([
+				'action'      => 'SEND_NOTIFICATION',
+				'entity_type' => Bean::type(self::$bean),
+				'entity_id'   => $entityID,
+				'remark'      => $mail,
+			]);
+			if ( $logged === false ) {
+				self::$error = Log::error();
+				return false;
+			}
+		}
+		// done!
+		return true;
 	}
 
 
