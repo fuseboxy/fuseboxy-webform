@@ -1191,7 +1191,8 @@ class Webform {
 			<in>
 				<!-- config -->
 				<structure name="$config" scope="self">
-					<structure name="bean">
+					<object name="bean" optional="yes" />
+					<structure name="bean" optional="yes">
 						<string name="type" />
 						<number name="id" />
 					</structure>
@@ -1200,6 +1201,13 @@ class Webform {
 			<out>
 				<!-- property -->
 				<object name="$bean" scope="self" />
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" />
+					</structure>
+				</structure>
 				<!-- return value -->
 				<boolean name="~return~" />
 			</out>
@@ -1207,7 +1215,21 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function initBeanData() {
-
+		// when [object] passed to config
+		// ===> use it directly
+		if ( is_object(self::$config['bean']) ) {
+			self::$bean = self::$config['bean'];
+			self::$config['bean']['type'] = Bean::type(self::$bean);
+			self::$config['bean']['id'] = self::$bean->id;
+		// when [type & id] passed to config
+		// ===> load from database
+		} elseif ( is_array(self::$config['bean']) ) {
+			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
+			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
+			if ( self::$bean === false ) return ORM::error();
+		}
+		// done!
+		return true;
 	}
 
 
@@ -1241,63 +1263,24 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function initProgressData() {
-
-	}
-
-
-
-
-	/**
-	<fusedoc>
-		<description>
-			load record from [config-bean] (or database) to [self-bean] property (as original data)
-			load record data to session cache (as progress data)
-		</description>
-		<io>
-			<in>
-				<structure name="$config" scope="self">
-					<structure name="bean">
-						<string name="type" />
-						<number name="id" />
-					</structure>
-				</structure>
-			</in>
-			<out>
-				<!-- property -->
-				<object name="$bean" scope="self" />
-				<!-- cache -->
-				<structure name="webform" scope="$_SESSION">
-					<structure name="~token~" />
-				</structure>
-				<!-- return value -->
-				<boolean name="~return~" />
-			</out>
-		</io>
-	</fusedoc>
-	*/
-	public static function initData() {
 		$formData = array();
-		// use data of [self-bean] when already assigned
-		// ===> (when object was passed as config-bean)
-		// ===> otherwise, load from database
-		if ( empty(self::$bean) ) {
-			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
-			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
-			if ( self::$bean === false ) return ORM::error();
-		}
-		// move [self-bean] data into form
+		// load bean data
+		$beanData = self::beanData();
+		if ( $beanData === false ) return false;
+		// move bean data into progress
 		// ===> only move those specified in [fieldConig] (instead of full bean data)
-		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+		foreach ( self::$config['fieldConfig'] as $nestedFieldName => $cfg ) {
 			// for field name of nested-key (e.g. exam.TOEFL.xxx)
 			// ===> simply copy data of top level (e.g. exam)
-			$fieldName = explode('.', $fieldName)[0];
+			$fieldName = explode('.', $nestedFieldName)[0];
 			// copy from bean if data exists
-			if ( !empty(self::$bean->{$fieldName}) ) {
-				$formData[$fieldName] = self::$bean->{$fieldName};
-			}
+			if ( !empty($beanData[$fieldName]) ) $formData[$fieldName] = $beanData[$fieldName];
 		}
-		// retain data & done!
-		return self::progressData($formData);
+		// retain data
+		$retained = self::progressData($formData);
+		if ( $retained === false ) return false;
+		// done!
+		return true;
 	}
 
 
@@ -1888,7 +1871,8 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	*/
 	public static function resetData() {
 		if ( self::clearData() === false ) return false;
-		if ( self::initData() === false ) return false;
+		if ( self::initBeanData() === false ) return false;
+		if ( self::initProgressData() === false ) return false;
 		// done!
 		return true;
 	}
