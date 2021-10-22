@@ -95,7 +95,7 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			clear cached data of webform
+			clear progress data of webform
 		</description>
 		<io>
 			<in>
@@ -112,7 +112,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function clearData() {
+	public static function clearProgress() {
 		$token = self::token();
 		if ( $token === false ) return false;
 		if ( isset($_SESSION['webform'][$token]) ) unset($_SESSION['webform'][$token]);
@@ -1870,7 +1870,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	</fusedoc>
 	*/
 	public static function resetData() {
-		if ( self::clearData() === false ) return false;
+		if ( self::clearProgress() === false ) return false;
 		if ( self::initBeanData() === false ) return false;
 		if ( self::initProgressData() === false ) return false;
 		// done!
