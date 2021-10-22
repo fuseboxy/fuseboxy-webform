@@ -2810,9 +2810,13 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function view($xfa) {
+	public static function view($xfa=[]) {
+		$original = self::$formDataSrc;
 		self::$formDataSrc = 'beanData';
-		return self::renderAll($xfa);
+		$output = self::renderAll($xfa);
+		if ( $output === false ) return false;
+		self::$formDataSrc = $original;
+		return $output;
 	}
 
 
@@ -2821,7 +2825,8 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			display webform with unsaved form data
+			display webform with data in session
+			===> for confirmation page
 		</description>
 		<io>
 			<in>
@@ -2841,20 +2846,12 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function viewProgress($xfa=[]) {
-/*
-$formData = self::progressData();
-return self::renderAll($xfa);
-		// exit point : back
-		$operation = empty($webform['bean']['id']) ? 'new' : 'edit';
-		$prevStep = Webform::prevStep($fusebox->action);
-		$xfa['back'] = "{$fusebox->controller}.{$operation}&step={$prevStep}";
-		// exit point : save
-		$btnKey = empty($webform['bean']['id']) ? 'submit' : 'update';
-		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
-		// display form
-		$layout['content'] = Webform::renderStep('confirm', $xfa);
-		F::error(Webform::error(), $layout['content'] === false);
-*/
+		$original = self::$formDataSrc;
+		self::$formDataSrc = 'progressData';
+		$output = self::renderStep('confirm', $xfa);
+		if ( $output === false ) return false;
+		self::$formDataSrc = $original;
+		return $output;
 	}
 
 
