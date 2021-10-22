@@ -2,12 +2,14 @@
 class Webform {
 
 
-	// property : record to process
-	public static $bean;
 	// property : webform config
 	public static $config;
+	// property : record to process
+	public static $bean;
 	// property : webform working mode
 	private static $mode = 'view';
+	// property : source of data for [renderField] method : {progressData|beanData}
+	private static $formDataSrc = 'progressData';
 	// property : library for corresponding methods
 	public static $libPath = array(
 		'uploadFile'     => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
@@ -1175,6 +1177,71 @@ class Webform {
 		}
 		// done!
 		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			load record from [config-bean] (or database) to [self-bean] property (as original data)
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<!-- property -->
+				<object name="$bean" scope="self" />
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initBeanData() {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			load record data to session cache (as progress data)
+		</description>
+		<io>
+			<in>
+				<!-- property -->
+				<object name="$bean" scope="self" />
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<!-- cache -->
+				<structure name="webform" scope="$_SESSION">
+					<structure name="~token~" />
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initProgressData() {
+
 	}
 
 
@@ -2743,7 +2810,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	/**
 	<fusedoc>
 		<description>
-			display webform with data of bean passed to config
+			display webform with data of initial bean
 		</description>
 		<io>
 			<in>
@@ -2755,7 +2822,7 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		</io>
 	</fusedoc>
 	*/
-	public static function viewBean($xfa) {
+	public static function view($xfa) {
 /*
 // *** IMPORTANT ***
 // ===> need to modify
