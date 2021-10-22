@@ -1215,9 +1215,13 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function initBeanData() {
+		// when already specified
+		// ===> simply do nothing
+		if ( !empty(self::$bean) ) {
+			return true;
 		// when [object] passed to config
 		// ===> use it directly
-		if ( is_object(self::$config['bean']) ) {
+		} elseif ( is_object(self::$config['bean']) ) {
 			self::$bean = self::$config['bean'];
 			self::$config['bean']['type'] = Bean::type(self::$bean);
 			self::$config['bean']['id'] = self::$bean->id;
