@@ -7,7 +7,7 @@ class Webform {
 	// property : webform config
 	public static $config;
 	// property : webform working mode
-	private static $mode = 'view';  // view, view-progress, edit
+	private static $mode = 'view';
 	// property : library for corresponding methods
 	public static $libPath = array(
 		'uploadFile'     => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
@@ -52,6 +52,39 @@ class Webform {
 
 		// done!
 		return date('Y-m-d H:i:s');
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			access data of initial bean passed to webform
+		</description>
+		<io>
+			<in />
+			<out>
+				<structure name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function beanData() {
+		// validation
+		if ( empty(self::$bean) ) {
+			self::$error = 'Bean not specified';
+			return false;
+		}
+		// export data
+		// ===> return array instead of object
+		$result = Bean::export(self::$bean);
+		if ( $result === false ) {
+			self::$error = Bean::error();
+			return false;
+		}
+		// done!
+		return $result;
 	}
 
 
@@ -2710,18 +2743,28 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	/**
 	<fusedoc>
 		<description>
-			display webform with data of config bean
+			display webform with data of bean passed to config
 		</description>
 		<io>
-			<in />
+			<in>
+				<structure name="$xfa" />
+			</in>
 			<out>
 				<string name="~return~" comments="output" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function view() {
-
+	public static function viewBean($xfa) {
+/*
+// *** IMPORTANT ***
+// ===> need to modify
+// ===> do not load into progressData
+Webform::initData();
+$formData = self::$bean->export();
+// display form
+return self::renderAll($xfa);
+*/
 	}
 
 
@@ -2730,18 +2773,40 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 	/**
 	<fusedoc>
 		<description>
-			display webform with progress data
+			display webform with unsaved form data
 		</description>
 		<io>
-			<in />
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<number name="id" />
+					</structure>
+					<boolean name="allowBack" />
+				</structure>
+
+			</in>
 			<out>
 				<string name="~return~" comments="output" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function viewProgress() {
-
+	public static function viewProgress($xfa=[]) {
+/*
+$formData = self::progressData();
+return self::renderAll($xfa);
+		// exit point : back
+		$operation = empty($webform['bean']['id']) ? 'new' : 'edit';
+		$prevStep = Webform::prevStep($fusebox->action);
+		$xfa['back'] = "{$fusebox->controller}.{$operation}&step={$prevStep}";
+		// exit point : save
+		$btnKey = empty($webform['bean']['id']) ? 'submit' : 'update';
+		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
+		// display form
+		$layout['content'] = Webform::renderStep('confirm', $xfa);
+		F::error(Webform::error(), $layout['content'] === false);
+*/
 	}
 
 
