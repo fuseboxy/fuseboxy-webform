@@ -218,43 +218,18 @@ switch ( $fusebox->action ) :
 		break;
 
 
-	// view submitted form
-	// ===> should show data of config-bean
+	// view saved form (with data of config-bean)
 	case 'view':
-F::error('Refactor in progress (soley rely on config-bean for display)');
-var_dump(Webform::$bean);
-Webform::initData();
-var_dump(Webform::$bean->export());
 		F::error('ID of [bean] is required', empty($webform['bean']['id']));
-// pre-load data (if any)
-//$started = Webform::start();
-//F::error(Webform::error(), $started === false);
+		// load data
+		$ready = Webform::initBeanData();
+		F::error(Webform::error(), $ready === false);
 		// exit point : edit
 		if ( $webform['allowEdit'] and !$webform['closed'] ) $xfa['edit'] = "{$fusebox->controller}.edit";
 		// exit point : print
 		if ( $webform['allowPrint'] ) $xfa['print'] = "{$fusebox->controller}.print";
-		// display form
-		$layout['content'] = Webform::renderAll( $xfa ?? [] );
-		F::error(Webform::error(), $layout['content'] === false);
-		// layout
-		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
-		else echo $layout['content'];
-		break;
-
-
-	// confirmation
-	case 'confirm':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		F::error('Confirmation is not required', empty($webform['steps']['confirm']));
-		// exit point : back
-		$operation = empty($webform['bean']['id']) ? 'new' : 'edit';
-		$prevStep = Webform::prevStep($fusebox->action);
-		$xfa['back'] = "{$fusebox->controller}.{$operation}&step={$prevStep}";
-		// exit point : save
-		$btnKey = empty($webform['bean']['id']) ? 'submit' : 'update';
-		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
-		// display form
-		$layout['content'] = Webform::renderStep('confirm', $xfa);
+		// display
+		$layout['content'] = Webform::view($xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -313,6 +288,26 @@ var_dump(Webform::$bean->export());
 		break;
 
 
+	// confirmation
+	case 'confirm':
+		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::error('Confirmation is not required', empty($webform['steps']['confirm']));
+		// exit point : back
+		$operation = empty($webform['bean']['id']) ? 'new' : 'edit';
+		$prevStep = Webform::prevStep($fusebox->action);
+		$xfa['back'] = "{$fusebox->controller}.{$operation}&step={$prevStep}";
+		// exit point : save
+		$btnKey = empty($webform['bean']['id']) ? 'submit' : 'update';
+		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
+		// display form
+		$layout['content'] = Webform::viewProgress($xfa);
+		F::error(Webform::error(), $layout['content'] === false);
+		// layout
+		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
+		else echo $layout['content'];
+		break;
+
+
 	// retain in-progress data
 	case 'autosave':
 		F::error('Forbidden', !F::ajaxRequest());
@@ -344,8 +339,8 @@ var_dump(Webform::$bean->export());
 		if ( $saveResult === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
 		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
 		F::redirect("{$fusebox->controller}.{$action}&step={$lastStep}", $saveResult === false);
-		// clear retained form data
-		$cleared = Webform::clearData();
+		// clear any form progress
+		$cleared = Webform::clearProgress();
 		F::error(Webform::error(), $cleared === false);
 		// done!
 		F::redirect("{$fusebox->controller}.completed&r=".base64_encode(http_build_query($saveResult)));

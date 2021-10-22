@@ -2811,15 +2811,8 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function view($xfa) {
-/*
-// *** IMPORTANT ***
-// ===> need to modify
-// ===> do not load into progressData
-Webform::initData();
-$formData = self::$bean->export();
-// display form
-return self::renderAll($xfa);
-*/
+		self::$formDataSrc = 'beanData';
+		return self::renderAll($xfa);
 	}
 
 
