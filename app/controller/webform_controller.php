@@ -157,7 +157,7 @@ switch ( $fusebox->action ) :
 		if ( empty($arguments['step']) ) {
 			$arguments['step'] = Webform::firstStep();
 			F::error(Webform::error(), $arguments['step'] === false);
-			$reset = Webform::resetData();
+			$reset = Webform::resetProgress();
 			F::error(Webform::error(), $reset === false);
 		}
 		// go to confirmation (when necessary)
@@ -194,7 +194,7 @@ switch ( $fusebox->action ) :
 		if ( empty($arguments['step']) ) {
 			$arguments['step'] = $firstStep = Webform::firstStep();
 			F::error(Webform::error(), $arguments['step'] === false);
-			$reset = Webform::resetData();
+			$reset = Webform::resetProgress();
 			F::error(Webform::error(), $reset === false);
 		}
 		// go to confirmation (when necessary)

@@ -1873,7 +1873,7 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function resetData() {
+	public static function resetProgress() {
 		if ( self::clearProgress() === false ) return false;
 		if ( self::initBeanData() === false ) return false;
 		if ( self::initProgressData() === false ) return false;
