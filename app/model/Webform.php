@@ -7,7 +7,7 @@ class Webform {
 	// property : webform config
 	public static $config;
 	// property : webform working mode
-	private static $mode = 'view';
+	private static $mode = 'view';  // view, view-progress, edit
 	// property : library for corresponding methods
 	public static $libPath = array(
 		'uploadFile'     => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
@@ -2702,6 +2702,46 @@ if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message
 		}
 		// done!
 		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			display webform with data of config bean
+		</description>
+		<io>
+			<in />
+			<out>
+				<string name="~return~" comments="output" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function view() {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			display webform with progress data
+		</description>
+		<io>
+			<in />
+			<out>
+				<string name="~return~" comments="output" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function viewProgress() {
+
 	}
 
 
