@@ -9,7 +9,7 @@ class Webform {
 	// property : webform working mode
 	private static $mode = 'view';
 	// property : source of data for [renderField] method : {progressData|beanData}
-	private static $formDataSrc = 'progressData';
+	private static $dataRender = 'progressData';
 	// property : library for corresponding methods
 	public static $libPath = array(
 		'uploadFile'     => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
@@ -1700,7 +1700,7 @@ class Webform {
 		$fieldConfig = $fieldConfig ?? self::fieldConfig($fieldName);
 		if ( $fieldConfig === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// load data from bean/progress (when necessary)
-		$formData = $formData ?? ( self::$formDataSrc == 'beanData' ) ? self::beanData() : self::progressData();
+		$formData = $formData ?? ( self::$dataRender == 'beanData' ) ? self::beanData() : self::progressData();
 		if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// more essential variables
 		$webform = self::$config;
@@ -2811,11 +2811,11 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function view($xfa=[]) {
-		$original = self::$formDataSrc;
-		self::$formDataSrc = 'beanData';
+		$original = self::$dataRender;
+		self::$dataRender = 'beanData';
 		$output = self::renderAll($xfa);
 		if ( $output === false ) return false;
-		self::$formDataSrc = $original;
+		self::$dataRender = $original;
 		return $output;
 	}
 
@@ -2846,11 +2846,11 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function viewProgress($xfa=[]) {
-		$original = self::$formDataSrc;
-		self::$formDataSrc = 'progressData';
+		$original = self::$dataRender;
+		self::$dataRender = 'progressData';
 		$output = self::renderStep('confirm', $xfa);
 		if ( $output === false ) return false;
-		self::$formDataSrc = $original;
+		self::$dataRender = $original;
 		return $output;
 	}
 
