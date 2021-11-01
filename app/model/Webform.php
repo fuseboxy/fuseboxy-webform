@@ -1700,7 +1700,8 @@ class Webform {
 		$fieldConfig = $fieldConfig ?? self::fieldConfig($fieldName);
 		if ( $fieldConfig === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// load data from bean/progress (when necessary)
-		$formData = $formData ?? ( self::$dataRender == 'beanData' ) ? self::beanData() : self::progressData();
+		if ( !isset($formData) and self::$dataRender == 'progressData' ) $formData = self::progressData();
+		elseif ( !isset($formData) and self::$dataRender == 'beanData' ) $formData = self::beanData();
 		if ( $formData === false ) return F::alertOutput([ 'type' => 'warning', 'message' => self::error() ]);
 		// more essential variables
 		$webform = self::$config;
