@@ -2211,7 +2211,7 @@ class Webform {
 			'datetime'    => date('Y-m-d H:i:s'),
 			'entity_type' => self::$config['bean']['type'],
 			'entity_id'   => $entityID,
-			'snapshot'    => call_user_func(function(){
+			'body'        => call_user_func(function(){
 				$original = self::$mode;
 				self::$mode = 'view';
 				$output = self::renderAll();
