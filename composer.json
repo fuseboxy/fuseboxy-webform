@@ -4,5 +4,10 @@
 	"license": "MIT",
 	"type": "fuseboxy-module",
 	"require": { "fuseboxy/fuseboxy-installer": "*" },
-	"autoload": { "files": [ "app/model/Webform.php" ] }
+	"autoload": {
+		"files": [
+			"app/model/Webform.php",
+			"app/model/WebformProgress.php"
+		]
+	}
 }
