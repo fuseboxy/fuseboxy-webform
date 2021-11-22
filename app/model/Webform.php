@@ -482,7 +482,7 @@ class Webform {
 		// field config : default file config
 		self::$config['fieldConfig'] = self::initConfig__defaultFileConfig(self::$config['fieldConfig']);
 		// field config : default table config
-		self::$config['fieldConfig'] = self::initConfig__defaultTableConfig(self::$config['fieldConfig']);
+		if ( self::initConfig__defaultTableConfig() === false ) return false;
 		// field config : table default value
 		if ( self::initConfig__defaultTableValue() === false ) return false;
 		// steps : default & fix
@@ -1052,66 +1052,73 @@ class Webform {
 		</description>
 		<io>
 			<in>
-				<structure name="$fieldConfigList">
-					<structure name="~fieldName~">
-						<string name="format" value="table" optional="yes" />
-						<structure name="tableRow" optional="yes">
-							<structure name="~tableFieldName~" comments="single field in one cell">
-								<string name="format" optional="yes" />
-							</structure>
-							<string name="+" value="~tableFieldName~" comments="single field in one cell; only field name specified" />
-							<structure name="+" comments="multiple fields in one cell">
-								<structure name="~tableFieldName~">
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" value="table" optional="yes" />
+							<structure name="tableRow" optional="yes">
+								<structure name="~tableFieldName~" comments="single field in one cell">
 									<string name="format" optional="yes" />
 								</structure>
-								<string name="+" value="~tableFieldName~" comments="multiple fields in one cell; only field name specified" />
+								<string name="+" value="~tableFieldName~" comments="single field in one cell; only field name specified" />
+								<structure name="+" comments="multiple fields in one cell">
+									<structure name="~tableFieldName~">
+										<string name="format" optional="yes" />
+									</structure>
+									<string name="+" value="~tableFieldName~" comments="multiple fields in one cell; only field name specified" />
+								</structure>
 							</structure>
 						</structure>
 					</structure>
 				</structure>
 			</in>
 			<out>
-				<structure name="~return~">
-					<structure name="~fieldName~">
-						<structure name="tableRow" optional="yes">
-							<structure name="~tableFieldName~" comments="single field in one cell">
-								<string name="format" />
-							</structure>
-							<structure name="+" comments="multiple fields in one cell">
-								<structure name="~tableFieldName~">
+				<!-- fixed config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<structure name="tableRow" optional="yes">
+								<structure name="~tableFieldName~" comments="single field in one cell">
 									<string name="format" />
+								</structure>
+								<structure name="+" comments="multiple fields in one cell">
+									<structure name="~tableFieldName~">
+										<string name="format" />
+									</structure>
 								</structure>
 							</structure>
 						</structure>
 					</structure>
 				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function initConfig__defaultTableConfig($fieldConfigList) {
+	public static function initConfig__defaultTableConfig() {
 		// go through config of each field
-		foreach ( $fieldConfigList as $fieldName => $cfg ) {
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// table format only
 			if ( isset($cfg['format']) and $cfg['format'] == 'table' and isset($cfg['tableRow']) ) {
 				// fix field of single-field-in-one-cell
 				$cfg['tableRow'] = self::initConfig__defaultEmptyConfig($cfg['tableRow']);
 				$cfg['tableRow'] = self::initConfig__defaultFieldFormat($cfg['tableRow']);
-				$fieldConfigList[$fieldName]['tableRow'] = $cfg['tableRow'];
+				self::$config['fieldConfig'][$fieldName]['tableRow'] = $cfg['tableRow'];
 				// fix each field of multi-field-in-one-cell
-				foreach ( $fieldConfigList[$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
+				foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
 					if ( is_numeric($tableCellIndex) ) {
 						$tableCellFieldConfigList = self::initConfig__defaultEmptyConfig($tableCellFieldConfigList);
 						$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
-						$fieldConfigList[$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
-						// workaround to fix bug of dummy [format] attribute
-						unset($fieldConfigList[$fieldName]['tableRow'][$tableCellIndex]['format']);
+						self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
+						// workaround to fix (unknown) bug of dummy [format] attribute
+						unset(self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex]['format']);
 					}
 				} // foreach-tableRow
 			} // if-format-table
 		} // foreach-fieldConfig
 		// done!
-		return $fieldConfigList;
+		return true;
 	}
 
 
