@@ -483,6 +483,8 @@ class Webform {
 		self::$config['fieldConfig'] = self::initConfig__defaultFileConfig(self::$config['fieldConfig']);
 		// field config : default table config
 		self::$config['fieldConfig'] = self::initConfig__defaultTableConfig(self::$config['fieldConfig']);
+		// field config : table default value
+		if ( self::initConfig__defaultTableValue() === false ) return false;
 		// steps : default & fix
 		if ( self::initConfig__defaultSteps() === false ) return false;
 		// notification : default & fix
@@ -1110,6 +1112,53 @@ class Webform {
 		} // foreach-fieldConfig
 		// done!
 		return $fieldConfigList;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			convert table json data into array
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<structure name="~fieldName~">
+						<string name="format" value="table" />
+						<structure_or_object name="default" optional="yes" format="json-object|json-array">
+							<structure_or_object name="~rowIndex~" />
+						</structure>
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<structure name="$config" scope="self">
+					<structure name="~fieldName~">
+						<string name="format" value="table" />
+						<structure name="default" optional="yes" format="php-array">
+							<structure name="~rowIndex~" />
+						</structure>
+					</structure>
+				</structure>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__defaultTableValue() {
+		// go through each field
+		foreach ( self::$config as $fieldName => $cfg ) {
+			// if table-field as default defined...
+			if ( isset($cfg['format']) and $cfg['format'] == 'table' and !empty($cfg['default']) ) {
+				// convert json to array (when necessary)
+				if ( is_string($cfg['default']) ) self::$config[$fieldName]['default'] = json_decode($cfg['default'], true);
+				// convert object to array (when necessary)
+				if ( is_object($cfg['default']) ) self::$config[$fieldName]['default'] = (array)$cfg['default'];
+				// convert each item to array (when necessary)
+				foreach ( self::$config[$fieldName]['default'] as $rowIndex => $item ) self::$config[$fieldName]['default'][$rowIndex] = (array)$item;
+			}
+		}
 	}
 
 
