@@ -522,7 +522,7 @@ class Webform {
 				</structure>
 			</in>
 			<out>
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<structure name="customButton">
 						<structure name="~btnKey~">
@@ -587,7 +587,7 @@ class Webform {
 				</structure>
 			</in>
 			<out>
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<structure name="customMessage">
 						<string name="closed|completed|neverSaved|lastSavedAt|lastSavedOn" />
@@ -863,7 +863,7 @@ class Webform {
 				</structure>
 			</in>
 			<out>
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<boolean name="allowEdit" />
 					<boolean name="allowPrint" />
@@ -901,7 +901,7 @@ class Webform {
 				</structure>
 			</in>
 			<out>
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<boolean name="opened" />
 					<boolean name="closed" />
@@ -936,7 +936,7 @@ class Webform {
 				</structure>
 			</in>
 			<out>
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<structure name="notification">
 						<list name="to" />
@@ -981,7 +981,7 @@ class Webform {
 				</structure>
 			</in>
 			<out>
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="~return~">
 					<structure name="~stepName~" />
 				</structure>
@@ -1134,6 +1134,7 @@ class Webform {
 				</structure>
 			</in>
 			<out>
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<structure name="~fieldName~">
 						<string name="format" value="table" />
@@ -1142,6 +1143,8 @@ class Webform {
 						</structure>
 					</structure>
 				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
 			</out>
 		</io>
 	</fusedoc>
@@ -1159,6 +1162,8 @@ class Webform {
 				foreach ( self::$config[$fieldName]['default'] as $rowIndex => $item ) self::$config[$fieldName]['default'][$rowIndex] = (array)$item;
 			}
 		}
+		// done!
+		return true;
 	}
 
 
@@ -1183,10 +1188,12 @@ class Webform {
 			<out>
 				<!-- property -->
 				<object name="$bean" scope="self" optional="yes" />
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
-					<string name="type" />
-					<number name="id" optional="yes" />
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" optional="yes" />
+					</structure>
 				</structure>
 				<!-- return value -->
 				<boolean name="true" />
