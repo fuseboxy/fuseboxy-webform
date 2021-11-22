@@ -1132,10 +1132,12 @@ class Webform {
 		<io>
 			<in>
 				<structure name="$config" scope="self">
-					<structure name="~fieldName~">
-						<string name="format" value="table" />
-						<structure_or_object name="default" optional="yes" format="json-object|json-array">
-							<structure_or_object name="~rowIndex~" />
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" value="table" />
+							<structure_or_object name="default" optional="yes" format="json-object|json-array">
+								<structure_or_object name="~rowIndex~" />
+							</structure>
 						</structure>
 					</structure>
 				</structure>
@@ -1143,10 +1145,12 @@ class Webform {
 			<out>
 				<!-- fixed config -->
 				<structure name="$config" scope="self">
-					<structure name="~fieldName~">
-						<string name="format" value="table" />
-						<structure name="default" optional="yes" format="php-array">
-							<structure name="~rowIndex~" />
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<string name="format" value="table" />
+							<structure name="default" optional="yes" format="php-array">
+								<structure name="~rowIndex~" />
+							</structure>
 						</structure>
 					</structure>
 				</structure>
@@ -1158,15 +1162,17 @@ class Webform {
 	*/
 	public static function initConfig__defaultTableValue() {
 		// go through each field
-		foreach ( self::$config as $fieldName => $cfg ) {
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// if table-field as default defined...
 			if ( isset($cfg['format']) and $cfg['format'] == 'table' and !empty($cfg['default']) ) {
 				// convert json to array (when necessary)
-				if ( is_string($cfg['default']) ) self::$config[$fieldName]['default'] = json_decode($cfg['default'], true);
+				if ( is_string($cfg['default']) ) self::$config['fieldConfig'][$fieldName]['default'] = json_decode($cfg['default'], true);
 				// convert object to array (when necessary)
-				if ( is_object($cfg['default']) ) self::$config[$fieldName]['default'] = (array)$cfg['default'];
+				if ( is_object($cfg['default']) ) self::$config['fieldConfig'][$fieldName]['default'] = (array)$cfg['default'];
 				// convert each item to array (when necessary)
-				foreach ( self::$config[$fieldName]['default'] as $rowIndex => $item ) self::$config[$fieldName]['default'][$rowIndex] = (array)$item;
+				foreach ( self::$config['fieldConfig'][$fieldName]['default'] as $rowIndex => $item ) {
+					self::$config['fieldConfig'][$fieldName]['default'][$rowIndex] = (array)$item;
+				}
 			}
 		}
 		// done!
@@ -1203,7 +1209,7 @@ class Webform {
 					</structure>
 				</structure>
 				<!-- return value -->
-				<boolean name="true" />
+				<boolean name="~return~" />
 			</out>
 		</io>
 	</fusedoc>
@@ -1264,7 +1270,7 @@ class Webform {
 			<out>
 				<!-- property -->
 				<object name="$bean" scope="self" />
-				<!-- config -->
+				<!-- fixed config -->
 				<structure name="$config" scope="self">
 					<structure name="bean">
 						<string name="type" />
