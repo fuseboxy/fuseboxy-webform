@@ -66,9 +66,10 @@
 						<structure name="tableRow" optional="yes">
 							<structure name="~rowFieldName~" />
 						</structure>
-						<file name="tableRow" optional="yes" example="/path/to/table/row.php" />
 						<boolean name="appendRow" optional="yes" />
 						<boolean name="removeRow" optional="yes" />
+						<file name="tableHeaderScript" optional="yes" default="~appPath~/view/webform/input.table.header.php" />
+						<file name="tableRowScript" optional="yes" default="~appPath~/view/webform/input.table.row.php" />
 						<!-- for [format=custom] only -->
 						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
 					</structure>

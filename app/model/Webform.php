@@ -1068,6 +1068,8 @@ class Webform {
 									<string name="+" value="~tableFieldName~" comments="multiple fields in one cell; only field name specified" />
 								</structure>
 							</structure>
+							<file name="tableHeaderScript" optional="yes" />
+							<file name="tableRowScript" optional="yes" />
 						</structure>
 					</structure>
 				</structure>
@@ -1088,6 +1090,8 @@ class Webform {
 								</structure>
 							</structure>
 						</structure>
+						<file name="tableHeaderScript" default="~appPath~/view/webform/input.table.header.php" />
+						<file name="tableRowScript" default="~appPath~/view/webform/input.table.row.php" />
 					</structure>
 				</structure>
 				<!-- return value -->
@@ -1099,22 +1103,39 @@ class Webform {
 	public static function initConfig__defaultTableConfig() {
 		// go through config of each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			// table format only
-			if ( isset($cfg['format']) and $cfg['format'] == 'table' and isset($cfg['tableRow']) ) {
-				// fix field of single-field-in-one-cell
-				$cfg['tableRow'] = self::initConfig__defaultEmptyConfig($cfg['tableRow']);
-				$cfg['tableRow'] = self::initConfig__defaultFieldFormat($cfg['tableRow']);
-				self::$config['fieldConfig'][$fieldName]['tableRow'] = $cfg['tableRow'];
-				// fix each field of multi-field-in-one-cell
-				foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
-					if ( is_numeric($tableCellIndex) ) {
-						$tableCellFieldConfigList = self::initConfig__defaultEmptyConfig($tableCellFieldConfigList);
-						$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
-						self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
-						// workaround to fix (unknown) bug of dummy [format] attribute
-						unset(self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex]['format']);
-					}
-				} // foreach-tableRow
+			// proceed when table format only
+			if ( isset($cfg['format']) and $cfg['format'] == 'table' ) {
+				// fix table header script
+				if ( empty($cfg['tableHeaderScript']) ) $cfg['tableHeaderScript'] = F::appPath('view/webform/input.table.header.php');
+				if ( !is_file($cfg['tableHeaderScript']) ) {
+					self::$error = "Table header script [{$cfg['tableHeaderScript']}] of field [{$fieldName}] not found";
+					return false;
+				}
+				self::$config['fieldConfig'][$fieldName]['tableHeaderScript'] = $cfg['tableHeaderScript'];
+				// fix table row script
+				if ( empty($cfg['tableRowScript']) ) $cfg['tableRowScript'] = F::appPath('view/webform/input.table.row.php');
+				if ( !is_file($cfg['tableRowScript']) ) {
+					self::$error = "Table row script [{$cfg['tableRowScript']}] of field [{$fieldName}] not found";
+					return false;
+				}
+				self::$config['fieldConfig'][$fieldName]['tableRowScript'] = $cfg['tableRowScript'];
+				// fix table row config
+				if ( isset($cfg['tableRow']) ) {
+					// fix field of single-field-in-one-cell
+					$cfg['tableRow'] = self::initConfig__defaultEmptyConfig($cfg['tableRow']);
+					$cfg['tableRow'] = self::initConfig__defaultFieldFormat($cfg['tableRow']);
+					self::$config['fieldConfig'][$fieldName]['tableRow'] = $cfg['tableRow'];
+					// fix each field of multi-field-in-one-cell
+					foreach ( self::$config['fieldConfig'][$fieldName]['tableRow'] as $tableCellIndex => $tableCellFieldConfigList ) {
+						if ( is_numeric($tableCellIndex) ) {
+							$tableCellFieldConfigList = self::initConfig__defaultEmptyConfig($tableCellFieldConfigList);
+							$tableCellFieldConfigList = self::initConfig__defaultFieldFormat($tableCellFieldConfigList);
+							self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex] = $tableCellFieldConfigList;
+							// workaround to fix (unknown) bug of dummy [format] attribute
+							unset(self::$config['fieldConfig'][$fieldName]['tableRow'][$tableCellIndex]['format']);
+						}
+					} // foreach-tableRow
+				} // if-isset-tableRow
 			} // if-format-table
 		} // foreach-fieldConfig
 		// done!
