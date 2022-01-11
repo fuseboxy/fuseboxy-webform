@@ -17,9 +17,11 @@
 				<structure name="tableHeader" optional="yes">
 					<string name="~columnHeader~" value="~columnWidth~" />
 				</structure>
+				<file name="tableHeaderScript" />
 				<structure name="tableRow" optional="yes">
 					<structure name="~rowFieldName~" />
 				</structure>
+				<file name="tableRowScript" />
 				<boolean name="appendRow" />
 				<boolean name="removeRow" />
 			</structure>
@@ -40,7 +42,7 @@
 </fusedoc>
 */ ?>
 <div id="<?php echo $fieldID; ?>" class="webform-input-table">
-	<header><?php include F::appPath('view/webform/input.table.header.php'); ?></header>
+	<header><?php include $fieldConfig['tableHeaderScript']; ?></header>
 	<fieldset><?php
 		// empty hidden field (when necessary)
 		// ===> avoid nothing submitted when no row
@@ -50,9 +52,7 @@
 		endif;
 		// table content
 		if ( !empty($fieldValue) ) :
-			foreach ( $fieldValue as $rowIndex => $rowItem ) :
-				include F::appPath('view/webform/input.table.row.php');
-			endforeach;
+			foreach ( $fieldValue as $rowIndex => $rowItem ) include $fieldConfig['tableRowScript'];
 		endif;
 	?></fieldset>
 </div>
