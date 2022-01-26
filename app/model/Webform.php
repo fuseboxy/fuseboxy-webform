@@ -413,6 +413,7 @@ class Webform {
 						<string name="type" />
 						<number name="id" optional="yes" />
 					</structure>
+					<structure name="retainParam" optional="yes" default="[]" />
 					<!-- permission -->
 					<boolean name="allowEdit" default="false" />
 					<boolean name="allowPrint" default="false" />
@@ -467,6 +468,8 @@ class Webform {
 	public static function initConfig() {
 		// bean : load record
 		if ( self::initConfig__fixBeanConfig() === false ) return false;
+		// retain param : default
+		self::$config['retainParam'] = self::$config['retainParam'] ?? [];
 		// form permission : edit & print : default
 		if ( self::initConfig__defaultFormPermission() === false ) return false;
 		// form state : opened & closed : default
