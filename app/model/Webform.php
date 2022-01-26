@@ -999,6 +999,13 @@ class Webform {
 		if ( empty(self::$config['steps']) and !empty(self::$config['fieldConfig']) ) {
 			self::$config['steps']['default'] = array_keys(self::$config['fieldConfig']);
 		}
+		// make sure fully associated array
+		$arr = self::$config['steps'];
+		self::$config['steps'] = array();
+		foreach ( $arr as $stepName => $fieldLayout ) {
+			if ( !is_numeric($stepName) ) self::$config['steps'][$fieldLayout] = array();;
+			else self::$config['steps'][$stepName] = $fieldLayout;
+		}
 		// default having [confirm] step
 		// ===> allow {false} to skip [confirm] step
 		self::$config['steps']['confirm'] = self::$config['steps']['confirm'] ?? true;
