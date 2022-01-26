@@ -1003,7 +1003,7 @@ class Webform {
 		$arr = self::$config['steps'];
 		self::$config['steps'] = array();
 		foreach ( $arr as $stepName => $fieldLayout ) {
-			if ( !is_numeric($stepName) ) self::$config['steps'][$fieldLayout] = array();;
+			if ( !is_numeric($stepName) ) self::$config['steps'][$fieldLayout] = array();
 			else self::$config['steps'][$stepName] = $fieldLayout;
 		}
 		// default having [confirm] step
