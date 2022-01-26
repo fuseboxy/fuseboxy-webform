@@ -1018,6 +1018,10 @@ class Webform {
 		// ===> when only field-name-list specified
 		// ===> use field-name-list as key & apply empty field-width-list
 		foreach ( self::$config['steps'] as $stepName => $fieldLayout ) {
+			// remove false/null step
+			// ===> e.g. [ 'my-step' => null  ]  >>>  (remove)
+			// ===> e.g. [ 'confirm' => false ]  >>>  (remove)
+			if ( $fieldLayout === false or $fieldLayout === null ) unset(self::$config['steps'][$stepName]);
 			// turn string into array
 			// ===> e.g. [ 'declare' => 'col_1|col_2' ]  >>>  [ 'declare' => array('col_1|col_2' => '') ]
 			if ( is_string($fieldLayout) ) {
@@ -1031,11 +1035,6 @@ class Webform {
 					if ( is_numeric($fieldNameList) ) list($fieldNameList, $fieldWidthList) = array($fieldWidthList, '');
 					self::$config['steps'][$stepName][$fieldNameList] = $fieldWidthList;
 				}
-			// remove empty step
-			// ===> e.g. [ 'my-step' => array() ]  >>>  (remove)
-			// ===> e.g. [ 'confirm' => false   ]  >>>  (remove)
-			} elseif ( empty($fieldLayout) ) {
-				unset(self::$config['steps'][$stepName]);
 			}
 		} // foreach-step
 		// done!
@@ -2845,6 +2844,7 @@ class Webform {
 				$err[$fieldName] = "Invalid date format in [{$fieldName}] ({$fieldValue})";
 			}
 			// check options : checkbox (multiple selection)
+			// ===> *IMPORTANT* easily to have issue when key is text with linebreak
 			if ( $cfg['format'] == 'checkbox' and $fieldValue !== '' ) {
 				$fieldValue = is_array($fieldValue) ? $fieldValue : explode('|', $fieldValue);
 				foreach ( $fieldValue as $selectedItem ) {
