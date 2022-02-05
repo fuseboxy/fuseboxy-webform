@@ -2053,10 +2053,16 @@ class Webform {
 		// move converted data into container
 		// ===> could not use bean-import to avoid having error when array-value
 		foreach ( $formData as $key => $val ) self::$bean->{$key} = $val;
-		// add more info
-		if ( empty(self::$bean->created_on) ) self::$bean->created_on = date('Y-m-d H:i:s');
-		else self::$bean->updated_on = date('Y-m-d H:i:s');
-		self::$bean->disabled = false;
+		// mark timestamp (when column exists)
+		if ( isset(self::$bean->created_on) and empty(self::$bean->created_on) ) {
+			self::$bean->created_on = date('Y-m-d H:i:s');
+		} elseif ( isset(self::$bean->updated_on) ) {
+			self::$bean->updated_on = date('Y-m-d H:i:s');
+		}
+		// force record enabled (when column exists)
+		if ( isset(self::$bean->disabled) ) {
+			self::$bean->disabled = false;
+		}
 		// save to database
 		$id = ORM::save(self::$bean);
 		if ( $id === false ) {
