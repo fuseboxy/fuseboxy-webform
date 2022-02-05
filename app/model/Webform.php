@@ -148,14 +148,19 @@ class Webform {
 			// when field [format=table]
 			// ===> simply overwrite
 			// ===> make sure no removed table row retained
-			if ( $fieldFormat == 'table' ) $baseData[$key] = $val;
+			if ( $fieldFormat == 'table' ) {
+				$baseData[$key] = $val;
 			// when array value
 			// ===> for field with nested field name (e.g. student.hkid)
 			// ===> keep merging recursively
-			elseif ( is_array($val) ) $baseData[$key] = self::dataMerge($baseData[$key] ?? [], $val, $fieldName);
+			} elseif ( is_array($val) ) {
+				$baseData[$key] = self::dataMerge($baseData[$key] ?? [], $val, $fieldName);
 			// when simple value
 			// ===> simply overwrite
-			else $baseData[$key] = $val;
+			} else {
+				if ( !is_array($baseData) ) $baseData = array();
+				$baseData[$key] = $val;
+			}
 		}
 		// done!
 		return $baseData;
