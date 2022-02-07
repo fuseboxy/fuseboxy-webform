@@ -1888,7 +1888,7 @@ class Webform {
 		ob_start();
 		?><div class="form-row"><?php
 			foreach ( $fieldNameList as $i => $fieldNameSubList ) :
-				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-{$fieldWidthList[$i]}" : 'col';
+				$fieldWidth = !empty($fieldWidthList[$i]) ? "col-md-{$fieldWidthList[$i]}" : 'col-md';
 				// determine column class
 				// ===> example : "foo,bar,ab_cd,x.y.z"
 				// ===> result  : "webform-col-foo-bar-ab_cd-x-y-z"
@@ -1896,7 +1896,7 @@ class Webform {
 				// display column
 				// ===> for example : "ddd,eee"
 				// ===> show [ddd] and [eee] fields in same column vertically
-				?><div class="webform-col <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
+				?><div class="webform-col col-12 <?php echo $colClassName; ?> <?php echo $fieldWidth; ?>"><?php
 					$fieldNameSubList = explode(',', $fieldNameSubList);
 					foreach ( $fieldNameSubList as $fieldName ) echo self::renderField($fieldName);
 				?></div><?php
