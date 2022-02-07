@@ -45,7 +45,7 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 ?><div class="webform-input-file"><?php
 	// field
 	if ( !empty($editable) ) :
-		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left p-3 position-relative"><?php
+		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left mb-0 p-3 position-relative"><?php
 			if ( empty($fieldConfig['readonly']) ) :
 				// psuedo-hidden field to submit
 				// ===> to be updated after ajax upload
