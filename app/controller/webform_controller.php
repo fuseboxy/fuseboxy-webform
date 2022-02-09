@@ -12,7 +12,7 @@
 				<!-- essential config -->
 				<mixed name="bean" />
 				<string name="layoutPath" />
-				<structure name="retainParam" optional="yes" comments="param to retain at button/form in order to maintain the record to edit (e.g. /my/webform/id=1)" />
+				<string_or_structure name="retainParam" optional="yes" comments="param to retain at button/form in order to maintain the record to edit (e.g. /my/webform/id=1)" format="query-string or associated-array" />
 				<!-- permission -->
 				<boolean name="allowEdit" optional="false" comments="user can view submitted form but cannot modify" />
 				<boolean name="allowPrint" optional="false" comments="user can print submitted form" />

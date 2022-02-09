@@ -403,6 +403,63 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			load record from [config-bean] (or database) to [self-bean] property (as original data)
+		</description>
+		<io>
+			<in>
+				<!-- config -->
+				<structure name="$config" scope="self">
+					<object name="bean" optional="yes" />
+					<structure name="bean" optional="yes">
+						<string name="type" />
+						<number name="id" />
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<!-- property -->
+				<object name="$bean" scope="self" />
+				<!-- fixed config -->
+				<structure name="$config" scope="self">
+					<structure name="bean">
+						<string name="type" />
+						<number name="id" />
+					</structure>
+				</structure>
+				<!-- return value -->
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initBeanData() {
+		// when already specified
+		// ===> simply do nothing
+		if ( !empty(self::$bean) ) {
+			return true;
+		// when [object] passed to config
+		// ===> use it directly
+		} elseif ( is_object(self::$config['bean']) ) {
+			self::$bean = self::$config['bean'];
+			self::$config['bean']['type'] = Bean::type(self::$bean);
+			self::$config['bean']['id'] = self::$bean->id;
+		// when [type & id] passed to config
+		// ===> load from database
+		} elseif ( is_array(self::$config['bean']) ) {
+			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
+			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
+			if ( self::$bean === false ) return ORM::error();
+		}
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			set default & fix config
 		</description>
 		<io>
@@ -418,7 +475,7 @@ class Webform {
 						<string name="type" />
 						<number name="id" optional="yes" />
 					</structure>
-					<structure name="retainParam" optional="yes" default="[]" />
+					<string name="retainParam" optional="yes" default="" format="query-string" />
 					<!-- permission -->
 					<boolean name="allowEdit" default="false" />
 					<boolean name="allowPrint" default="false" />
@@ -473,8 +530,8 @@ class Webform {
 	public static function initConfig() {
 		// bean : load record
 		if ( self::initConfig__fixBeanConfig() === false ) return false;
-		// retain param : default
-		self::$config['retainParam'] = self::$config['retainParam'] ?? [];
+		// retain param : default & fix
+		if ( self::initConfig__fixRetainParam() === false ) return false;
 		// form permission : edit & print : default
 		if ( self::initConfig__defaultFormPermission() === false ) return false;
 		// form state : opened & closed : default
@@ -1289,52 +1346,40 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			load record from [config-bean] (or database) to [self-bean] property (as original data)
+			convert retain param into a query string (with &-prefixed)
+			===> easier to implement on xfa
+			===> also check for reserved word
 		</description>
 		<io>
 			<in>
-				<!-- config -->
 				<structure name="$config" scope="self">
-					<object name="bean" optional="yes" />
-					<structure name="bean" optional="yes">
-						<string name="type" />
-						<number name="id" />
+					<structure name="retainParam" optional="yes">
+						<string name="*" />
 					</structure>
 				</structure>
 			</in>
 			<out>
-				<!-- property -->
-				<object name="$bean" scope="self" />
 				<!-- fixed config -->
 				<structure name="$config" scope="self">
-					<structure name="bean">
-						<string name="type" />
-						<number name="id" />
-					</structure>
+					<string name="retainParam" default="" example="&foo=1&bar=2" />
 				</structure>
 				<!-- return value -->
-				<boolean name="~return~" />
+				<string name="~return~" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function initBeanData() {
-		// when already specified
-		// ===> simply do nothing
-		if ( !empty(self::$bean) ) {
-			return true;
-		// when [object] passed to config
-		// ===> use it directly
-		} elseif ( is_object(self::$config['bean']) ) {
-			self::$bean = self::$config['bean'];
-			self::$config['bean']['type'] = Bean::type(self::$bean);
-			self::$config['bean']['id'] = self::$bean->id;
-		// when [type & id] passed to config
-		// ===> load from database
-		} elseif ( is_array(self::$config['bean']) ) {
-			if ( empty(self::$config['bean']['id']) ) self::$bean = ORM::new(self::$config['bean']['type']);
-			else self::$bean = ORM::get(self::$config['bean']['type'], self::$config['bean']['id']);
-			if ( self::$bean === false ) return ORM::error();
+	public static function initConfig__fixRetainParam() {
+		// determine default value
+		if ( empty(self::$config['retainParam']) ) self::$config['retainParam'] = '';
+		// convert from data to query-string
+		if ( is_array(self::$config['retainParam']) ) self::$config['retainParam'] = http_build_query(self::$config['retainParam']);
+		// prepend [&] to make it easier to implement to xfa
+		if ( !empty(self::$config['retainParam']) ) self::$config['retainParam'] = '&'.self::$config['retainParam'];
+		// check for reserved word
+		if ( strpos(self::$config['retainParam'], '&step=') !== false ) {
+			self::$error = '<strong>step</strong> is a reserved parameter and not allowed in [retainParam]';
+			return false;
 		}
 		// done!
 		return true;
