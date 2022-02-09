@@ -2105,6 +2105,9 @@ class Webform {
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<object name="bean" />
+					<structure name="fieldConfig">
+						<structure name="~fieldName~" />
+					</structure>
 					<structure name="notification">
 						<string name="fromName" />
 						<string name="from" />
@@ -2126,6 +2129,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function sendNotification($entityID) {
+		$entityType = Bean::type(self::$bean);
 		// when notification suppressed
 		// ===> simply quit & do nothing
 		if ( empty(self::$config['notification']) ) return true;
@@ -2136,7 +2140,21 @@ class Webform {
 			self::$error = 'Notification recipient not specified';
 			return false;
 		}
-		// load form data
+		// load bean data (saved data)
+		// ===> load from database instead of access [self::$bean]
+		// ===> because [self::$bean] seems to be the beginning data
+		// ===> it might not get reloaded after record saved
+		$bean = ORM::load($entityType, $entityID);
+		if ( $bean === false ) {
+			self::$error = ORM::error();
+			return false;
+		}
+		$beanData = Bean::export($bean);
+		if ( $beanData === false ) {
+			self::$error = Bean::error();
+			return false;
+		}
+		// load form data (progress data)
 		$formData = self::progressData();
 		if ( $formData === false ) return false;
 		// prepare mail
@@ -2161,17 +2179,23 @@ class Webform {
 			if ( $cfg['to'][0] == ':' ) self::$error .= " ({$cfg['to']})";
 			return false;
 		}
-/*
 		// prepare mapping of mask & data
-		$masks = array();
-		foreach ( $formData as $key => $val ) $masks['{{'.$key.'}}'] = $val;
+		// ===> use {{...}} to access bean data (which are data load from database)
+		// ===> use [[...]] to access form data (which are data stayed in session)
+		$beanDataMasks = array();
+		foreach ( $beanData as $fieldName => $fieldValue ) $beanData['{{'.$fieldName.'}}'] = $fieldValue;
+		$formDataMasks = array();
+		foreach ( self::$config['fieldConfig'] as $fieldName => $fieldCfg ) {
+			$fieldValue = self::nestedArrayGet($fieldName, $formData);
+			if ( $fieldValue !== null ) {
+				$formDataMasks['[['.$fieldName.']]'] = ( $fieldCfg['format'] == 'checkbox' ) ? implode('<br>', $fieldValue) : $fieldValue;
+			}
+		}
 		// replace mask in subject & body
-		foreach ( $masks as $key => $val ) {
-			if ( is_array($val) ) $val = implode('|', $val);  // checkbox value
+		foreach ( array_merge($beanDataMasks, $formDataMasks) as $key => $val ) {
 			$mail['subject'] = str_ireplace($key, $val, $mail['subject']);
 			$mail['body']    = str_ireplace($key, $val, $mail['body']);
 		}
-*/
 		// send email
 		if ( Util::mail($mail) === false ) {
 			self::$error = Util::error();
@@ -2181,7 +2205,7 @@ class Webform {
 		if ( !empty(self::$config['writeLog']) ) {
 			$logged = Log::write([
 				'action'      => 'SEND_NOTIFICATION',
-				'entity_type' => Bean::type(self::$bean),
+				'entity_type' => $entityType,
 				'entity_id'   => $entityID,
 				'remark'      => $mail,
 			]);
