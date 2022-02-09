@@ -1861,13 +1861,13 @@ class Webform {
 		$fieldValue = $fieldConfig['value'] ?? self::nestedArrayGet($fieldName, $formData) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
 		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image','signature']) ) {
-			$xfa['uploadHandler'] = F::command('controller').'.upload';
-			$xfa['uploadProgress'] = F::command('controller').'.uploadProgress';
+			$xfa['uploadHandler'] = F::command('controller').'.upload'.self::$config['retainParam'];
+			$xfa['uploadProgress'] = F::command('controller').'.uploadProgress'.self::$config['retainParam'];
 		}
 		// exit point : dynamic table
 		if ( !F::is('*.view,*.confirm') and $fieldConfig['format'] == 'table' ) {
-			$xfa['appendRow'] = F::command('controller').'.appendRow';
-			$xfa['removeRow'] = F::command('controller').'.removeRow';
+			$xfa['appendRow'] = F::command('controller').'.appendRow'.self::$config['retainParam'];
+			$xfa['removeRow'] = F::command('controller').'.removeRow'.self::$config['retainParam'];
 		}
 		// done!
 		ob_start();

@@ -210,7 +210,7 @@ switch ( $fusebox->action ) :
 		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
 		elseif ( empty($nextStep) ) $xfa['update'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
 		// exit point : autosave
-		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
+		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave{$webform['retainParam']}";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -422,7 +422,7 @@ switch ( $fusebox->action ) :
 		$fieldName = $arguments['fieldName'];
 		$fieldValue = array();
 		// button
-		$xfa['removeRow'] = F::command('controller').'.removeRow';
+		$xfa['removeRow'] = F::command('controller').'.removeRow'.$webform['retainParam'];
 		// display
 		include F::appPath('view/webform/input.table.row.php');
 		break;
