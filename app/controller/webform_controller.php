@@ -166,11 +166,11 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
-		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.new&step={$prevStep}";
+		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.new{$webform['retainParam']}&step={$prevStep}";
 		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		elseif ( !$nextStep ) $xfa['submit'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
+		elseif ( !$nextStep ) $xfa['submit'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
 		// exit point : autosave
 		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
 		// display form
@@ -203,12 +203,12 @@ switch ( $fusebox->action ) :
 		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
-		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit&step={$prevStep}";
-		elseif ( $webform['allowBack'] and $arguments['step'] == $firstStep ) $xfa['back'] = "{$fusebox->controller}.start";
+		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit{$webform['retainParam']}&step={$prevStep}";
+		elseif ( $webform['allowBack'] and $arguments['step'] == $firstStep ) $xfa['back'] = "{$fusebox->controller}.start{$webform['retainParam']}";
 		// exit point : next
 		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
-		elseif ( empty($nextStep) ) $xfa['update'] = "{$fusebox->controller}.validate&step={$arguments['step']}";
+		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
+		elseif ( empty($nextStep) ) $xfa['update'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
 		// exit point : autosave
 		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
 		// display form
@@ -227,9 +227,9 @@ switch ( $fusebox->action ) :
 		$ready = Webform::initBeanData();
 		F::error(Webform::error(), $ready === false);
 		// exit point : edit
-		if ( $webform['allowEdit'] and !$webform['closed'] ) $xfa['edit'] = "{$fusebox->controller}.edit";
+		if ( $webform['allowEdit'] and !$webform['closed'] ) $xfa['edit'] = "{$fusebox->controller}.edit{$webform['retainParam']}";
 		// exit point : print
-		if ( $webform['allowPrint'] ) $xfa['print'] = "{$fusebox->controller}.print";
+		if ( $webform['allowPrint'] ) $xfa['print'] = "{$fusebox->controller}.print{$webform['retainParam']}";
 		// display
 		$layout['content'] = Webform::view($xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -297,7 +297,7 @@ switch ( $fusebox->action ) :
 		// exit point : back
 		$operation = empty($webform['bean']['id']) ? 'new' : 'edit';
 		$prevStep = Webform::prevStep($fusebox->action);
-		$xfa['back'] = "{$fusebox->controller}.{$operation}&step={$prevStep}";
+		$xfa['back'] = "{$fusebox->controller}.{$operation}{$webform['retainParam']}&step={$prevStep}";
 		// exit point : save
 		$btnKey = empty($webform['bean']['id']) ? 'submit' : 'update';
 		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
