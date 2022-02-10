@@ -2243,11 +2243,12 @@ class Webform {
 			if ( $cfg['to'][0] == ':' ) self::$error .= " ({$cfg['to']})";
 			return false;
 		}
-		// prepare mapping of mask & data
-		// ===> use {{...}} to access bean data (which are data load from database)
-		// ===> use [[...]] to access form data (which are data stayed in session)
+		// mapping of mask & bean data
+		// ===> use {{XXX}} to access bean data (which are data load from database)
 		$beanDataMasks = array();
 		foreach ( $beanData as $fieldName => $fieldValue ) $beanData['{{'.$fieldName.'}}'] = $fieldValue;
+		// mapping of mask & form data
+		// ===> use [[XXX]] to access form data (which are data stayed in session)
 		$formDataMasks = array();
 		foreach ( self::$config['fieldConfig'] as $fieldName => $fieldCfg ) {
 			$fieldValue = self::nestedArrayGet($fieldName, $formData);
@@ -2255,6 +2256,15 @@ class Webform {
 				$formDataMasks['[['.$fieldName.']]'] = ( $fieldCfg['format'] == 'checkbox' ) ? implode('<br>', $fieldValue) : $fieldValue;
 			}
 		}
+		// mapping of mask & other data
+		// ===> use {:XXX:} to access other common information (e.g. date)
+		$otherDataMasks = array(
+			'{:YYYYMMDD:}' => date('Y-m-d'),
+			'{:DATE:}'     => date('j M Y'),
+			'{:YEAR:}'     => date('Y'),
+			'{:MONTH:}'    => date('n'),
+			'{:DAY:}'      => date('j'),
+		);
 		// replace mask in subject & body
 		foreach ( array_merge($beanDataMasks, $formDataMasks) as $key => $val ) {
 			$mail['subject'] = str_ireplace($key, $val, $mail['subject']);
