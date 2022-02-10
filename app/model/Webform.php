@@ -2000,8 +2000,11 @@ class Webform {
 		<io>
 			<in>
 				<!-- config -->
+				<object name="$bean" scope="self" />
 				<structure name="$config" scope="self">
-					<object name="bean" />
+					<structure name="bean">
+						<string name="type" />
+					</structure>
 					<structure name="customMessage">
 						<string name="completed" />
 					</structure>
@@ -2039,30 +2042,46 @@ class Webform {
 		// load submitted data
 		$formData = self::progressData();
 		if ( $formData === false ) return false;
+		// get columns of database table
+		$columns = ORM::columns(self::$config['bean']['type']);
+		if ( $columns === false ) {
+			self::$error = ORM::error();
+			return false;
+		}
 		// convert submitted data
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			$fieldValue = self::nestedArrayGet($fieldName, $formData);
 			// when field not appear in submitted data
 			if ( $fieldValue === null ) {
 				// *IMPORTANT*
-				// ===> do not assign null value to avoid removing data already in database
 				// ===> simply do nothing
+				// ===> do NOT assign null value to avoid removing data already in database
 			// turn [checkbox] array-value into list
 			} elseif ( $cfg['format'] == 'checkbox' and !empty($fieldValue) ) {
 				self::nestedArraySet($fieldName, $formData, implode('|', $fieldValue));
 			// turn [table] complex-value into json
 			} elseif ( $cfg['format'] == 'table' and !empty($fieldValue) ) {
 				self::nestedArraySet($fieldName, $formData, json_encode(array_values($fieldValue)));
+			// turn empty [date] into null (to avoid database error)
+			} elseif ( in_array($cfg['format'], ['date','datetime']) and $fieldValue === '' ) {
+				self::nestedArraySet($fieldName, $formData, null);
 			}
 		}
 		// move converted data into container
 		// ===> could not use bean-import to avoid having error when array-value
 		foreach ( $formData as $key => $val ) self::$bean->{$key} = $val;
 		// mark timestamp (when column exists)
-		if ( isset(self::$bean->created_on) and empty(self::$bean->created_on) ) {
+		if ( isset($columns['created_on']) and empty(self::$bean->created_on) ) {
 			self::$bean->created_on = date('Y-m-d H:i:s');
-		} elseif ( isset(self::$bean->updated_on) ) {
+		} elseif ( isset($columns['updated_on']) ) {
 			self::$bean->updated_on = date('Y-m-d H:i:s');
+		}
+		// fix any empty date(time) value
+		// ===> to avoid database error
+		foreach ( $columns as $colName => $colType ) {
+			if ( in_array($colType, ['date','datetime']) and isset($bean->{$colName}) and $bean->{$colName} === '' ) {
+				$bean->{$colName} = null;
+			}
 		}
 		// force record enabled (when column exists)
 		if ( isset(self::$bean->disabled) ) {
