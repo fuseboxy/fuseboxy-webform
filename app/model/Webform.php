@@ -2208,7 +2208,7 @@ class Webform {
 		// ===> load from database instead of access [self::$bean]
 		// ===> because [self::$bean] seems to be the beginning data
 		// ===> it might not get reloaded after record saved
-		$bean = ORM::load($entityType, $entityID);
+		$bean = ORM::get($entityType, $entityID);
 		if ( $bean === false ) {
 			self::$error = ORM::error();
 			return false;
