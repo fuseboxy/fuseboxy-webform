@@ -2115,12 +2115,6 @@ class Webform {
 		// move converted data into container
 		// ===> could not use bean-import to avoid having error when array-value
 		foreach ( $formData as $key => $val ) self::$bean->{$key} = $val;
-		// mark timestamp (when column exists)
-		if ( isset($columns['created_on']) and empty(self::$bean->created_on) ) {
-			self::$bean->created_on = date('Y-m-d H:i:s');
-		} elseif ( isset($columns['updated_on']) ) {
-			self::$bean->updated_on = date('Y-m-d H:i:s');
-		}
 		// fix any empty date(time) value
 		// ===> to avoid database error
 		foreach ( $columns as $colName => $colType ) {
@@ -2129,9 +2123,7 @@ class Webform {
 			}
 		}
 		// force record enabled (when column exists)
-		if ( isset(self::$bean->disabled) ) {
-			self::$bean->disabled = false;
-		}
+		if ( isset(self::$bean->disabled) ) self::$bean->disabled = false;
 		// save to database
 		$id = ORM::save(self::$bean);
 		if ( $id === false ) {
