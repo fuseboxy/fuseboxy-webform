@@ -781,14 +781,13 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			assign default format for multiple fields
+			assign default format
 		</description>
 		<io>
 			<in>
 				<structure name="$fieldConfigList">
 					<structure name="~fieldName~">
-						<string name="format" optional="yes" />
-						<structure name="options" optional="yes" />
+						<string name="format" optional="yes" default="text" />
 					</structure>
 				</structure>
 			</in>
@@ -805,9 +804,7 @@ class Webform {
 	public static function initConfig__defaultFieldFormat($fieldConfigList) {
 		// go through config of each field
 		foreach ( $fieldConfigList as $fieldName => $cfg ) {
-			if ( empty($cfg['format']) and isset($cfg['options']) ) {
-				$fieldConfigList[$fieldName]['format'] = 'dropdown';
-			} elseif ( empty($cfg['format']) or $cfg['format'] === true ) {
+			if ( empty($cfg['format']) or $cfg['format'] === true ) {
 				$fieldConfigList[$fieldName]['format'] = 'text';
 			}
 		}
