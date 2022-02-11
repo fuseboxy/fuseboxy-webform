@@ -11,6 +11,8 @@
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
+				<string name="class" optional="yes" />
+				<string name="style" optional="yes" />
 				<number name="maxlength" optional="yes" />
 			</structure>
 		</in>
