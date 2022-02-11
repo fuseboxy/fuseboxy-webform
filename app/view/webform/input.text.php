@@ -11,6 +11,8 @@
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
+				<number name="maxlength" optional="yes" />
+				<number name="minlength" optional="yes" />
 				<array name="options" optional="yes">
 					<string name="+" />
 				</array>
@@ -37,6 +39,8 @@
 			class="form-control <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($options) ) : ?>list="<?php echo $fieldID; ?>-suggest"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['maxlength']) ) : ?>maxlength="<?php echo $fieldConfig['maxlength']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['minlength']) ) : ?>minlength="<?php echo $fieldConfig['minlength']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
