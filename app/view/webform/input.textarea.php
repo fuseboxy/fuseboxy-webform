@@ -8,10 +8,10 @@
 			<string name="$fieldValue" />
 			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<structure name="$fieldConfig">
-				<string name="icon" optional="yes" />
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
+				<number name="maxlength" optional="yes" />
 			</structure>
 		</in>
 		<out>
@@ -32,6 +32,7 @@
 			name="<?php echo $dataFieldName; ?>"
 			class="form-control <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['maxlength']) ) : ?>maxlength="<?php echo $fieldConfig['maxlength']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required'; ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
