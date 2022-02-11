@@ -5,12 +5,12 @@
 			<boolean name="$editable" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
-			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<string name="$fieldValue" />
+			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
 			<structure name="$fieldConfig">
 				<string name="placeholder" optional="yes" />
-				<boolean name="required" />
-				<boolean name="readonly" />
+				<boolean name="required" optional="yes" />
+				<boolean name="readonly" optional="yes" />
 				<structure name="options">
 					<structure name="~optGroup~" optional="yes">
 						<string name="~optValue~" value="~optText~" />
