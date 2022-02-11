@@ -11,6 +11,9 @@
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
+				<array name="options" optional="yes">
+					<string name="+" />
+				</array>
 			</structure>
 		</in>
 		<out>
@@ -32,11 +35,20 @@
 			name="<?php echo $dataFieldName; ?>"
 			value="<?php echo htmlspecialchars($fieldValue); ?>"
 			class="form-control <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
+			<?php if ( !empty($options) ) : ?>list="<?php echo $fieldID; ?>-suggest"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
 		/><?php
+		// suggestions (when necessary)
+		if ( !empty($options) ) :
+			?><datalist id="<?php echo $fieldID; ?>-suggest"><?php
+				foreach ( $options as $key => $val ) :
+					?><option value="<?php echo $val; ?>" /><?php
+				endforeach;
+			?></datalist><?php
+		endif;
 	// readonly
 	elseif ( $fieldValue !== '' ) :
 		?><div class="form-control-plaintext text-primary"><strong><?php echo $fieldValue; ?></strong></div><?php
