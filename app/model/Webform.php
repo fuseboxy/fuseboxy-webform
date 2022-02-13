@@ -2162,7 +2162,7 @@ class Webform {
 						<structure name="~fieldName~" />
 					</structure>
 					<structure name="notification">
-						<string name="fromName" />
+						<string name="from_name" />
 						<string name="from" />
 						<list name="to" delim=";," />
 						<list name="cc" delim=";," />
@@ -2212,7 +2212,7 @@ class Webform {
 		if ( $formData === false ) return false;
 		// prepare mail
 		$mail = array(
-			'from_name' => !empty($cfg['fromName']) ? $cfg['fromName'] : null,
+			'from_name' => !empty($cfg['from_name']) ? $cfg['from_name'] : null,
 			'from'      => !empty($cfg['from']) ? $cfg['from'] : null,
 			'cc'        => !empty($cfg['cc']) ? $cfg['cc'] : null,
 			'bcc'       => !empty($cfg['bcc']) ? $cfg['bcc'] : null,
