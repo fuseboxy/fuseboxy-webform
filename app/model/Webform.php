@@ -2115,7 +2115,7 @@ class Webform {
 				self::$error = "Sync-field [{$cfg['sameAs']}] not found (field={$fieldName})";
 				return false;
 			} elseif ( !empty($cfg['sameAs']) ) {
-				self::nestedArraySet($fieldName, $formData, self::nestedArrayGet($cfg['sameAs']));
+				self::nestedArraySet($fieldName, $formData, self::nestedArrayGet($cfg['sameAs'], $formData));
 			}
 		}
 		// move converted data into container
