@@ -2109,6 +2109,15 @@ class Webform {
 				self::nestedArraySet($fieldName, $formData, null);
 			}
 		}
+		// sync value of field with [sameAs] specified
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			if ( !empty($cfg['sameAs']) and !isset(self::$config['fieldConfig'][$cfg['sameAs']]) ) {
+				self::$error = "Sync-field [{$cfg['sameAs']}] not found (field={$fieldName})";
+				return false;
+			} elseif ( !empty($cfg['sameAs']) ) {
+				self::nestedArraySet($fieldName, $formData, self::nestedArrayGet($cfg['sameAs']));
+			}
+		}
 		// move converted data into container
 		// ===> could not use bean-import to avoid having error when array-value
 		foreach ( $formData as $key => $val ) self::$bean->{$key} = $val;
