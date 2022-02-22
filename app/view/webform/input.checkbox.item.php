@@ -34,20 +34,29 @@ $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $f
 ?><div class="form-check"><?php
 	// field
 	if ( !empty($editable) ) :
+		$isChecked = in_array($optValue, $fieldValue);
 		?><input
 			type="checkbox"
 			id="<?php echo $checkboxID; ?>"
 			class="form-check-input"
-			name="<?php echo $dataFieldName; ?>[]"
 			value="<?php echo htmlspecialchars($optValue); ?>"
-			<?php if ( in_array($optValue, $fieldValue) ) echo 'checked'; ?>
-			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly'; ?>
+			<?php if ( empty($fieldConfig['readonly']) ) : ?>
+				name="<?php echo $dataFieldName; ?>[]"
+			<?php else : ?>
+				disabled
+			<?php endif; ?>
+			<?php if ( $isChecked ) echo 'checked'; ?>
 			<?php if ( !empty($fieldConfig['required']) and $optIndex == 0 ) echo 'required'; ?>
 		/><label 
 			for="<?php echo $checkboxID; ?>" 
 			class="form-check-label <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 		><?php echo $optText; ?></label><?php
+		// attribute [readonly] does not work on input[type=checkbox]
+		// ===> disable input[type=checkbox] and submit value through hidden field
+		if ( !empty($fieldConfig['readonly']) and $isChecked ) :
+			?><input type="hidden" name="<?php echo $dataFieldName; ?>[]" value="<?php echo $optValue; ?>" /><?php
+		endif;
 	// readonly
 	elseif ( in_array($optValue, $fieldValue) ) :
 		?><i class="form-check-input fa fa-check text-primary"></i> <strong class="text-primary"><?php echo $optText; ?></strong><?php
