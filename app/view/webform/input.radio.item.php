@@ -29,20 +29,29 @@ $radioID = $fieldID.'-'.$optIndex;
 ?><div class="form-check"><?php
 	// field
 	if ( !empty($editable) ) :
+		$isChecked = ( $fieldValue == $optValue );
 		?><input
 			type="radio"
 			id="<?php echo $radioID; ?>"
 			class="form-check-input"
-			name="<?php echo $dataFieldName; ?>"
+			<?php if ( empty($fieldConfig['readonly']) ) : ?>
+				name="<?php echo $dataFieldName; ?>"
+			<?php else : ?>
+				disabled
+			<?php endif; ?>
 			value="<?php echo htmlspecialchars($optValue); ?>"
-			<?php if ( $fieldValue == $optValue ) echo 'checked'; ?>
-			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly'; ?>
+			<?php if ( $isChecked ) echo 'checked'; ?>
 			<?php if ( !empty($fieldConfig['required']) and $optIndex == 0 ) echo 'required'; ?>
 		 /><label 
 			for="<?php echo $radioID; ?>" 
 			class="form-check-label <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 		><?php echo $optText; ?></label><?php
+		// attribute [readonly] does not work on input[type=radio]
+		// ===> disable input[type=radio] and submit value through hidden field
+		if ( !empty($fieldConfig['readonly']) and $isChecked ) :
+			?><input type="hidden" name="<?php echo $dataFieldName; ?>" value="<?php echo $fieldValue; ?>" /><?php
+		endif;
 	// readonly
 	elseif ( $fieldValue == $optValue ) :
 		?><i class="form-check-input fa fa-check text-primary"></i> <strong class="text-primary"><?php echo $optText; ?></strong><?php
