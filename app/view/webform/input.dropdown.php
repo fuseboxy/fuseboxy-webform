@@ -34,11 +34,14 @@
 	if ( !empty($editable) ) :
 		?><select
 			id="<?php echo $fieldID; ?>"
-			name="<?php echo $dataFieldName; ?>"
 			class="custom-select <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
+			<?php if ( empty($fieldConfig['readonly']) ) : ?>
+				name="<?php echo $dataFieldName; ?>"
+			<?php else : ?>
+				disabled
+			<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required'; ?>
-			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly'; ?>
 		><?php
 			// empty first item
 			?><option value=""><?php if ( !empty($fieldConfig['placeholder']) ) echo $fieldConfig['placeholder']; ?></option><?php
@@ -60,6 +63,11 @@
 				endif;
 			endforeach;
 		?></select><?php
+		// readonly attribute does not work on <select>
+		// ===> disable <select> and submit value through hidden field
+		if ( !empty($fieldConfig['readonly']) ) :
+			?><input type="hidden" name="<?php echo $dataFieldName; ?>" value="<?php echo $fieldValue; ?>" /><?php
+		endif;
 	// readonly
 	elseif ( $fieldValue !== '' ) :
 		$flatten = array();
