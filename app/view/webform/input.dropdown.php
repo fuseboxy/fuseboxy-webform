@@ -63,7 +63,7 @@
 				endif;
 			endforeach;
 		?></select><?php
-		// readonly attribute does not work on <select>
+		// field [readonly] attribute does not work on <select>
 		// ===> disable <select> and submit value through hidden field
 		if ( !empty($fieldConfig['readonly']) ) :
 			?><input type="hidden" name="<?php echo $dataFieldName; ?>" value="<?php echo $fieldValue; ?>" /><?php
