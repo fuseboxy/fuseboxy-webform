@@ -140,16 +140,16 @@ switch ( $fusebox->action ) :
 	// determine landing page
 	case 'index':
 	case 'start':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
-		F::redirect("{$fusebox->controller}.new", empty($webform['bean']['id']));
-		F::redirect("{$fusebox->controller}.view");
+		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
+		F::redirect("{$fusebox->controller}.new{$webform['retainParam']}", empty($webform['bean']['id']));
+		F::redirect("{$fusebox->controller}.view{$webform['retainParam']}");
 		break;
 
 
 	// submit new form
 	// ===> should show form data in session
 	case 'new':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
 		F::error('ID of [bean] must be empty', !empty($webform['bean']['id']));
 		// set form mode
 		Webform::mode('new');
@@ -164,7 +164,7 @@ switch ( $fusebox->action ) :
 			F::error(Webform::error(), $reset === false);
 		}
 		// go to confirmation (when necessary)
-		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
+		F::redirect("{$fusebox->controller}.confirm{$webform['retainParam']}", $arguments['step'] == 'confirm');
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
 		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.new{$webform['retainParam']}&step={$prevStep}";
@@ -173,7 +173,7 @@ switch ( $fusebox->action ) :
 		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
 		elseif ( !$nextStep ) $xfa['submit'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
 		// exit point : autosave
-		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave";
+		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave{$webform['retainParam']}";
 		// display form
 		$layout['content'] = Webform::renderStep($arguments['step'], $xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
@@ -186,7 +186,7 @@ switch ( $fusebox->action ) :
 	// edit submitted form
 	// ===> should show form data in session
 	case 'edit':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
 		F::error('ID of [bean] is required', empty($webform['bean']['id']));
 		// set form mode
 		Webform::mode('edit');
@@ -201,7 +201,7 @@ switch ( $fusebox->action ) :
 			F::error(Webform::error(), $reset === false);
 		}
 		// go to confirmation (when necessary)
-		F::redirect("{$fusebox->controller}.confirm", $arguments['step'] == 'confirm');
+		F::redirect("{$fusebox->controller}.confirm{$webform['retainParam']}", $arguments['step'] == 'confirm');
 		// exit point : back
 		$prevStep = Webform::prevStep($arguments['step']);
 		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit{$webform['retainParam']}&step={$prevStep}";
@@ -242,7 +242,7 @@ switch ( $fusebox->action ) :
 
 	// check submitted data of specific step
 	case 'validate':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
 		F::error('Argument [step] is required', empty($arguments['step']));
 		// obtain last step
 		$lastStep = Webform::lastStep();
@@ -266,9 +266,9 @@ switch ( $fusebox->action ) :
 		}
 		// return to current step (when error)
 		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
-		F::redirect("{$fusebox->controller}.{$action}&step={$arguments['step']}", $validated === false);
+		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$arguments['step']}", $validated === false);
 		// go to next step (thru an intermediate action)
-		F::redirect("{$fusebox->controller}.nextStep&step={$arguments['step']}");
+		F::redirect("{$fusebox->controller}.nextStep{$webform['retainParam']}&step={$arguments['step']}");
 		break;
 
 
@@ -285,15 +285,15 @@ switch ( $fusebox->action ) :
 		// obtain next step
 		$nextStep = Webform::nextStep($arguments['step']);
 		// go to next step (when not last step)
-		F::redirect("{$fusebox->controller}.{$action}&step={$nextStep}", $arguments['step'] != $lastStep);
+		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$nextStep}", $arguments['step'] != $lastStep);
 		// go to save (when last step)
-		F::redirect("{$fusebox->controller}.save");
+		F::redirect("{$fusebox->controller}.save{$webform['retainParam']}");
 		break;
 
 
 	// confirmation
 	case 'confirm':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
 		F::error('Confirmation is not required', empty($webform['steps']['confirm']));
 		// exit point : back
 		$operation = empty($webform['bean']['id']) ? 'new' : 'edit';
@@ -325,7 +325,7 @@ switch ( $fusebox->action ) :
 			F::alert(['type' => 'danger webform-autosave', 'message' => $err ]);
 		// display form
 		} else {
-			$xfa['autosave'] = "{$fusebox->controller}.autosave";
+			$xfa['autosave'] = "{$fusebox->controller}.autosave{$webform['retainParam']}";
 			include F::appPath('view/webform/autosave.php');
 		}
 		break;
@@ -333,7 +333,7 @@ switch ( $fusebox->action ) :
 
 	// save submitted data
 	case 'save':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
 		// obtain last step
 		$lastStep = Webform::lastStep();
 		F::error(Webform::error(), $lastStep === false);
@@ -341,18 +341,18 @@ switch ( $fusebox->action ) :
 		$saveResult = Webform::save();
 		if ( $saveResult === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
 		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
-		F::redirect("{$fusebox->controller}.{$action}&step={$lastStep}", $saveResult === false);
+		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$lastStep}", $saveResult === false);
 		// clear any form progress
 		$cleared = Webform::clearProgress();
 		F::error(Webform::error(), $cleared === false);
 		// done!
-		F::redirect("{$fusebox->controller}.completed&r=".base64_encode(http_build_query($saveResult)));
+		F::redirect("{$fusebox->controller}.completed{$webform['retainParam']}&r=".base64_encode(http_build_query($saveResult)));
 		break;
 
 
 	// thank you page
 	case 'completed':
-		F::redirect("{$fusebox->controller}.closed", !empty($webform['closed']));
+		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
 		// transform result (if any)
 		if ( !empty($arguments['r']) ) parse_str(base64_decode($arguments['r']), $result);
 		// display
