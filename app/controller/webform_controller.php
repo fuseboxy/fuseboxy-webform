@@ -301,7 +301,7 @@ switch ( $fusebox->action ) :
 		$xfa['back'] = "{$fusebox->controller}.{$operation}{$webform['retainParam']}&step={$prevStep}";
 		// exit point : save
 		$btnKey = empty($webform['bean']['id']) ? 'submit' : 'update';
-		$xfa[$btnKey] = "{$fusebox->controller}.validate&step={$fusebox->action}";
+		$xfa[$btnKey] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$fusebox->action}";
 		// display form
 		$layout['content'] = Webform::viewProgress($xfa);
 		F::error(Webform::error(), $layout['content'] === false);
