@@ -80,6 +80,9 @@ class WebformProgress {
 		if ( is_array($haystack) ) return in_array($needle, $haystack);
 		return ( strpos($haystack, $needle) !== false );
 	}
+	public static function assertNotContains($fieldName, $needle) {
+		return !self::assertNotContains($fieldName, $needle);
+	}
 
 
 
@@ -104,6 +107,9 @@ class WebformProgress {
 		$fieldValue = self::fieldValue($fieldName);
 		if ( $fieldValue === false ) throw new Exception(self::error());
 		return empty($fieldValue);
+	}
+	public static function assertNotEmpty($fieldName) {
+		return !self::assertEmpty($fieldName);
 	}
 
 
@@ -131,6 +137,9 @@ class WebformProgress {
 		if ( $fieldValue === false ) throw new Exception(self::error());
 		return ( $fieldValue == $compareValue );
 	}
+	public static function assertNotEqual($fieldName, $compareValue) {
+		return !self::assertEqual($fieldName, $compareValue);
+	}
 
 
 
@@ -156,6 +165,9 @@ class WebformProgress {
 		$needle = self::fieldValue($fieldName);
 		if ( $needle === false ) throw new Exception(self::error());
 		return in_array($needle, $haystack);
+	}
+	public static function assertNotInArray($fieldName, $haystack) {
+		return !self::assertInArray($fieldName, $haystack);
 	}
 
 
