@@ -38,7 +38,7 @@
 			$optGroupItems = $optText;
 			// group label
 			if ( !empty($optGroupItems) ) :
-				?><small><strong><?php echo $optGroupLabel; ?></strong></small><?php
+				?><strong><?php echo $optGroupLabel; ?></strong><?php
 			endif;
 			// option list
 			foreach ( $optGroupItems as $optValue => $optText ) :
