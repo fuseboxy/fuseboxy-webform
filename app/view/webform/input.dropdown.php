@@ -51,14 +51,19 @@
 				if ( is_array($optText) ) :
 					$optGroupLabel = $optValue;
 					$optGroupItems = $optText;
-					?><optgroup label="<?php echo $optGroupLabel; ?>"><?php
-						// optgroup-option
-						foreach ( $optGroupItems as $optValue => $optText ) :
-							include F::appPath('view/webform/input.dropdown.item.php');
-						endforeach;
-					?></optgroup><?php
+					// group label
+					if ( !empty($optGroupItems) ) :
+						?><optgroup label="<?php echo $optGroupLabel; ?>"><?php
+							// optgroup-option
+							foreach ( $optGroupItems as $optValue => $optText ) :
+								if ( $optText !== false and $optText !== null ) :
+									include F::appPath('view/webform/input.dropdown.item.php');
+								endif;
+							endforeach;
+						?></optgroup><?php
+					endif;
 				// option
-				else :
+				elseif ( $optText !== false and $optText !== null ) :
 					include F::appPath('view/webform/input.dropdown.item.php');
 				endif;
 			endforeach;
