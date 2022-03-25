@@ -36,17 +36,19 @@
 		if ( is_array($optText) ) :
 			$optGroupLabel = $optValue;
 			$optGroupItems = $optText;
-			// group label
-			if ( !empty($optGroupItems) ) :
-				?><strong><?php echo $optGroupLabel; ?></strong><?php
-			endif;
-			// option list
-			foreach ( $optGroupItems as $optValue => $optText ) :
-				if ( $optText !== false and $optText !== null ) :
-					include F::appPath('view/webform/input.checkbox.item.php');
-					$optIndex++;
+			?><div class="chkgroup <?php if ( $optIndex ) echo 'mt-2'; ?>"><?php
+				// group label
+				if ( !empty($optGroupItems) ) :
+					?><strong><?php echo $optGroupLabel; ?></strong><?php
 				endif;
-			endforeach;
+				// option list
+				foreach ( $optGroupItems as $optValue => $optText ) :
+					if ( $optText !== false and $optText !== null ) :
+						include F::appPath('view/webform/input.checkbox.item.php');
+						$optIndex++;
+					endif;
+				endforeach;
+			?></div><?php
 		// individual option
 		elseif ( $optText !== false and $optText !== null ) :
 			include F::appPath('view/webform/input.checkbox.item.php');
