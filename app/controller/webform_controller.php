@@ -77,6 +77,32 @@
 						<file name="tableRowScript" optional="yes" default="~appPath~/view/webform/input.table.row.php" />
 						<!-- for [format=custom] only -->
 						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
+<!-- advanced -->
+<string name="toggleCollapse" />
+<string name="toggleCollapseTarget" />
+<string name="toggleCollapseWhen" />
+<stirng name="toggleCollapseWhenNot" />
+<string name="toggleCollapseConditions" />
+<string name="toggleDisabled" />
+<string name="toggleDisabledTarget" />
+<string name="toggleDisabledWhen" />
+<string name="toggleDisabledWhenNot" />
+<string name="toggleReadonly" />
+<string name="toggleReadonlyTarget" />
+<string name="toggleReadonlyWhen" />
+<string name="toggleReadonlyWhenNot" />
+<string name="toggleRequired" />
+<string name="toggleRequiredTarget" />
+<string name="toggleRequiredWhen" />
+<string name="toggleRequiredWhenNot" />
+<string name="toggleAttr" />
+<string name="toggleAttrTarget" />
+<string name="toggleAttrWhen" />
+<string name="toggleAttrWhenNot" />
+<string name="toggleClass" />
+<string name="toggleClassTarget" />
+<string name="toggleClassWhen" />
+<string name="toggleClassWhenNot" />
 					</structure>
 				</structure>
 				<!-- email notification settings -->
