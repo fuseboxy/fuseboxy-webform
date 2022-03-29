@@ -15,6 +15,8 @@
 				<string name="style" optional="yes" />
 				<number name="maxlength" optional="yes" />
 				<number name="minlength" optional="yes" />
+				<string name="dataAllowed" optional="yes" />
+				<string name="dataDisallowed" optional="yes" />
 				<array name="options" optional="yes">
 					<string name="+" />
 				</array>
@@ -46,6 +48,8 @@
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
+			<?php if ( !empty($fieldConfig['dataAllowed']) ) : ?>data-allowed="<?php echo $fieldConfig['dataAllowed']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['dataDisallowed']) ) : ?>data-disallowed="<?php echo $fieldConfig['dataDisallowed']; ?>"<?php endif; ?>
 		/><?php
 		// suggestions (when necessary)
 		if ( !empty($options) ) :

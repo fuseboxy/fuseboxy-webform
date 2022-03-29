@@ -50,9 +50,10 @@
 						<string name="default" optional="yes" comments="filling with this value if field has no value" />
 						<string name="value" optional="yes" comments="force filling with this value even if field has value" />
 						<string name="sameAs" optional="yes" value="~anotherFieldName~" comments="sync value from another field name" />
-<string name="pattern" optional="yes" comments="for realtime validation on user input" />
 						<number name="maxlength" optional="yes" />
 						<number name="minlength" optional="yes" />
+						<string name="dataAllowed" optional="yes" />
+						<string name="dataDisallowed" optional="yes" />
 						<!-- styling -->
 						<string name="class" optional="yes" comments="class applied to input field" />
 						<string name="style" optional="yes" comments="style applied to input field" />
