@@ -50,12 +50,14 @@
 						<string name="default" optional="yes" comments="filling with this value if field has no value" />
 						<string name="value" optional="yes" comments="force filling with this value even if field has value" />
 						<string name="sameAs" optional="yes" value="~anotherFieldName~" comments="sync value from another field name" />
-						<string name="pattern" optional="yes" comments="for realtime validation on user input" />
+<string name="pattern" optional="yes" comments="for realtime validation on user input" />
 						<number name="maxlength" optional="yes" />
 						<number name="minlength" optional="yes" />
 						<!-- styling -->
-						<string name="class" optional="yes" />
-						<string name="style" optional="yes" />
+						<string name="class" optional="yes" comments="class applied to input field" />
+						<string name="style" optional="yes" comments="style applied to input field" />
+						<string name="wrapperClass" optional="yes" comments="class applied to webform-input" />
+						<string name="wrapperStyle" optional="yes" comments="style applied to webform-input" />
 						<!-- for [format=file|image] only -->
 						<string name="filesize" optional="yes" comments="max file size in bytes" example="2MB|500KB" />
 						<list name="filetype" optional="yes" delim="," example="pdf,doc,docx" />
@@ -78,31 +80,31 @@
 						<!-- for [format=custom] only -->
 						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
 <!-- advanced -->
-<string name="toggleCollapse" />
-<string name="toggleCollapseTarget" />
-<string name="toggleCollapseWhen" />
-<stirng name="toggleCollapseWhenNot" />
-<string name="toggleCollapseConditions" />
-<string name="toggleDisabled" />
-<string name="toggleDisabledTarget" />
-<string name="toggleDisabledWhen" />
-<string name="toggleDisabledWhenNot" />
-<string name="toggleReadonly" />
-<string name="toggleReadonlyTarget" />
-<string name="toggleReadonlyWhen" />
-<string name="toggleReadonlyWhenNot" />
-<string name="toggleRequired" />
-<string name="toggleRequiredTarget" />
-<string name="toggleRequiredWhen" />
-<string name="toggleRequiredWhenNot" />
-<string name="toggleAttr" />
-<string name="toggleAttrTarget" />
-<string name="toggleAttrWhen" />
-<string name="toggleAttrWhenNot" />
-<string name="toggleClass" />
-<string name="toggleClassTarget" />
-<string name="toggleClassWhen" />
-<string name="toggleClassWhenNot" />
+<structure name="toggleAttr">
+	<string name="target" />
+	<structure name="setAttr">
+		<structure name="when|whenNot">
+			<structure name="~thisFieldValue~">
+				<string name="~attrName~" value="~attrValue~" />
+			</structure>
+		</structure>
+	</structure>
+	<structure name="removeAttr">
+		<structure name="when|whenNot">
+			<array name="~thisFieldValue~">
+				<string name="~attrName~" />
+			</array>
+		</structure>
+	</structure>
+</structure>
+<structure name="toggleClass">
+	<string name="target" />
+	<structure name="addClass|removeClass">
+		<structure name="when|whenNot">
+			<string name="~thisFieldValue~" value="~className~" />
+		</structure>
+	</structure>
+</structure>
 					</structure>
 				</structure>
 				<!-- email notification settings -->

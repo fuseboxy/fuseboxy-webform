@@ -15,6 +15,8 @@
 				<string name="help" optional="yes" comments="help text show under input field" />
 				<boolean name="required" optional="yes" comments="show asterisk at label (or in-label of certain types)" />
 				<string name="customScript" optional="yes" oncondition="when [format=custom]" />
+				<string name="wrapperClass" optional="yes" />
+				<string name="wrapperStyle" optional="yes" />
 			</structure>
 		</in>
 		<out>
@@ -31,7 +33,10 @@ if ( $fieldConfig['format'] == 'hidden' ) :
 
 // otherwise, show field with wrapper
 else :
-	?><div class="webform-input form-group"><?php
+	?><div 
+		class="webform-input form-group <?php if ( !empty($fieldConfig['wrapperClass']) ) echo $fieldConfig['wrapperClass']; ?>"
+		<?php if ( !empty($fieldConfig['wrapperStyle']) ) : ?>style="<?php echo $fieldConfig['wrapperStyle']; ?>"<?php endif; ?>
+	><?php
 		// label
 		include F::appPath('view/webform/input.label.php');
 		// field

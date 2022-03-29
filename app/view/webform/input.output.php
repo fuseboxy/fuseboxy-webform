@@ -19,7 +19,7 @@
 	// output
 	?><div 
 		id="<?php echo $fieldID; ?>"
-		class="<?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
+		<?php if ( !empty($fieldConfig['class']) ) : ?>class="<?php echo $fieldConfig['class']; ?>"<?php endif; ?>
 		<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 	><?php echo $fieldValue; ?></div>
 </div>
