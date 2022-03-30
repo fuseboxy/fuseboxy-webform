@@ -81,8 +81,8 @@
 						<!-- for [format=custom] only -->
 						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
 <!-- advanced -->
-<structure name="toggleAttr">
-	<string name="target" />
+<structure name="toggleAttr" comments="toggle attribute of another field while modifying this field">
+	<array_or_string name="target" comments="field name" />
 	<structure name="setAttr">
 		<structure name="when|whenNot">
 			<structure name="~thisFieldValue~">
@@ -98,11 +98,27 @@
 		</structure>
 	</structure>
 </structure>
-<structure name="toggleClass">
-	<string name="target" />
+<structure name="toggleClass" comments="toggle class of another field while modifying this field">
+	<array_or_string name="target" comments="field name" />
 	<structure name="addClass|removeClass">
 		<structure name="when|whenNot">
 			<string name="~thisFieldValue~" value="~className~" />
+		</structure>
+	</structure>
+</structure>
+<structure name="toggleWrapperClass" comments="toggle class of [webform-input] wrapper of another field while modifying this field">
+	<array_or_string name="target" comments="field name" />
+	<structure name="addClass|removeClass">
+		<structure name="when|whenNot">
+			<string name="~thisFieldValue~" value="~className~" />
+		</structure>
+	</structure>
+</structure>
+<structure name="toggleValue" comments="toggle value of another field while modifying this field">
+	<array_or_string name="target" comments="field name" />
+	<structure name="setValue">
+		<structure name="when|whenNot">
+			<string name="~thisFieldValue~" value="~anotherFieldValue~" />
 		</structure>
 	</structure>
 </structure>
