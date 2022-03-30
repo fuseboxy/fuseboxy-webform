@@ -34,7 +34,7 @@ $radioID = $fieldID.'-'.$optIndex;
 		?><input
 			type="radio"
 			id="<?php echo $radioID; ?>"
-			class="form-check-input"
+			class="form-check-input cursor-pointer"
 			<?php if ( empty($fieldConfig['readonly']) ) : ?>
 				name="<?php echo $dataFieldName; ?>"
 			<?php else : ?>
@@ -45,7 +45,7 @@ $radioID = $fieldID.'-'.$optIndex;
 			<?php if ( !empty($fieldConfig['required']) and $optIndex == 0 ) echo 'required'; ?>
 		 /><label 
 			for="<?php echo $radioID; ?>" 
-			class="form-check-label <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
+			class="form-check-label cursor-pointer <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 		><?php echo $optText; ?></label><?php
 		// attribute [readonly] does not work on input[type=radio]

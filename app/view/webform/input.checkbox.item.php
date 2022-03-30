@@ -39,7 +39,7 @@ $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $f
 		?><input
 			type="checkbox"
 			id="<?php echo $checkboxID; ?>"
-			class="form-check-input"
+			class="form-check-input cursor-pointer"
 			value="<?php echo htmlspecialchars($optValue); ?>"
 			<?php if ( empty($fieldConfig['readonly']) ) : ?>
 				name="<?php echo $dataFieldName; ?>[]"
@@ -50,7 +50,7 @@ $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $f
 			<?php if ( !empty($fieldConfig['required']) and $optIndex == 0 ) echo 'required'; ?>
 		/><label 
 			for="<?php echo $checkboxID; ?>" 
-			class="form-check-label <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
+			class="form-check-label cursor-pointer <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 		><?php echo $optText; ?></label><?php
 		// attribute [readonly] does not work on input[type=checkbox]
