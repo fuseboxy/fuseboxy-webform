@@ -1462,8 +1462,8 @@ class Webform {
 					if ( empty($cfg['target']) ) self::$config['fieldConfig'][$toggleType]['target'] = array();
 					elseif ( is_string($cfg['target']) ) self::$config['fieldConfig'][$toggleType]['target'] = array($cfg['target']);
 					// append [targetSelector] to the settings
-					self::$config['fieldConfig'][$toggleType]['targetSelector'] = implode(',', array_map(function($item){
-						return '.webform-input [name=\"'.Webform::fieldName2dataFieldName($item).'\"]';
+					self::$config['fieldConfig'][$fieldName][$toggleType]['targetSelector'] = implode(',', array_map(function($targetFieldName){
+						return '.webform-input [name=\"'.self::fieldName2dataFieldName($targetFieldName).'\"]';
 					}, $cfg[$toggleType]['target']));
 				} // if-isset-toggleType
 			} // foreach-toggleType
