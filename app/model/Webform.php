@@ -1459,12 +1459,12 @@ class Webform {
 				// if toggle config defined...
 				if ( isset($cfg[$toggleType]) ) {
 					// convert [target] to array
-					if ( empty($cfg['target']) ) self::$config['fieldConfig'][$fieldName][$toggleType]['target'] = array();
-					elseif ( is_string($cfg['target']) ) self::$config['fieldConfig'][$fieldName][$toggleType]['target'] = array($cfg['target']);
+					if ( empty($cfg[$toggleType]['target']) ) self::$config['fieldConfig'][$fieldName][$toggleType]['target'] = array();
+					elseif ( is_string($cfg[$toggleType]['target']) ) self::$config['fieldConfig'][$fieldName][$toggleType]['target'] = array($cfg[$toggleType]['target']);
 					// append [targetSelector] to the settings
 					self::$config['fieldConfig'][$fieldName][$toggleType]['targetSelector'] = implode(',', array_map(function($targetFieldName){
 						return '.webform-input [name=\"'.self::fieldName2dataFieldName($targetFieldName).'\"]';
-					}, $cfg[$toggleType]['target']));
+					}, self::$config['fieldConfig'][$fieldName][$toggleType]['target']));
 				} // if-isset-toggleType
 			} // foreach-toggleType
 		} // foreach-fieldConfig
