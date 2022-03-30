@@ -66,17 +66,17 @@ foreach ( $all as $toggleType ) $hasAnyToggle |= !empty($fieldConfig[$toggleType
 
 // display
 if ( $hasAnyToggle ) :
-	?><script>$(function(){<?php
+	?><script>$(function(){ <?php
 	// go through each toggle type
 	foreach ( $all as $attrName => $toggleType ) :
 		if ( !empty($fieldConfig[$toggleType]) ) :
 			// append [targetSelector] to the settings
 			$fieldConfig[$toggleType]['targetSelector'] = implode(',', array_map(function($item){
-				return '.webform-input [name="'.Webform::fieldName2dataFieldName($item).'"]';
+				return '.webform-input [name=\"'.Webform::fieldName2dataFieldName($item).'\"]';
 			}, $fieldConfig[$toggleType]['target']));
 			// write data attribute to element
 			?>$('.webform-input [name="<?php echo $dataFieldName; ?>"]').attr('<?php echo $attrName; ?>', '<?php echo json_encode($fieldConfig[$toggleType]); ?>');<?php
 		endif;
 	endforeach;
-	?>});</script><?php
+	?> });</script><?php
 endif;
