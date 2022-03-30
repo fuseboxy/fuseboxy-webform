@@ -550,6 +550,8 @@ class Webform {
 		if ( self::initConfig__defaultTableConfig() === false ) return false;
 		// field config : table default value
 		if ( self::initConfig__defaultTableValue() === false ) return false;
+		// field config : fix toggle settings
+		if ( self::initConfig__fixToggleConfig() === false ) return false;
 		// steps : default & fix
 		if ( self::initConfig__defaultSteps() === false ) return false;
 		// notification : default & fix
@@ -1378,6 +1380,95 @@ class Webform {
 			self::$error = '<strong>step</strong> is a reserved parameter and not allowed in [retainParam]';
 			return false;
 		}
+		// done!
+		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			fix data structure of toggle settings
+		</description>
+		<io>
+			<in>
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<structure name="toggleAttr">
+								<string name="target" optional="yes" />
+							</structure>
+							<structure name="toggleValue">
+								<string name="target" optional="yes" />
+							</structure>
+							<structure name="toggleClass">
+								<string name="target" optional="yes" />
+							</structure>
+							<structure name="toggleWrapperClass">
+								<string name="target" optional="yes" />
+							</structure>
+						</structure>
+					</structure>
+				</structure>
+			</in>
+			<out>
+				<!-- fixed config -->
+				<structure name="$config" scope="self">
+					<structure name="fieldConfig">
+						<structure name="~fieldName~">
+							<structure name="toggleAttr">
+								<array name="target">
+									<string name="~targetFieldName~" />
+								</array>
+								<list name="targetSelector" delim="," />
+							</structure>
+							<structure name="toggleValue">
+								<array name="target">
+									<string name="~targetFieldName~" />
+								</array>
+								<list name="targetSelector" delim="," />
+							</structure>
+							<structure name="toggleClass">
+								<array name="target">
+									<string name="~targetFieldName~" />
+								</array>
+								<list name="targetSelector" delim="," />
+							</structure>
+							<structure name="toggleWrapperClass">
+								<array name="target">
+									<string name="~targetFieldName~" />
+								</array>
+								<list name="targetSelector" delim="," />
+							</structure>
+						</structure>
+					</structure>
+				</structure>
+				<!-- return value -->
+				<string name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function initConfig__fixToggleConfig() {
+		// go through each field
+		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
+			// go through each toggle type
+			foreach ( ['toggleAttr', 'toggleValue', 'toggleClass', 'toggleWrapperClass'] as $toggleType ) {
+			// if toggle config defined...
+			if ( isset($cfg[$toggleType]) ) {
+				if ( isset($cfg['format']) and $cfg['format'] == 'table' and !empty($cfg['default']) ) {
+					// convert [target] to array
+					if ( empty($cfg['target']) ) self::$config['fieldConfig'][$toggleType]['target'] = array();
+					elseif ( is_string($cfg['target']) ) self::$config['fieldConfig'][$toggleType]['target'] = array($cfg['target']);
+					// append [targetSelector] to the settings
+					self::$config['fieldConfig'][$toggleType]['targetSelector'] = implode(',', array_map(function($item){
+						return '.webform-input [name=\"'.Webform::fieldName2dataFieldName($item).'\"]';
+					}, $cfg[$toggleType]['target']));
+				} // if-isset-toggleType
+			} // foreach-toggleType
+		} // foreach-fieldConfig
 		// done!
 		return true;
 	}
