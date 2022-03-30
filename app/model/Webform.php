@@ -1456,9 +1456,8 @@ class Webform {
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// go through each toggle type
 			foreach ( ['toggleAttr', 'toggleValue', 'toggleClass', 'toggleWrapperClass'] as $toggleType ) {
-			// if toggle config defined...
-			if ( isset($cfg[$toggleType]) ) {
-				if ( isset($cfg['format']) and $cfg['format'] == 'table' and !empty($cfg['default']) ) {
+				// if toggle config defined...
+				if ( isset($cfg[$toggleType]) ) {
 					// convert [target] to array
 					if ( empty($cfg['target']) ) self::$config['fieldConfig'][$toggleType]['target'] = array();
 					elseif ( is_string($cfg['target']) ) self::$config['fieldConfig'][$toggleType]['target'] = array($cfg['target']);
