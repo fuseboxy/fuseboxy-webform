@@ -27,7 +27,7 @@
 </fusedoc>
 */
 $radioID = $fieldID.'-'.$optIndex;
-?><div class="form-check <?php if ( !empty($fieldConfig['inline'] ) echo 'form-check-inline'; ?>"><?php
+?><div class="form-check <?php if ( !empty($fieldConfig['inline']) ) echo 'form-check-inline'; ?>"><?php
 	// field
 	if ( !empty($editable) ) :
 		$isChecked = ( $fieldValue == $optValue );

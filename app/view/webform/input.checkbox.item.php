@@ -32,7 +32,7 @@
 */
 $checkboxID = $fieldID.'-'.$optIndex;
 $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $fieldValue));
-?><div class="form-check <?php if ( !empty($fieldConfig['inline'] ) echo 'form-check-inline'; ?>"><?php
+?><div class="form-check <?php if ( !empty($fieldConfig['inline']) ) echo 'form-check-inline'; ?>"><?php
 	// field
 	if ( !empty($editable) ) :
 		$isChecked = in_array($optValue, $fieldValue);
