@@ -80,48 +80,41 @@
 						<file name="tableRowScript" optional="yes" default="~appPath~/view/webform/input.table.row.php" />
 						<!-- for [format=custom] only -->
 						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
-<!-- advanced -->
-<structure name="toggleAttr" comments="toggle attribute of another field while modifying this field">
-	<array_or_string name="target" comments="field name" />
-	<structure name="setAttr">
-		<structure name="when|whenNot">
-			<structure name="~thisFieldValue~">
-				<string name="~attrName~" value="~attrValue~" />
-			</structure>
-		</structure>
-	</structure>
-	<structure name="removeAttr">
-		<structure name="when|whenNot">
-			<array name="~thisFieldValue~">
-				<string name="~attrName~" />
-			</array>
-		</structure>
-	</structure>
-</structure>
-<structure name="toggleClass" comments="toggle class of another field while modifying this field">
-	<array_or_string name="target" comments="field name" />
-	<structure name="addClass|removeClass">
-		<structure name="when|whenNot">
-			<string name="~thisFieldValue~" value="~className~" />
-		</structure>
-	</structure>
-</structure>
-<structure name="toggleWrapperClass" comments="toggle class of [webform-input] wrapper of another field while modifying this field">
-	<array_or_string name="target" comments="field name" />
-	<structure name="addClass|removeClass">
-		<structure name="when|whenNot">
-			<string name="~thisFieldValue~" value="~className~" />
-		</structure>
-	</structure>
-</structure>
-<structure name="toggleValue" comments="toggle value of another field while modifying this field">
-	<array_or_string name="target" comments="field name" />
-	<structure name="setValue">
-		<structure name="when|whenNot">
-			<string name="~thisFieldValue~" value="~anotherFieldValue~" />
-		</structure>
-	</structure>
-</structure>
+						<!-- advanced -->
+						<structure name="toggleAttr" comments="toggle attribute of another field while modifying this field">
+							<string_or_array name="target" comments="field name; use array for multiple fields" />
+							<structure name="setAttr">
+								<structure name="when|whenNot">
+									<structure name="~thisFieldValue~">
+										<string_or_boolean name="~targetFieldAttrName~" value="~targetFieldAttrValue~" comments="use string to set attribute value; use {true} to add attribute without value; use {false|null} to remove attribute" />
+									</structure>
+								</structure>
+							</structure>
+						</structure>
+						<structure name="toggleValue" comments="toggle value of another field while modifying this field">
+							<string_or_array name="target" comments="field name; use array for multiple fields" />
+							<structure name="setValue">
+								<structure name="when|whenNot">
+									<string name="~thisFieldValue~" value="~targetFieldValue~" />
+								</structure>
+							</structure>
+						</structure>
+						<structure name="toggleClass" comments="toggle class of another field while modifying this field">
+							<string_or_array name="target" comments="field name; use array for multiple fields" />
+							<structure name="addClass|removeClass">
+								<structure name="when|whenNot">
+									<string name="~thisFieldValue~" value="~className~" />
+								</structure>
+							</structure>
+						</structure>
+						<structure name="toggleWrapperClass" comments="toggle class of [webform-input] wrapper of another field while modifying this field">
+							<string_or_array name="target" comments="field name; use array for multiple fields" />
+							<structure name="addClass|removeClass">
+								<structure name="when|whenNot">
+									<string name="~thisFieldValue~" value="~className~" />
+								</structure>
+							</structure>
+						</structure>
 					</structure>
 				</structure>
 				<!-- email notification settings -->

@@ -44,6 +44,8 @@ else :
 		else include F::appPath('view/webform/input.'.$fieldConfig['format'].'.php');
 		// help
 		include F::appPath('view/webform/input.help.php');
+		// toggle
+		include F::appPath('view/webform/input.toggle.php');
 	?></div><?php
 
 endif;
