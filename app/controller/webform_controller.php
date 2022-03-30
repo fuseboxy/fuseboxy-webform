@@ -37,6 +37,7 @@
 						<string name="placeholder" optional="yes" />
 						<string name="icon" optional="yes" />
 						<string name="help" optional="yes" comments="help text show below input field" />
+						<boolean name="inline" optional="yes" comments="for [format=checkbox|radio]" />
 						<!-- options -->
 						<structure name="options" optional="yes" comments="show dropdown when specified">
 							<string name="~optionValue~" value="~optionText~" optional="yes" />

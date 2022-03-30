@@ -14,6 +14,7 @@
 				<boolean name="readonly" optional="yes" />
 				<string name="class" optional="yes" />
 				<string name="style" optional="yes" />
+				<boolean name="inline" optional="yes" />
 			</structure>
 			<number name="$optIndex" />
 			<string name="$optValue" />
@@ -31,7 +32,7 @@
 */
 $checkboxID = $fieldID.'-'.$optIndex;
 $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $fieldValue));
-?><div class="form-check"><?php
+?><div class="form-check <?php if ( !empty($fieldConfig['inline'] ) echo 'form-check-inline'; ?>"><?php
 	// field
 	if ( !empty($editable) ) :
 		$isChecked = in_array($optValue, $fieldValue);

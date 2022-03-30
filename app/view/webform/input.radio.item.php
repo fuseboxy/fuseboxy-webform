@@ -12,6 +12,7 @@
 				<boolean name="readonly" optional="yes" />
 				<string name="class" optional="yes" />
 				<string name="style" optional="yes" />
+				<boolean name="inline" optional="yes" />
 			</structure>
 			<number name="$optIndex" />
 			<string name="$optValue" />
@@ -26,7 +27,7 @@
 </fusedoc>
 */
 $radioID = $fieldID.'-'.$optIndex;
-?><div class="form-check"><?php
+?><div class="form-check <?php if ( !empty($fieldConfig['inline'] ) echo 'form-check-inline'; ?>"><?php
 	// field
 	if ( !empty($editable) ) :
 		$isChecked = ( $fieldValue == $optValue );
