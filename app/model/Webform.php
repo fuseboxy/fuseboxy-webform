@@ -1406,9 +1406,6 @@ class Webform {
 							<structure name="toggleClass">
 								<string name="target" optional="yes" />
 							</structure>
-							<structure name="toggleWrapperClass">
-								<string name="target" optional="yes" />
-							</structure>
 						</structure>
 					</structure>
 				</structure>
@@ -1436,12 +1433,6 @@ class Webform {
 								</array>
 								<list name="targetSelector" delim="," />
 							</structure>
-							<structure name="toggleWrapperClass">
-								<array name="target">
-									<string name="~targetFieldName~" />
-								</array>
-								<list name="targetSelector" delim="," />
-							</structure>
 						</structure>
 					</structure>
 				</structure>
@@ -1455,7 +1446,7 @@ class Webform {
 		// go through each field
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// go through each toggle type
-			foreach ( ['toggleAttr', 'toggleValue', 'toggleClass', 'toggleWrapperClass'] as $toggleType ) {
+			foreach ( ['toggleAttr', 'toggleValue', 'toggleClass'] as $toggleType ) {
 				// if toggle config defined...
 				if ( isset($cfg[$toggleType]) ) {
 					// convert [target] to array
