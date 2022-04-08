@@ -192,7 +192,7 @@ switch ( $fusebox->action ) :
 		// ===> considered as just enter (instead of looping this action with new step)
 		// ===> reset form data accordingly
 		if ( empty($arguments['step']) ) {
-			$arguments['step'] = Webform::firstStep();
+			$_GET['step'] = $arguments['step'] = Webform::firstStep();
 			F::error(Webform::error(), $arguments['step'] === false);
 			$reset = Webform::resetProgress();
 			F::error(Webform::error(), $reset === false);
@@ -229,7 +229,7 @@ switch ( $fusebox->action ) :
 		// ===> considered as just enter (instead of looping this action with new step)
 		// ===> reset form data accordingly
 		if ( empty($arguments['step']) ) {
-			$arguments['step'] = $firstStep = Webform::firstStep();
+			$_GET['step'] = $arguments['step'] = Webform::firstStep();
 			F::error(Webform::error(), $arguments['step'] === false);
 			$reset = Webform::resetProgress();
 			F::error(Webform::error(), $reset === false);
