@@ -243,7 +243,7 @@ switch ( $fusebox->action ) :
 		// exit point : back
 		$prevStep = Webform::prevStep($currentStep);
 		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit{$webform['retainParam']}&step={$prevStep}";
-		elseif ( $webform['allowBack'] and Weform::isFirstStep() ) $xfa['back'] = "{$fusebox->controller}.start{$webform['retainParam']}";
+		elseif ( $webform['allowBack'] and Webform::isFirstStep() ) $xfa['back'] = "{$fusebox->controller}.start{$webform['retainParam']}";
 		// exit point : next
 		$nextStep = Webform::nextStep($currentStep);
 		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$currentStep}";
