@@ -2460,6 +2460,8 @@ class Webform {
 		// done!
 		return ( isset($_GET['step']) and $_GET['step'] == $step );
 	}
+	// alias method
+	public static function stepIsNot($step) { return !self::stepIs($step); }
 
 
 
