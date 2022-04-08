@@ -125,6 +125,32 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			determine current step of the form
+		</description>
+		<io>
+			<in>
+				<string name="step" scope="$_GET" optional="yes" />
+				<string name="action" scope="$fusebox" />
+			</in>
+			<out>
+				<string name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function currentStep() {
+		// use default step (when necessary)
+		if ( F::is('*.new,*.edit') and !isset($_GET['step']) ) return self::firstStep();
+		// done!
+		return $_GET['step'] ?? null;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			merge (cached & submitted) data recursively
 		</description>
 		<io>
@@ -2439,13 +2465,10 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
-			check whether current step is as specified
+			check whether current step is/not as specified
 		</description>
 		<io>
 			<in>
-				<string name="step" scope="$_GET" optional="yes" />
-				<string name="action" scope="$fusebox" />
-				<!-- parameter -->
 				<string name="$step" />
 			</in>
 			<out>
@@ -2454,14 +2477,8 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function stepIs($step) {
-		// use default step (when necessary)
-		if ( F::is('*.new,*.edit') and !isset($_GET['step']) ) return self::firstStep();
-		// done!
-		return ( isset($_GET['step']) and $_GET['step'] == $step );
-	}
-	// alias method
-	public static function stepIsNot($step) { return !self::stepIs($step); }
+	public static function stepIs($step) { return ( self::currentStep() == $step ); }
+	public static function stepIsNot($step) { return ( self::currentStep() != $step ); }
 
 
 
