@@ -139,9 +139,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function currentStep() {
-		// use default step (when necessary)
-		if ( F::is('*.new,*.edit') and !isset($_GET['step']) ) return self::firstStep();
-		// done!
+		if ( !isset($_GET['step']) and F::is('*.new,*.edit') ) return self::firstStep();
 		return $_GET['step'] ?? null;
 	}
 
@@ -1538,6 +1536,58 @@ class Webform {
 		if ( $retained === false ) return false;
 		// done!
 		return true;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether current step is the first step
+		</description>
+		<io>
+			<in />
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isFirstStep() {
+		// obtain relevant info
+		$first = self::firstStep();
+		if ( $first === false ) return false;
+		$current = self::currentStep();
+		if ( $current === false ) return false;
+		// done!
+		return ( $current == $first );
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether current step is the last step
+		</description>
+		<io>
+			<in />
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isLastStep() {
+		// obtain relevant info
+		$last = self::firstStep();
+		if ( $last === false ) return false;
+		$current = self::currentStep();
+		if ( $current === false ) return false;
+		// done!
+		return ( $current == $last );
 	}
 
 
