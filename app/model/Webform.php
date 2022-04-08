@@ -2530,8 +2530,8 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function stepIs($step) { return ( self::currentStep() == $step ); }
-	public static function stepIsNot($step) { return ( self::currentStep() != $step ); }
+	public static function stepIs($step) { return ( self::currentStep() === $step ); }
+	public static function stepIsNot($step) { return ( self::currentStep() !== $step ); }
 
 
 
