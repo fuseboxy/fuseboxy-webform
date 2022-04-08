@@ -2439,6 +2439,34 @@ class Webform {
 	/**
 	<fusedoc>
 		<description>
+			check whether current step is as specified
+		</description>
+		<io>
+			<in>
+				<string name="step" scope="$_GET" optional="yes" />
+				<string name="action" scope="$fusebox" />
+				<!-- parameter -->
+				<string name="$step" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function stepIs($step) {
+		// use default step (when necessary)
+		if ( F::is('*.new,*.edit') and !isset($_GET['step']) ) return self::firstStep();
+		// done!
+		return ( isset($_GET['step']) and $_GET['step'] == $step );
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			determine type of step row
 		</description>
 		<io>
