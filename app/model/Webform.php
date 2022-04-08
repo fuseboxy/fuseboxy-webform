@@ -1582,7 +1582,7 @@ class Webform {
 	*/
 	public static function isLastStep() {
 		// obtain relevant info
-		$last = self::firstStep();
+		$last = self::lastStep();
 		if ( $last === false ) return false;
 		$current = self::currentStep();
 		if ( $current === false ) return false;
