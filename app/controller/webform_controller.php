@@ -189,27 +189,28 @@ switch ( $fusebox->action ) :
 		Webform::mode('new');
 		// set first step
 		// ===> when no step specified
-		// ===> considered as just enter (instead of looping this action with new step)
+		// ===> considered as just enter (instead of looping this action by back/next)
 		// ===> reset form data accordingly
-		if ( empty($arguments['step']) ) {
-			$arguments['step'] = $_GET['step'] = Webform::firstStep();
-			F::error(Webform::error(), $arguments['step'] === false);
+		if ( empty($_GET['step']) ) {
 			$reset = Webform::resetProgress();
 			F::error(Webform::error(), $reset === false);
 		}
+		// obtain current step
+		$currentStep = Webform::currentStep();
+		F::error(Webform::error(), $currentStep === false);
 		// go to confirmation (when necessary)
 		F::redirect("{$fusebox->controller}.confirm{$webform['retainParam']}", Webform::stepIs('confirm'));
 		// exit point : back
-		$prevStep = Webform::prevStep($arguments['step']);
+		$prevStep = Webform::prevStep($currentStep);
 		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.new{$webform['retainParam']}&step={$prevStep}";
 		// exit point : next
-		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
-		elseif ( !$nextStep ) $xfa['submit'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
+		$nextStep = Webform::nextStep($currentStep);
+		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$currentStep}";
+		elseif ( !$nextStep ) $xfa['submit'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$currentStep}";
 		// exit point : autosave
 		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave{$webform['retainParam']}";
 		// display form
-		$layout['content'] = Webform::renderStep($arguments['step'], $xfa ?? []);
+		$layout['content'] = Webform::renderStep($currentStep, $xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -229,28 +230,29 @@ switch ( $fusebox->action ) :
 		F::error(Webform::error(), $firstStep === false);
 		// set first step
 		// ===> when no step specified
-		// ===> considered as just enter (instead of looping this action with new step)
+		// ===> considered as just enter (instead of looping this action with back/next)
 		// ===> reset form data accordingly
-		if ( empty($arguments['step']) ) {
-			$arguments['step'] = $_GET['step'] = $firstStep;
-			F::error(Webform::error(), $arguments['step'] === false);
+		if ( empty($_GET['step']) ) {
 			$reset = Webform::resetProgress();
 			F::error(Webform::error(), $reset === false);
 		}
 		// go to confirmation (when necessary)
 		F::redirect("{$fusebox->controller}.confirm{$webform['retainParam']}", Webform::stepIs('confirm'));
+		// obtain current step
+		$currentStep = Webform::currentStep();
+		F::error(Webform::error(), $currentStep === false);
 		// exit point : back
-		$prevStep = Webform::prevStep($arguments['step']);
+		$prevStep = Webform::prevStep($currentStep);
 		if ( $webform['allowBack'] and $prevStep ) $xfa['back'] = "{$fusebox->controller}.edit{$webform['retainParam']}&step={$prevStep}";
 		elseif ( $webform['allowBack'] and Weform::stepIs($firstStep) ) $xfa['back'] = "{$fusebox->controller}.start{$webform['retainParam']}";
 		// exit point : next
-		$nextStep = Webform::nextStep($arguments['step']);
-		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
-		elseif ( empty($nextStep) ) $xfa['update'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$arguments['step']}";
+		$nextStep = Webform::nextStep($currentStep);
+		if ( $webform['allowNext'] and $nextStep ) $xfa['next'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$currentStep}";
+		elseif ( empty($nextStep) ) $xfa['update'] = "{$fusebox->controller}.validate{$webform['retainParam']}&step={$currentStep}";
 		// exit point : autosave
 		if ( !empty($webform['autosave']) ) $xfa['autosave'] = "{$fusebox->controller}.autosave{$webform['retainParam']}";
 		// display form
-		$layout['content'] = Webform::renderStep($arguments['step'], $xfa ?? []);
+		$layout['content'] = Webform::renderStep($currentStep, $xfa ?? []);
 		F::error(Webform::error(), $layout['content'] === false);
 		// layout
 		if ( !empty($webform['layoutPath']) ) include $webform['layoutPath'];
@@ -280,10 +282,13 @@ switch ( $fusebox->action ) :
 	// check submitted data of specific step
 	case 'validate':
 		F::redirect("{$fusebox->controller}.closed{$webform['retainParam']}", !empty($webform['closed']));
-		F::error('Argument [step] is required', empty($arguments['step']));
+		F::error('Step is not specified', empty($_GET['step']));
 		// obtain last step
 		$lastStep = Webform::lastStep();
 		F::error(Webform::error(), $lastStep === false);
+		// obtain current step
+		$currentStep = Webform::currentStep();
+		F::error(Webform::error(), $currentStep === false);
 		// validate & retain data (when necessary)
 		$validated = true;
 		if ( isset($arguments['data']) ) {
@@ -293,7 +298,7 @@ switch ( $fusebox->action ) :
 			$cached = Webform::progressData($arguments['data']);
 			F::error(Webform::error(), $cached === false);
 			// check data just submitted
-			$validated = Webform::validateStep($arguments['step'], $arguments['data']);
+			$validated = Webform::validateStep($currentStep, $arguments['data']);
 			if ( $validated === false ) $_SESSION['flash'] = array('type' => 'danger', 'message' => nl2br(Webform::error()));
 		}
 		// validate captcha (when last step)
@@ -303,9 +308,9 @@ switch ( $fusebox->action ) :
 		}
 		// return to current step (when error)
 		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
-		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$arguments['step']}", $validated === false);
+		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$currentStep}", $validated === false);
 		// go to next step (thru an intermediate action)
-		F::redirect("{$fusebox->controller}.nextStep{$webform['retainParam']}&step={$arguments['step']}");
+		F::redirect("{$fusebox->controller}.nextStep{$webform['retainParam']}&step={$currentStep}");
 		break;
 
 
@@ -313,14 +318,17 @@ switch ( $fusebox->action ) :
 	// ===> for the scenario which developer refer to data-in-progress to determine steps conditionally
 	// ===> make sure submitted data cached into session before actual next-step determined
 	case 'nextStep':
-		F::error('Argument [step] is required', empty($arguments['step']));
+		F::error('Step is not specified', empty($_GET['step']));
 		// determine action
 		$action = empty($webform['bean']['id']) ? 'new' : 'edit';
+		// obtain current step
+		$currentStep = Webform::currentStep();
+		F::error(Webform::error(), $currentStep === false);
 		// obtain last step
 		$lastStep = Webform::lastStep();
 		F::error(Webform::error(), $lastStep === false);
 		// obtain next step
-		$nextStep = Webform::nextStep($arguments['step']);
+		$nextStep = Webform::nextStep($currentStep);
 		// go to next step (when not last step)
 		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$nextStep}", Webform::stepIsNot($lastStep));
 		// go to save (when last step)
