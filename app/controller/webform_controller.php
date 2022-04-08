@@ -322,7 +322,7 @@ switch ( $fusebox->action ) :
 		// obtain next step
 		$nextStep = Webform::nextStep($arguments['step']);
 		// go to next step (when not last step)
-		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$nextStep}", $arguments['step'] != $lastStep);
+		F::redirect("{$fusebox->controller}.{$action}{$webform['retainParam']}&step={$nextStep}", Webform::stepIsNot($lastStep));
 		// go to save (when last step)
 		F::redirect("{$fusebox->controller}.save{$webform['retainParam']}");
 		break;
