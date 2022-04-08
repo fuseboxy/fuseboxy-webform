@@ -139,7 +139,10 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function currentStep() {
-		if ( !isset($_GET['step']) and F::is('*.new,*.edit') ) return self::firstStep();
+		// default using first step (when no step specified in url)
+		// ===> check for config to make sure webform config is ready
+		if ( !isset($_GET['step']) and F::is('*.new,*.edit') and !empty(self::$config) ) return self::firstStep();
+		// done!
 		return $_GET['step'] ?? null;
 	}
 
