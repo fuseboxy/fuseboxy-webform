@@ -421,7 +421,7 @@ switch ( $fusebox->action ) :
 
 
 	// ajax file upload (for [format=file|image] field)
-	case 'upload':
+	case 'uploadFile':
 		if ( !empty($webform['closed']) ) die('Forbidden');
 		// validate
 		if     ( empty($arguments['uploaderID'])   ) $err = 'Argument [uploaderID] is required';
