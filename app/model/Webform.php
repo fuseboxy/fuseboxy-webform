@@ -2534,7 +2534,7 @@ class Webform {
 	*/
 	public static function stepIs($list) {
 		if ( is_string($list) ) $list = explode(',', $list);
-		return in_array(self::currentStep(), $list);
+		return in_array(self::currentStep(), $list, true);
 	}
 	// alias method
 	public static function stepIsNot($list) { return !self::stepIs($list); }
