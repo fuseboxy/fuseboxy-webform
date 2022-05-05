@@ -2522,7 +2522,9 @@ class Webform {
 		</description>
 		<io>
 			<in>
-				<string name="$step" />
+				<list_or_array name="$list" delim=",">
+					<string name="+" value="~stepName~" comments="can be {null} for default step when no {step} url variable" />
+				</list_or_array>
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -2530,8 +2532,12 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function stepIs($step) { return ( self::currentStep() === $step ); }
-	public static function stepIsNot($step) { return ( self::currentStep() !== $step ); }
+	public static function stepIs($list) {
+		if ( is_string($list) ) $list = explode(',', $list);
+		return in_array(self::currentStep(), $list);
+	}
+	// alias method
+	public static function stepIsNot($list) { return !self::stepIs($list); }
 
 
 
