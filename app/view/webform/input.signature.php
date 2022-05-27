@@ -29,22 +29,22 @@ $btnText = '';
 	if ( !empty($editable) ) :
 		// psuedo-hidden field to submit
 		// ===> to be updated after ajax upload
-		if ( empty($fieldConfig['readonly']) ) :
-			?><input 
-				type="text" 
-				class="w-0 p-0 op-0 position-absolute"
-				name="<?php echo $dataFieldName; ?>"
-				value="<?php echo htmlspecialchars($fieldValue); ?>" 
-				style="bottom: 0;"
-				<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
-			/><?php
-		endif;
+		?><input 
+			type="text" 
+			class="w-0 p-0 op-0 position-absolute"
+			name="<?php echo $dataFieldName; ?>"
+			value="<?php echo htmlspecialchars($fieldValue); ?>" 
+			style="bottom: 0;"
+			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
+		/><?php
 		// clear button
-		?><button 
-			type="button"
-			class="btn-clear close position-absolute mr-2"
-			style="right: 0; <?php if ( empty($fieldValue) ) echo 'display: none;'; ?>"
-		>&times;</button><?php
+		if ( empty($fieldConfig['readonly']) ) :
+			?><button 
+				type="button"
+				class="btn-clear close position-absolute mr-2"
+				style="right: 0; <?php if ( empty($fieldValue) ) echo 'display: none;'; ?>"
+			>&times;</button><?php
+		endif;
 		// signature
 		?><div 
 			class="signature-pad"
