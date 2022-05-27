@@ -1767,7 +1767,7 @@ class Webform {
 	public static function nestedArrayGet($nestedKey, $nestedArray) {
 		$nestedKey = explode('.', $nestedKey);
 		$result = $nestedArray;
-		foreach ( $nestedKey as $key ) $result = $result[$key] ?? null;
+		foreach ( $nestedKey as $key ) $result = $result->{$key} ?? $result[$key] ?? null;
 		return $result;
 	}
 
