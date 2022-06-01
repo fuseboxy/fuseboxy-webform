@@ -697,8 +697,8 @@ class Webform {
 		self::$config['customMessage'] = self::$config['customMessage'] ?? [];
 		// all default
 		$default = array(
-			'closed'      => 'Form was closed.',
-			'completed'   => 'Your submission was received.',
+			'closed'      => 'Form closed',
+			'completed'   => 'Form submitted successfully',
 			'neverSaved'  => 'Never saved',
 			'lastSavedAt' => 'Last saved at ',
 			'lastSavedOn' => 'Last saved on ',
