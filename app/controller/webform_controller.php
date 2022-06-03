@@ -83,8 +83,12 @@
 						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
 						<!-- advanced -->
 						<structure name="toggleAttr" comments="toggle attribute of another field while modifying this field">
-							<string_or_array name="target" comments="field name; use array for multiple fields" />
-							<structure name="field|wrapper|column">
+							<!-- target field -->
+							<string name="target" comments="single field" />
+							<array name="target" comments="multiple fields" />
+							<list name="targetSelector" delim="," comments="use css-selector to define the fields" />
+							<!-- things related to target field -->
+							<structure name="field|element|wrapper|column" comments="{element} is alias of {field}">
 								<structure name="when|whenNot">
 									<structure name="~thisFieldValue~">
 										<string_or_boolean name="~targetFieldAttrName~" value="~targetFieldAttrValue~" comments="use string to set attribute value; use {true} to add attribute without value; use {false|null} to remove attribute" />
@@ -93,16 +97,24 @@
 							</structure>
 						</structure>
 						<structure name="toggleValue" comments="toggle value of another field while modifying this field">
-							<string_or_array name="target" comments="field name; use array for multiple fields" />
-							<structure name="field|wrapper|column">
+							<!-- target field -->
+							<string name="target" comments="single field" />
+							<array name="target" comments="multiple fields" />
+							<list name="targetSelector" delim="," comments="use css-selector to define the fields" />
+							<!-- things related to target field -->
+							<structure name="field|element|wrapper|column" comments="{element} is alias of {field}">
 								<structure name="when|whenNot">
 									<string name="~thisFieldValue~" value="~targetFieldValue~" />
 								</structure>
 							</structure>
 						</structure>
 						<structure name="toggleClass" comments="toggle class of another field while modifying this field">
-							<string_or_array name="target" comments="field name; use array for multiple fields" />
-							<structure name="field|wrapper|column">
+							<!-- target field -->
+							<string name="target" comments="single field" />
+							<array name="target" comments="multiple fields" />
+							<list name="targetSelector" delim="," comments="use css-selector to define the fields" />
+							<!-- things related to target field -->
+							<structure name="field|element|wrapper|column" comments="{element} is alias of {field}">
 								<structure name="when|whenNot">
 									<string name="~thisFieldValue~" value="~className~" />
 								</structure>

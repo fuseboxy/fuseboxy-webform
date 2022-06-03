@@ -1,7 +1,7 @@
 <?php /*
 <fusedoc>
 	<description>
-		write [data-toggle-xxx] attribute into element by javascript
+		write [data-toggle-xxx] attribute into element by javascript (fuseboxy-webform-asset.js)
 		===> to avoid too many duplicated display logic in input tags
 		===> to avoid handling single/double-quotes in json string
 	</description>
@@ -12,32 +12,9 @@
 			<string name="$fieldValue" />
 			<string name="$dataFieldName" />
 			<structure name="$fieldConfig">
-				<structure name="toggleAttr" comments="toggle attribute of another field while modifying this field">
-					<string_or_array name="target" comments="field name; use array for multiple fields" />
-					<structure name="field|wrapper|column">
-						<structure name="when|whenNot">
-							<structure name="~thisFieldValue~">
-								<string_or_boolean name="~targetFieldAttrName~" value="~targetFieldAttrValue~" comments="use string to set attribute value; use {true} to add attribute without value; use {false|null} to remove attribute" />
-							</structure>
-						</structure>
-					</structure>
-				</structure>
-				<structure name="toggleValue" comments="toggle value of another field while modifying this field">
-					<string_or_array name="target" comments="field name; use array for multiple fields" />
-					<structure name="field|wrapper|column">
-						<structure name="when|whenNot">
-							<string name="~thisFieldValue~" value="~targetFieldValue~" />
-						</structure>
-					</structure>
-				</structure>
-				<structure name="toggleClass" comments="toggle class of another field while modifying this field">
-					<string_or_array name="target" comments="field name; use array for multiple fields" />
-					<structure name="field|wrapper|column">
-						<structure name="when|whenNot">
-							<string name="~thisFieldValue~" value="~className~" />
-						</structure>
-					</structure>
-				</structure>
+				<structure name="toggleAttr" comments="toggle attribute of another field while modifying this field" />
+				<structure name="toggleValue" comments="toggle value of another field while modifying this field" />
+				<structure name="toggleClass" comments="toggle class of another field while modifying this field" />
 			</structure>
 		</in>
 		<out />
