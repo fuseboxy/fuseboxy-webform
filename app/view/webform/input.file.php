@@ -91,7 +91,7 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 			endif;
 			// preview link
 			if ( !empty($fieldValue) ) :
-				?><a href="<?php echo $fieldValue; ?>" class="preview-link small" target="_blank"><?php
+				?><a href="<?php echo dirname($fieldValue).'/'.urlencode(basename($fieldValue)); ?>" class="preview-link small" target="_blank"><?php
 					if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
 						?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail d-block mt-2" alt="" /><?php
 					else :
@@ -105,9 +105,9 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 		?><div class="bg-light rounded p-3"><?php
 			// file link or image
 			if ( !empty($fieldValue) ) :
-				?><a href="<?php echo $fieldValue; ?>" class="small" target="_blank"><?php
+				?><a href="<?php echo dirname($fieldValue).'/'.urlencode(basename($fieldValue)); ?>" class="small" target="_blank"><?php
 					if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
-						?><img src="<?php echo htmlspecialchars($fieldValue); ?>" class="img-thumbnail" alt="" /><?php
+						?><img src="<?php echo dirname($fieldValue).'/'.urlencode(basename($fieldValue)); ?>" class="img-thumbnail" alt="" /><?php
 					else :
 						?><strong><?php echo basename($fieldValue); ?></strong><?php
 					endif;
