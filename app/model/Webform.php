@@ -2404,11 +2404,17 @@ class Webform {
 		// prepare mapping of mask & data
 		$masks = array();
 		// use {{XXX}} to access bean data (which are data load from database)
-		foreach ( $beanData as $fieldName => $fieldValue ) $masks['{{'.strtoupper($fieldName).'}}'] = $fieldValue;
+		foreach ( $beanData as $fieldName => $fieldValue ) {
+			if ( is_string($fieldValue) ) {
+				$masks['{{'.strtoupper($fieldName).'}}'] = $fieldValue;
+			}
+		}
 		// use [[XXX]] to access form data (which are data stayed in session)
 		foreach ( self::$config['fieldConfig'] as $fieldName => $fieldCfg ) {
 			$fieldValue = self::nestedArrayGet($fieldName, $formData);
-			if ( $fieldValue !== null ) $masks['[['.strtoupper($fieldName).']]'] = ( $fieldCfg['format'] == 'checkbox' ) ? implode('<br>', $fieldValue) : $fieldValue;
+			if ( $fieldValue !== null and is_string($fieldValue) ) {
+				$masks['[['.strtoupper($fieldName).']]'] = ( $fieldCfg['format'] == 'checkbox' ) ? implode('<br>', $fieldValue) : $fieldValue;
+			}
 		}
 		// mapping of mask & other data
 		// ===> use ((XXX)) to access other common information (e.g. date)
