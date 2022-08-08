@@ -74,7 +74,11 @@ $rowID = 'row-'.str_replace('.', '-', $fieldName).'-'.$rowIndex;
 							$tableFieldValue = array();
 							Webform::nestedArraySet($fieldName, $tableFieldValue, $fieldValue);
 							// display table field
-							echo Webform::renderField($actualFieldName, $tableFieldConfig, $tableFieldValue);
+							$fieldOutput = Webform::renderField($actualFieldName, $tableFieldConfig, $tableFieldValue);
+							$field = Util::phpQuery($fieldOutput);
+							$field->find('.input-group')->addClass('input-group-sm');
+							$field->find('.form-control,.custom-select')->addClass('form-control-sm');
+							echo $field;
 						endforeach;
 					?></td><?php
 					// continue...
