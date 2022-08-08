@@ -2,6 +2,8 @@
 <fusedoc>
 	<description>
 		render table which submits array-of-structure
+		===> pre-collapsed table when empty value
+		===> click table title to expand
 	</description>
 	<io>
 		<in>
@@ -41,7 +43,7 @@
 	</io>
 </fusedoc>
 */ ?>
-<div id="<?php echo $fieldID; ?>" class="webform-input-table">
+<div id="<?php echo $fieldID; ?>" class="webform-input-table <?php if ( !empty($fieldConfig['label']) and empty($fieldValue) ) echo 'collapse'; ?>">
 	<header><?php include $fieldConfig['tableHeaderScript']; ?></header>
 	<fieldset><?php
 		// empty hidden field (when necessary)
