@@ -86,7 +86,7 @@ $rowID = 'row-'.str_replace('.', '-', $fieldName).'-'.$rowIndex;
 				endforeach;
 				// remove button
 				if ( !empty($xfa['removeRow']) and !empty($fieldConfig['removeRow']) ) :
-					?><td width="50" class="text-center px-0 py-2">
+					?><td width="50" class="text-center px-0 py-1">
 						<a 
 							href="<?php echo F::url($xfa['removeRow']); ?>"
 							class="btn btn-sm btn-square btn-danger btn-remove-row mt-1"
