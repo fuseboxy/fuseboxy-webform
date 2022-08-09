@@ -13,6 +13,7 @@
 				<boolean name="readonly" optional="yes" />
 				<string name="class" optional="yes" />
 				<string name="style" optional="yes" />
+				<number name="maxlength" optional="yes" default="10" />
 				<string name="dateFormat" optional="yes" example="Y-m-d|Y-m|.." />
 				<string name="dateLocale" optional="yes" example="en|en-GB|zh|zh-TW|.." />
 			</structure>
@@ -36,7 +37,7 @@
 			name="<?php echo $dataFieldName; ?>"
 			value="<?php echo htmlspecialchars($fieldValue); ?>"
 			class="form-control datepicker br-0 <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
-			maxlength="10"
+			maxlength="<?php echo $fieldConfig['maxlength'] ?? 10; ?>"
 			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
