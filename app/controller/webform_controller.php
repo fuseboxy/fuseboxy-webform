@@ -67,6 +67,9 @@
 						<string name="filetypeError" optional="yes" comments="error message shown when file type failed; use {FILE_TYPE} as mask" />
 						<!-- for [format=image] only -->
 						<string name="resize" optional="yes" example="800x600|1024w|100h" />
+						<!-- for [format=date] only -->
+						<string name="dateFormat" optional="yes" example="Y-m-d|Y-m|.." />
+						<string name="dateLocale" optional="yes" example="en|en-GB|zh|zh-TW|.." />
 						<!-- for [format=table] only -->
 						<string name="tableTitle" optional="yes" />
 						<structure name="tableHeader" optional="yes">
