@@ -3040,11 +3040,11 @@ class Webform {
 			}
 			// field config : custom
 			if ( isset($cfg['format']) and $cfg['format'] == 'custom' ) {
-				if ( !isset($cfg['customScript']) ) {
-					self::$error = "Field config [customScript] for [{$fieldName}] is required";
+				if ( !isset($cfg['scriptPath']) ) {
+					self::$error = "Field config [scriptPath] for [{$fieldName}] is required";
 					return false;
-				} elseif ( !file_exists($cfg['customScript']) ) {
-					self::$error = "Script of [customScript] for [{$fieldName}] not exists ({$cfg['customScript']})";
+				} elseif ( !file_exists($cfg['scriptPath']) ) {
+					self::$error = "Script for [{$fieldName}] not exists ({$cfg['scriptPath']})";
 					return false;
 				}
 			}

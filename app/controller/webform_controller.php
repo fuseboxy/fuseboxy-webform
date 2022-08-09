@@ -83,7 +83,7 @@
 						<file name="tableHeaderScript" optional="yes" default="~appPath~/view/webform/input.table.header.php" />
 						<file name="tableRowScript" optional="yes" default="~appPath~/view/webform/input.table.row.php" />
 						<!-- for [format=custom] only -->
-						<file name="customScript" optional="yes" example="/path/to/custom/input.php" />
+						<file name="scriptPath" optional="yes" example="/path/to/custom/input.php" />
 						<!-- advanced -->
 						<structure name="toggleAttr" comments="toggle attribute of another field while modifying this field">
 							<!-- target field -->
