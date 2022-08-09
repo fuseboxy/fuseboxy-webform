@@ -25,7 +25,7 @@ if ( !empty($fieldConfig['icon']) or !empty($fieldConfig['inline-label']) ) :
 				?><small><?php echo $fieldConfig['inline-label']; ?></small><?php
 				// required mark
 				if ( !empty($fieldConfig['required']) ) :
-					?><span class="text-danger ml-1">*</span><?php
+					?> <span class="text-danger">*</span><?php
 				endif;
 			endif;
 		?></span>
