@@ -41,8 +41,8 @@
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
-			<?php if ( !empty($fieldConfig['dateFormat'] ) : ?>data-date-format="<?php echo $fieldConfig['dateFormat']; ?>"<?php endif; ?>
-			<?php if ( !empty($fieldConfig['dateLocale'] ) : ?>data-date-locale="<?php echo $fieldConfig['dateLocale']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['dateFormat']) ) : ?>data-date-format="<?php echo $fieldConfig['dateFormat']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['dateLocale']) ) : ?>data-date-locale="<?php echo $fieldConfig['dateLocale']; ?>"<?php endif; ?>
 		/><?php
 		// calendar icon
 		?><div class="input-group-append">
