@@ -1,6 +1,6 @@
 <?php
-// define realtime filter
-$fieldConfig['dataAllowed'] = '0123456789.';
+// define realtime filter (when necessary)
+if ( !isset($fieldConfig['dataAllowed']) ) $fieldConfig['dataAllowed'] = '0123456789.';
 
 // capture original output
 ob_start();

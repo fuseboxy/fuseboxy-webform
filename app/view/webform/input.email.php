@@ -1,6 +1,6 @@
 <?php
-// define realtime filter
-$fieldConfig['dataAllowed'] = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@._-';
+// define realtime filter (when necessary)
+if ( !isset($fieldConfig['dataAllowed']) ) $fieldConfig['dataAllowed'] = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@._-';
 
 // capture original output
 ob_start();
