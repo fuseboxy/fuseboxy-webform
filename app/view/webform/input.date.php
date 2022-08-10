@@ -16,8 +16,8 @@
 				<number name="maxlength" optional="yes" default="10" />
 				<string name="dataAllowed" optional="yes" />
 				<string name="dataDisallowed" optional="yes" />
-				<string name="dateFormat" optional="yes" example="Y-m-d|Y-m|.." />
-				<string name="dateLocale" optional="yes" example="en|en-GB|zh|zh-TW|.." />
+				<string name="datepickerFormat" optional="yes" example="Y-m-d|Y-m|.." />
+				<string name="datepickerLocale" optional="yes" example="en|en-GB|zh|zh-TW|.." />
 			</structure>
 		</in>
 		<out>
@@ -50,8 +50,8 @@ if ( !isset($fieldConfig['dataAllowed']) ) $fieldConfig['dataAllowed'] = '012345
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
 			<?php if ( !empty($fieldConfig['dataAllowed']) ) : ?>data-allowed="<?php echo $fieldConfig['dataAllowed']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['dataDisallowed']) ) : ?>data-disallowed="<?php echo $fieldConfig['dataDisallowed']; ?>"<?php endif; ?>
-			<?php if ( !empty($fieldConfig['dateFormat']) ) : ?>data-date-format="<?php echo $fieldConfig['dateFormat']; ?>"<?php endif; ?>
-			<?php if ( !empty($fieldConfig['dateLocale']) ) : ?>data-date-locale="<?php echo $fieldConfig['dateLocale']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['datepickerFormat']) ) : ?>data-datepicker-format="<?php echo $fieldConfig['datepickerFormat']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['datepickerLocale']) ) : ?>data-datepicker-locale="<?php echo $fieldConfig['datepickerLocale']; ?>"<?php endif; ?>
 		/><?php
 		// calendar icon
 		?><div class="input-group-append">

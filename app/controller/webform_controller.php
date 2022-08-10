@@ -68,8 +68,8 @@
 						<!-- for [format=image] only -->
 						<string name="resize" optional="yes" example="800x600|1024w|100h" />
 						<!-- for [format=date] only -->
-						<string name="dateFormat" optional="yes" example="Y-m-d|Y-m|.." />
-						<string name="dateLocale" optional="yes" example="en|en-GB|zh|zh-TW|.." />
+						<string name="datepickerFormat" optional="yes" example="Y-m-d|Y-m|.." />
+						<string name="datepickerLocale" optional="yes" example="en|en-GB|zh|zh-TW|.." />
 						<!-- for [format=table] only -->
 						<string name="tableTitle" optional="yes" />
 						<structure name="tableHeader" optional="yes">
