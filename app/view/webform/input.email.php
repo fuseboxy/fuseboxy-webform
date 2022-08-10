@@ -1,4 +1,7 @@
 <?php
+// define realtime filter
+$fieldConfig['dataAllowed'] = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@._-';
+
 // capture original output
 ob_start();
 include F::appPath('view/webform/input.text.php');
