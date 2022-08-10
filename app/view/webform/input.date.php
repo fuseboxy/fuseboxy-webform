@@ -14,6 +14,8 @@
 				<string name="class" optional="yes" />
 				<string name="style" optional="yes" />
 				<number name="maxlength" optional="yes" default="10" />
+				<string name="dataAllowed" optional="yes" />
+				<string name="dataDisallowed" optional="yes" />
 				<string name="dateFormat" optional="yes" example="Y-m-d|Y-m|.." />
 				<string name="dateLocale" optional="yes" example="en|en-GB|zh|zh-TW|.." />
 			</structure>
@@ -25,8 +27,12 @@
 		</out>
 	</io>
 </fusedoc>
-*/ ?>
-<div class="webform-input-date input-group"><?php
+*/
+// define realtime filter (when necessary)
+if ( !isset($fieldConfig['dataAllowed']) ) $fieldConfig['dataAllowed'] = '0123456789-';
+
+// display field
+?><div class="webform-input-date input-group"><?php
 	// icon
 	include F::appPath('view/webform/input.icon.php');
 	// field
@@ -42,6 +48,8 @@
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
+			<?php if ( !empty($fieldConfig['dataAllowed']) ) : ?>data-allowed="<?php echo $fieldConfig['dataAllowed']; ?>"<?php endif; ?>
+			<?php if ( !empty($fieldConfig['dataDisallowed']) ) : ?>data-disallowed="<?php echo $fieldConfig['dataDisallowed']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['dateFormat']) ) : ?>data-date-format="<?php echo $fieldConfig['dateFormat']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['dateLocale']) ) : ?>data-date-locale="<?php echo $fieldConfig['dateLocale']; ?>"<?php endif; ?>
 		/><?php
