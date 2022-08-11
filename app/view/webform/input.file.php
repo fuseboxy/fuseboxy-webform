@@ -5,7 +5,7 @@
 	</description>
 	<io>
 		<in>
-			<boolean name="$editable" />
+			<boolean name="$isEditMode" />
 			<structure name="$xfa">
 				<string name="uploadHandler" />
 				<string name="uploadProgress" />
@@ -44,7 +44,7 @@
 $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnother' ]['text'];
 ?><div class="webform-input-file"><?php
 	// field
-	if ( !empty($editable) ) :
+	if ( !empty($isEditMode) ) :
 		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left mb-0 p-3 position-relative"><?php
 			// when field-readonly
 			// ===> [hidden] field to pass value

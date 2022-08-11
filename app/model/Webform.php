@@ -1999,7 +1999,7 @@ class Webform {
 	</fusedoc>
 	*/
 	public static function renderField($fieldName, $fieldConfig=null, $formData=null) {
-		$editable = in_array(self::$mode, ['new','edit']);
+		$isEditMode = in_array(self::$mode, ['new','edit']);
 		// simply display nothing (when empty field name)
 		if ( empty($fieldName) ) return '';
 		// obtain field config (when necessary)

@@ -2,7 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
-			<boolean name="$editable" />
+			<boolean name="$isEditMode" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
@@ -16,7 +16,7 @@
 	</io>
 </fusedoc>
 */
-if ( !empty($editable) ) :
+if ( !empty($isEditMode) ) :
 	?><input 
 		type="hidden"
 		id="<?php echo $fieldID; ?>"

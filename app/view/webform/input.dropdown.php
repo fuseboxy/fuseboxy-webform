@@ -2,7 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
-			<boolean name="$editable" />
+			<boolean name="$isEditMode" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
@@ -31,7 +31,7 @@
 	// icon
 	include F::appPath('view/webform/input.icon.php');
 	// field
-	if ( !empty($editable) ) :
+	if ( !empty($isEditMode) ) :
 		?><select
 			id="<?php echo $fieldID; ?>"
 			class="custom-select <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"

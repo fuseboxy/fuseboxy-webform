@@ -2,7 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
-			<boolean name="$editable" />
+			<boolean name="$isEditMode" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
@@ -36,7 +36,7 @@ if ( !isset($fieldConfig['dataAllowed']) ) $fieldConfig['dataAllowed'] = '012345
 	// icon
 	include F::appPath('view/webform/input.icon.php');
 	// field
-	if ( !empty($editable) ) :
+	if ( !empty($isEditMode) ) :
 		?><input 
 			type="text"
 			id="<?php echo $fieldID; ?>"

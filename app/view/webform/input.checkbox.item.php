@@ -2,7 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
-			<boolean name="$editable" />
+			<boolean name="$isEditMode" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$dataFieldName" example="firstName ===> data[firstName]; student.name ===> data[student][name]" />
@@ -34,7 +34,7 @@ $checkboxID = $fieldID.'-'.$optIndex;
 $fieldValue = is_array($fieldValue) ? $fieldValue : array_filter(explode('|', $fieldValue));
 ?><div class="form-check <?php if ( !empty($fieldConfig['inline']) ) echo 'form-check-inline'; ?>"><?php
 	// field
-	if ( !empty($editable) ) :
+	if ( !empty($isEditMode) ) :
 		$isChecked = in_array($optValue, $fieldValue);
 		?><input
 			type="checkbox"

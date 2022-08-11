@@ -7,7 +7,7 @@
 	</description>
 	<io>
 		<in>
-			<boolean name="$editable" />
+			<boolean name="$isEditMode" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$dataFieldName" />
@@ -34,7 +34,7 @@
 		</in>
 		<out>
 			<string name="fieldName" scope="url" oncondition="xfa.appendRow" />
-			<structure name="data" scope="form" optional="yes" oncondition="editable">
+			<structure name="data" scope="form" optional="yes" oncondition="isEditMode">
 				<array name="~fieldName~">
 					<structure name="+" />
 				</array>
@@ -49,7 +49,7 @@
 		// empty hidden field (when necessary)
 		// ===> avoid nothing submitted when no row
 		// ===> for the scenario which user remove all rows and submit the change
-		if ( !empty($editable) ) :
+		if ( !empty($isEditMode) ) :
 			?><input type="hidden" name="<?php echo $dataFieldName; ?>" value="" /><?php
 		endif;
 		// table content

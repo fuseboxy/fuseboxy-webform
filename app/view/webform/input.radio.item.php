@@ -2,7 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
-			<boolean name="$editable" />
+			<boolean name="$isEditMode" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<string name="$fieldValue" />
@@ -29,7 +29,7 @@
 $radioID = $fieldID.'-'.$optIndex;
 ?><div class="form-check <?php if ( !empty($fieldConfig['inline']) ) echo 'form-check-inline'; ?>"><?php
 	// field
-	if ( !empty($editable) ) :
+	if ( !empty($isEditMode) ) :
 		$isChecked = ( $fieldValue == $optValue );
 		?><input
 			type="radio"
