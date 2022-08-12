@@ -18,6 +18,7 @@
 */
 // useful variables
 $reqMark        = '<span class="text-danger ml-1">*</span>';
+$toggleIcon     =  "<i id='toggle-{$fieldID}' class='far fa-plus-square transition-none mr-2'></i>";
 $isRequired     = !empty($fieldConfig['required']);
 $hasLabel       = !empty($fieldConfig['label']);
 $hasInlineLabel = !empty($fieldConfig['inline-label']);
@@ -45,7 +46,7 @@ if ( $fieldConfig['format'] == 'table' and $hasLabel ) :
 	>
 		<thead class="thead-light">
 			<tr><th class="bb-0"><?php
-				if ( empty($fieldValue) ) echo "<i id='toggle-{$fieldID}' class='far fa-plus-square transition-none mr-2'></i>";
+				if ( empty($fieldValue) and !empty($isEditMode) ) echo $toggleIcon;
 				if ( $hasLabel ) echo $fieldConfig['label'];
 				if ( $isRequired ) echo $reqMark;
 			?></th></tr>
