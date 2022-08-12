@@ -2,6 +2,7 @@
 <fusedoc>
 	<io>
 		<in>
+			<boolean name="$isEditMode" optional="yes" />
 			<string name="$fieldID" />
 			<string name="$fieldName" />
 			<mixed name="$fieldValue" />
@@ -25,8 +26,8 @@ $hasInlineLabel = !empty($fieldConfig['inline-label']);
 // table-header-style label (when necessary)
 if ( $fieldConfig['format'] == 'table' and $hasLabel ) :
 	?><table 
-		class="table table-bordered small mb-0 <?php if ( empty($fieldValue) ) echo 'cursor-pointer'; ?>"
-		<?php if ( empty($fieldValue) ) : ?>
+		class="table table-bordered small mb-0 <?php if ( empty($fieldValue) and !empty($isEditMode) ) echo 'cursor-pointer'; ?>"
+		<?php if ( empty($fieldValue) and !empty($isEditMode) ) : ?>
 			data-toggle="collapse"
 			data-target="#<?php echo $fieldID; ?>"
 			onclick="
