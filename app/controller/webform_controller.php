@@ -80,8 +80,10 @@
 						</structure>
 						<boolean name="appendRow" optional="yes" />
 						<boolean name="removeRow" optional="yes" />
-						<file name="tableHeaderScript" optional="yes" default="~appPath~/view/webform/input.table.header.php" />
-						<file name="tableRowScript" optional="yes" default="~appPath~/view/webform/input.table.row.php" />
+						<structure name="scriptPath">
+							<file name="tableHeader" optional="yes" default="~appPath~/view/webform/input.table.header.php" />
+							<file name="tableRow" optional="yes" default="~appPath~/view/webform/input.table.row.php" />
+						</structure>
 						<!-- for [format=custom] only -->
 						<file name="scriptPath" optional="yes" example="/path/to/custom/input.php" />
 						<!-- advanced -->
@@ -476,7 +478,7 @@ switch ( $fusebox->action ) :
 		// button
 		$xfa['removeRow'] = F::command('controller').'.removeRow'.$webform['retainParam'];
 		// display
-		include $fieldConfig['tableRowScript'];
+		include $fieldConfig['scriptPath']['tableRow'];
 		break;
 
 

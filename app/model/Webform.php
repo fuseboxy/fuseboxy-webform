@@ -1165,8 +1165,10 @@ class Webform {
 									<string name="+" value="~tableFieldName~" comments="multiple fields in one cell; only field name specified" />
 								</structure>
 							</structure>
-							<file name="tableHeaderScript" optional="yes" />
-							<file name="tableRowScript" optional="yes" />
+							<structure name="scriptPath">
+								<file name="tableHeader" optional="yes" />
+								<file name="tableRow" optional="yes" />
+							</structure>
 						</structure>
 					</structure>
 				</structure>
@@ -1187,8 +1189,10 @@ class Webform {
 								</structure>
 							</structure>
 						</structure>
-						<file name="tableHeaderScript" default="~appPath~/view/webform/input.table.header.php" />
-						<file name="tableRowScript" default="~appPath~/view/webform/input.table.row.php" />
+						<structure name="scriptPath">
+							<file name="tableHeader" default="~appPath~/view/webform/input.table.header.php" />
+							<file name="tableRow" default="~appPath~/view/webform/input.table.row.php" />
+						</structure>
 					</structure>
 				</structure>
 				<!-- return value -->
@@ -1202,20 +1206,21 @@ class Webform {
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
 			// proceed when table format only
 			if ( isset($cfg['format']) and $cfg['format'] == 'table' ) {
+				$cfg['scriptPath'] = $cfg['scriptPath'] ?? array();
 				// fix table header script
-				if ( empty($cfg['tableHeaderScript']) ) $cfg['tableHeaderScript'] = F::appPath('view/webform/input.table.header.php');
-				if ( !is_file($cfg['tableHeaderScript']) ) {
-					self::$error = "Table header script [{$cfg['tableHeaderScript']}] of field [{$fieldName}] not found";
+				if ( empty($cfg['scriptPath']['tableHeader']) ) $cfg['scriptPath']['tableHeader'] = F::appPath('view/webform/input.table.header.php');
+				if ( !is_file($cfg['scriptPath']['tableHeader']) ) {
+					self::$error = "Table header script [{$cfg['scriptPath']['tableHeader']}] of field [{$fieldName}] not found";
 					return false;
 				}
-				self::$config['fieldConfig'][$fieldName]['tableHeaderScript'] = $cfg['tableHeaderScript'];
 				// fix table row script
-				if ( empty($cfg['tableRowScript']) ) $cfg['tableRowScript'] = F::appPath('view/webform/input.table.row.php');
-				if ( !is_file($cfg['tableRowScript']) ) {
-					self::$error = "Table row script [{$cfg['tableRowScript']}] of field [{$fieldName}] not found";
+				if ( empty($cfg['scriptPath']['tableRow']) ) $cfg['scriptPath']['tableRow'] = F::appPath('view/webform/input.table.row.php');
+				if ( !is_file($cfg['scriptPath']['tableRow']) ) {
+					self::$error = "Table row script [{$cfg['scriptPath']['tableRow']}] of field [{$fieldName}] not found";
 					return false;
 				}
-				self::$config['fieldConfig'][$fieldName]['tableRowScript'] = $cfg['tableRowScript'];
+				// modify config container
+				self::$config['fieldConfig'][$fieldName]['scriptPath'] = $cfg['scriptPath'];
 				// fix table row config
 				if ( isset($cfg['tableRow']) ) {
 					// fix field of single-field-in-one-cell

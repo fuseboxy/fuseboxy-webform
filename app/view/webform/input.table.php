@@ -19,13 +19,15 @@
 				<structure name="tableHeader" optional="yes">
 					<string name="~columnHeader~" value="~columnWidth~" />
 				</structure>
-				<file name="tableHeaderScript" />
 				<structure name="tableRow" optional="yes">
 					<structure name="~rowFieldName~" />
 				</structure>
-				<file name="tableRowScript" />
 				<boolean name="appendRow" />
 				<boolean name="removeRow" />
+				<structure name="scriptPath">
+					<file name="tableHeader" />
+					<file name="tableRow" />
+				</structure>
 			</structure>
 			<structure name="$xfa">
 				<string name="appendRow" optional="yes" />
@@ -44,7 +46,7 @@
 </fusedoc>
 */ ?>
 <div id="<?php echo $fieldID; ?>" class="webform-input-table <?php if ( !empty($fieldConfig['label']) and empty($fieldValue) ) echo 'collapse'; ?>">
-	<header><?php include $fieldConfig['tableHeaderScript']; ?></header>
+	<header><?php include $fieldConfig['scriptPath']['tableHeader']; ?></header>
 	<fieldset><?php
 		// empty hidden field (when necessary)
 		// ===> avoid nothing submitted when no row
@@ -54,7 +56,7 @@
 		endif;
 		// table content
 		if ( !empty($fieldValue) ) :
-			foreach ( $fieldValue as $rowIndex => $rowItem ) include $fieldConfig['tableRowScript'];
+			foreach ( $fieldValue as $rowIndex => $rowItem ) include $fieldConfig['scriptPath']['tableRow'];
 		endif;
 	?></fieldset>
 </div>
