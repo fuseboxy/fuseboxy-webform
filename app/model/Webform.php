@@ -2975,9 +2975,6 @@ class Webform {
 		if ( empty(self::$config['bean']) ) {
 			self::$error = 'Webform config [bean] is required';
 			return false;
-		} elseif ( strpos(self::$config['bean']['type'], '_') !== false ) {
-			self::$error = 'Type of [bean] cannot contain underscore';
-			return false;
 		// check layout path (false is allowed)
 		} elseif ( !isset(self::$config['layoutPath']) ) {
 			self::$error = 'Webform config [layoutPath] is required';
