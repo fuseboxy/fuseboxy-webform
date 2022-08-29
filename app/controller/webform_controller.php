@@ -476,7 +476,7 @@ switch ( $fusebox->action ) :
 		// button
 		$xfa['removeRow'] = F::command('controller').'.removeRow'.$webform['retainParam'];
 		// display
-		include F::appPath('view/webform/input.table.row.php');
+		include $fieldConfig['tableRowScript'];
 		break;
 
 
