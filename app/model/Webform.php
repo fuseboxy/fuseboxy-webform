@@ -3017,11 +3017,15 @@ class Webform {
 				} // foreach-fieldLayout
 			} // is-fieldLayout
 		} // foreach-step
-		// get columns of database table
-		$columns = ORM::columns(self::$config['bean']['type']);
-		if ( $columns === false ) {
-			self::$error = ORM::error();
-			return false;
+		// get columns of database table (when necessary)
+		// ===> allow using [tmp] bean type while do not need such table exists
+		// ===> in order to utilize webform to generate UI without needing an actual table
+		if ( self::$config['bean']['type'] != 'tmp' ) {
+			$columns = ORM::columns(self::$config['bean']['type']);
+			if ( $columns === false ) {
+				self::$error = ORM::error();
+				return false;
+			}
 		}
 		// check each field config
 		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
