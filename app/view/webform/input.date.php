@@ -44,6 +44,7 @@ if ( !isset($fieldConfig['dataAllowed']) ) $fieldConfig['dataAllowed'] = '012345
 			value="<?php echo htmlspecialchars($fieldValue); ?>"
 			class="form-control datepicker br-0 <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
 			maxlength="<?php echo $fieldConfig['maxlength'] ?? 10; ?>"
+			autocomplete="off"
 			<?php if ( !empty($fieldConfig['placeholder']) ) : ?>placeholder="<?php echo $fieldConfig['placeholder']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
