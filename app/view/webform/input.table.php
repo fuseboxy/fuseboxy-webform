@@ -45,7 +45,7 @@
 	</io>
 </fusedoc>
 */ ?>
-<div id="<?php echo $fieldID; ?>" class="webform-input-table <?php if ( !empty($fieldConfig['label']) and empty($fieldValue) ) echo 'collapse'; ?>">
+<div id="<?php echo $fieldID; ?>" class="webform-input-table table-responsive <?php if ( !empty($fieldConfig['label']) and empty($fieldValue) ) echo 'collapse'; ?>">
 	<header><?php include $fieldConfig['scriptPath']['tableHeader']; ?></header>
 	<fieldset><?php
 		// empty hidden field (when necessary)
