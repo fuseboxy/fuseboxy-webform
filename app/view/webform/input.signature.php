@@ -53,7 +53,7 @@ $btnText = '';
 	endif;
 	// display signature (not upload yet)
 	if ( !empty($fieldValue) and substr($fieldValue, -6) == '</svg>' ) :
-		?><div class="signature-image"><?php echo $fieldValue; ?></div><?php
+		?><div class="signature-image"><?php echo substr($fieldValue, strpos($fieldValue, '<svg ')); ?></div><?php
 	// display signature (uploaded)
 	elseif ( !empty($fieldValue) ) :
 		?><img class="signature-image" src="<?php echo htmlspecialchars($fieldValue); ?>" alt="" /><?php
