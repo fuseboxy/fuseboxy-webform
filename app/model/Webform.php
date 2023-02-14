@@ -3170,19 +3170,19 @@ class Webform {
 				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
 			}
 			// check length : max
-			if ( !empty($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
+			if ( isset($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
 				$err[$fieldName] = "Length of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
 			}
 			// check length : min
-			if ( !empty($cfg['minlength']) and strlen($fieldValue) > $cfg['minlength'] ) {
+			if ( isset($cfg['minlength']) and strlen($fieldValue) < $cfg['minlength'] ) {
 				$err[$fieldName] = "Length of [{$fieldName}] is too short (min={$cfg['minlength']},now=".strlen($fieldValue).")";
 			}
 			// check value : max
-			if ( !empty($cfg['max']) and strlen($fieldValue) > $cfg['max'] ) {
+			if ( isset($cfg['max']) and $fieldValue > $cfg['max'] ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is too large (max={$cfg['max']},now=".strlen($fieldValue).")";
 			}
 			// check value : min
-			if ( !empty($cfg['min']) and strlen($fieldValue) > $cfg['min'] ) {
+			if ( isset($cfg['min']) and $fieldValue < $cfg['min'] ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is too small (min={$cfg['min']},now=".strlen($fieldValue).")";
 			}
 		} // foreach-fieldConfig
