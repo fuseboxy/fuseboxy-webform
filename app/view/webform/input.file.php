@@ -66,6 +66,7 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 					value="<?php echo htmlspecialchars($fieldValue); ?>"
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
+					<?php include F::appPath('view/webform/input.data_toggle.php'); ?>
 				/><?php
 				// remove button
 				?><button 

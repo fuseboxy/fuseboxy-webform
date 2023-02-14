@@ -53,6 +53,7 @@ if ( !isset($fieldConfig['dataAllowed']) ) $fieldConfig['dataAllowed'] = '012345
 			<?php if ( !empty($fieldConfig['dataDisallowed']) ) : ?>data-disallowed="<?php echo $fieldConfig['dataDisallowed']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['datepickerFormat']) ) : ?>data-datepicker-format="<?php echo $fieldConfig['datepickerFormat']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['datepickerLocale']) ) : ?>data-datepicker-locale="<?php echo $fieldConfig['datepickerLocale']; ?>"<?php endif; ?>
+			<?php include F::appPath('view/webform/input.data_toggle.php'); ?>
 		/><?php
 		// calendar icon
 		?><div class="input-group-append">

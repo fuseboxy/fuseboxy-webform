@@ -50,6 +50,7 @@
 			<?php if ( !empty($fieldConfig['readonly']) ) echo 'readonly' ?>
 			<?php if ( !empty($fieldConfig['dataAllowed']) ) : ?>data-allowed="<?php echo $fieldConfig['dataAllowed']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['dataDisallowed']) ) : ?>data-disallowed="<?php echo $fieldConfig['dataDisallowed']; ?>"<?php endif; ?>
+			<?php include F::appPath('view/webform/input.data_toggle.php'); ?>
 		/><?php
 		// suggestions (when necessary)
 		if ( !empty($options) ) :

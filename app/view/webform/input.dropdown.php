@@ -42,6 +42,7 @@
 			<?php endif; ?>
 			<?php if ( !empty($fieldConfig['style']) ) : ?>style="<?php echo $fieldConfig['style']; ?>"<?php endif; ?>
 			<?php if ( !empty($fieldConfig['required']) ) echo 'required'; ?>
+			<?php include F::appPath('view/webform/input.data_toggle.php'); ?>
 		><?php
 			// empty first item
 			?><option value=""><?php if ( !empty($fieldConfig['placeholder']) ) echo $fieldConfig['placeholder']; ?></option><?php

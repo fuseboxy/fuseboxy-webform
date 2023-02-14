@@ -43,6 +43,7 @@ $radioID = $fieldID.'-'.$optIndex;
 			value="<?php echo htmlspecialchars($optValue); ?>"
 			<?php if ( $isChecked ) echo 'checked'; ?>
 			<?php if ( !empty($fieldConfig['required']) and $optIndex == 0 ) echo 'required'; ?>
+			<?php include F::appPath('view/webform/input.data_toggle.php'); ?>
 		 /><label 
 			for="<?php echo $radioID; ?>" 
 			class="form-check-label cursor-pointer <?php if ( !empty($fieldConfig['class']) ) echo $fieldConfig['class']; ?>"
