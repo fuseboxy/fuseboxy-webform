@@ -2275,12 +2275,18 @@ class Webform {
 			}
 		}
 		// sync value of field with [sameAs] specified
-		foreach ( self::$config['fieldConfig'] as $fieldName => $cfg ) {
-			if ( !empty($cfg['sameAs']) and !isset(self::$config['fieldConfig'][$cfg['sameAs']]) ) {
-				self::$error = "Sync-field [{$cfg['sameAs']}] not found (field={$fieldName})";
+		// ===> only when exists in submitted fields
+		foreach ( self::$config['fieldConfig'] as $targetFieldName => $cfg ) {
+			$sourceFieldName = $cfg['sameAs'] ?? '';
+			if ( !empty($sourceFieldName) and !isset(self::$config['fieldConfig'][$sourceFieldName]) ) {
+				self::$error = "Sync-field [{$sourceFieldName}] not found (field={$targetFieldName})";
 				return false;
-			} elseif ( !empty($cfg['sameAs']) ) {
-				self::nestedArraySet($fieldName, $formData, self::nestedArrayGet($cfg['sameAs'], $formData));
+			} elseif ( !empty($sourceFieldName) ) {
+				// only sync when both fields exist in form
+				// ===> do not sync when only specified in field-config but not shown in steps
+				$sourceFieldValue = self::nestedArrayGet($sourceFieldName, $formData);
+				$targetFieldValue = self::nestedArrayGet($targetFieldName, $formData);
+				if ( $sourceFieldValue !== null and $targetFieldValue !== null ) self::nestedArraySet($targetFieldName, $formData, $sourceFieldValue);
 			}
 		}
 		// move converted data into container
@@ -3170,19 +3176,19 @@ class Webform {
 				$err[$fieldName] = "Value of [{$fieldName}] is invalid ({$fieldValue})";
 			}
 			// check length : max
-			if ( isset($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
+			if ( !empty($cfg['maxlength']) and strlen($fieldValue) > $cfg['maxlength'] ) {
 				$err[$fieldName] = "Length of [{$fieldName}] is too long (max={$cfg['maxlength']},now=".strlen($fieldValue).")";
 			}
 			// check length : min
-			if ( isset($cfg['minlength']) and strlen($fieldValue) < $cfg['minlength'] ) {
+			if ( !empty($cfg['minlength']) and strlen($fieldValue) > $cfg['minlength'] ) {
 				$err[$fieldName] = "Length of [{$fieldName}] is too short (min={$cfg['minlength']},now=".strlen($fieldValue).")";
 			}
 			// check value : max
-			if ( isset($cfg['max']) and $fieldValue > $cfg['max'] ) {
+			if ( !empty($cfg['max']) and strlen($fieldValue) > $cfg['max'] ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is too large (max={$cfg['max']},now=".strlen($fieldValue).")";
 			}
 			// check value : min
-			if ( isset($cfg['min']) and $fieldValue < $cfg['min'] ) {
+			if ( !empty($cfg['min']) and strlen($fieldValue) > $cfg['min'] ) {
 				$err[$fieldName] = "Value of [{$fieldName}] is too small (min={$cfg['min']},now=".strlen($fieldValue).")";
 			}
 		} // foreach-fieldConfig
