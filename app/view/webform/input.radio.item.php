@@ -30,7 +30,7 @@ $radioID = $fieldID.'-'.$optIndex;
 ?><div class="form-check <?php if ( !empty($fieldConfig['inline']) ) echo 'form-check-inline'; ?>"><?php
 	// field
 	if ( !empty($isEditMode) ) :
-		$isChecked = ( $fieldValue == $optValue );
+		$isChecked = ( (string)$fieldValue == (string)$optValue );
 		?><input
 			type="radio"
 			id="<?php echo $radioID; ?>"

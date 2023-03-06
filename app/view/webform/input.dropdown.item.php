@@ -12,5 +12,5 @@
 */
 ?><option 
 	value="<?php echo htmlspecialchars($optValue); ?>"
-	<?php if ( $fieldValue == $optValue ) echo 'selected'; ?>
+	<?php if ( (string)$fieldValue == (string)$optValue ) echo 'selected'; ?>
 ><?php echo htmlspecialchars($optText); ?></option>
