@@ -440,26 +440,22 @@ switch ( $fusebox->action ) :
 	// ajax file upload (for [format=file|image] field)
 	case 'uploadFile':
 		if ( !empty($webform['closed']) ) die('Forbidden');
-		// validate
-		if     ( empty($arguments['uploaderID'])   ) $err = 'Argument [uploaderID] is required';
-		elseif ( empty($arguments['fieldName'])    ) $err = 'Argument [fieldName] is required';
-		elseif ( empty($arguments['originalName']) ) $err = 'Argument [originalName] is required';
-		// commit to upload
-		if ( empty($err) ) {
-			$result = Webform::uploadFileToTemp($arguments['uploaderID'], $arguments['fieldName'], $arguments['originalName']);
-			if ( $result === false ) $err = Webform::error();
-		}
-		// check if any error
-		if ( !empty($err) ) $result = array('success' => false, 'msg' => Webform::error());
-		// done!
-		echo json_encode($result);
-		break;
-
-
-	// ajax upload progress (for [format=file|image] field)
-	case 'uploadProgress':
-		if ( !empty($webform['closed']) ) die('Forbidden');
-		include Webform::$libPath['uploadProgress'];
+		F::error('Argument [fieldName] is required', empty($arguments['fieldName']));
+		// proceed to upload
+		$uploadResult = Webform::uploadFileToTemp($arguments['fieldName']);
+		F::error(Webform::error(), $uploadResult === false);
+		F::error($uploadResult['message'], empty($uploadResult['success']));
+		// prepare essential variables
+		$fieldName = $arguments['fieldName'];
+		$fieldValue = $uploadResult['fileUrl'];
+		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
+		F::error(Webform::error(), $dataFieldName === false);
+		$fieldConfig = Webform::fieldConfig($fieldName);
+		F::error(Webform::error(), $fieldConfig === false);
+		// exit point
+		$xfa['ajaxUpload'] = F::command('command').'&fieldName='.$fieldName;
+		// display field
+		include F::appPath('view/webform/input.'.( $fieldConfig['format'] ?? 'file' ).'.php');
 		break;
 
 
