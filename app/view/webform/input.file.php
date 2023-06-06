@@ -7,8 +7,7 @@
 		<in>
 			<boolean name="$isEditMode" />
 			<structure name="$xfa">
-				<string name="uploadHandler" />
-				<string name="uploadProgress" />
+				<string name="ajaxUpload" />
 			</structure>
 			<string name="$fieldID" />
 			<string name="$fieldName" />
@@ -41,11 +40,10 @@
 	</io>
 </fusedoc>
 */
-$btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnother' ]['text'];
-?><div class="webform-input-file"><?php
+?><div id="<?php echo $fieldID; ?>" class="webform-input-file"><?php
 	// field
 	if ( !empty($isEditMode) ) :
-		?><label for="<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left mb-0 p-3 position-relative"><?php
+		?><label for="choose-<?php echo $fieldID; ?>" class="form-control-file btn btn-light text-left mb-0 p-3 position-relative"><?php
 			// when field-readonly
 			// ===> [hidden] field to pass value
 			if ( !empty($fieldConfig['readonly']) ) :
@@ -55,10 +53,12 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 					value="<?php echo htmlspecialchars($fieldValue); ?>" 
 				/><?php
 			// when not field-readonly
-			// ===> [browse] button to choose file
-			// ===> [psuedo-hidden] field to submit value (to be updated after ajax upload)
+			// ===> [upload] button to choose file
+			// ===> [psuedo-hidden] field to submit value
 			else :
 				// psuedo-hidden field
+				// ===> instead of using hidden field
+				// ===> for browser validation message
 				?><input 
 					type="text"
 					class="w-0 p-0 op-0 position-absolute"
@@ -67,6 +67,12 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 					<?php include F::appPath('view/webform/input.data_toggle.php'); ?>
+					data-toggle="ajax-upload"
+					data-target="#<?php echo $fieldID; ?>"
+					data-form-action="<?php echo F::url($xfa['ajaxUpload']); ?>"
+					data-choose-button="#choose-<?php echo $fieldID; ?>"
+					data-remove-button="#remove-<?php echo $fieldID; ?>"
+					data-preview="#preview-<?php echo $fieldID; ?>"
 				/><?php
 				// remove button
 				?><button 
@@ -78,17 +84,11 @@ $btnText = $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'choose
 				// upload button
 				?><button 
 					type="button" 
-					id="<?php echo $fieldID; ?>" 
-					class="btn-upload btn btn-sm btn-primary mr-2"
-					data-upload-handler="<?php echo F::url($xfa['uploadHandler'].'&uploaderID='.$fieldID.'&fieldName='.$fieldName); ?>"
-					data-upload-progress="<?php echo F::url($xfa['uploadProgress']); ?>"
-					data-filesize="<?php echo Webform::fileSizeInBytes($fieldConfig['filesize']); ?>"
-					data-filetype="<?php echo $fieldConfig['filetype'];  ?>"
-					data-filetype-error="<?php echo $fieldConfig['filetypeError']; ?>"
-					data-filesize-error="<?php echo $fieldConfig['filesizeError']; ?>"
+					id="choose-<?php echo $fieldID; ?>" 
+					class="btn-choose btn btn-sm btn-primary mr-2"
 					data-button-text="<?php echo $webform['customButton']['chooseFile']['text']; ?>"
 					data-button-alt-text="<?php echo $webform['customButton']['chooseAnother']['text']; ?>"
-				><?php echo $btnText; ?></button><?php
+				><?php echo $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnother' ]['text']; ?></button><?php
 			endif;
 			// preview link
 			if ( !empty($fieldValue) ) :
