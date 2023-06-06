@@ -10,11 +10,6 @@ class Webform {
 	private static $mode = 'view';
 	// property : source of data for [renderField] method : {progressData|beanData}
 	private static $dataRender = 'progressData';
-	// property : library for corresponding methods
-	public static $libPath = array(
-		'uploadFile'     => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/Uploader.php',
-		'uploadProgress' => __DIR__.'/../../lib/simple-ajax-uploader/2.6.7/extras/uploadProgress.php',
-	);
 	// get (latest) error message
 	private static $error;
 	public static function error() { return self::$error; }
@@ -2023,8 +2018,7 @@ class Webform {
 		$fieldValue = $fieldConfig['value'] ?? self::nestedArrayGet($fieldName, $formData) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
 		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image','signature']) ) {
-			$xfa['uploadHandler'] = F::command('controller').'.uploadFile'.self::$config['retainParam'];
-			$xfa['uploadProgress'] = F::command('controller').'.uploadProgress'.self::$config['retainParam'];
+			$xfa['ajaxUpload'] = F::command('controller').'.uploadFile&fieldName='.$fieldName;
 		}
 		// exit point : dynamic table
 		if ( !F::is('*.view,*.confirm') and $fieldConfig['format'] == 'table' ) {
@@ -2684,10 +2678,6 @@ class Webform {
 					<string name="uploadDir" example="/path/to/upload/dir/" />
 					<string name="uploadUrl" example="https://my.domain.com/base/url/to/upload/dir/" />
 				</structure>
-				<!-- library -->
-				<structure name="$libPath" scope="self">
-					<string name="uploadFile" comments="server-side script of SimpleAjaxUploader library" />
-				</structure>
 				<!-- config -->
 				<structure name="$config" scope="self">
 					<structure name="bean">
@@ -2721,14 +2711,20 @@ class Webform {
 		</io>
 	</fusedoc>
 	*/
-	public static function uploadFileToTemp($uploaderID, $fieldName, $originalName) {
-		// load library
-		$lib = self::$libPath['uploadFile'];
-		if ( !file_exists($lib) ) {
-			self::$error = "Could not load [SimpleAjaxUploader] library (path={$lib})";
-			return false;
-		}
-		require_once $lib;
+	public static function uploadFileToTemp($fieldName) {
+
+var_dump($fieldName);
+var_dump($_FILES);
+die();
+
+/*
+Webform::fileSizeInBytes($fieldConfig['filesize']);
+$fieldConfig['filetype'];
+$fieldConfig['filetypeError'];
+$fieldConfig['filesizeError'];
+*/
+
+
 		// validation
 		$err = array();
 		if ( !in_array(self::$config['fieldConfig'][$fieldName]['format'], ['file','image']) ) {
