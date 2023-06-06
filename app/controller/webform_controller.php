@@ -442,12 +442,15 @@ switch ( $fusebox->action ) :
 		if ( !empty($webform['closed']) ) die('Forbidden');
 		F::error('Argument [fieldName] is required', empty($arguments['fieldName']));
 		// proceed to upload
-		$uploadResult = Webform::uploadFileToTemp($arguments['fieldName']);
+		$uploadResult = Webform::uploadFileToTemp($arguments);
 		F::error(Webform::error(), $uploadResult === false);
 		F::error($uploadResult['message'], empty($uploadResult['success']));
 		// prepare essential variables
+		$isEditMode = true;
 		$fieldName = $arguments['fieldName'];
 		$fieldValue = $uploadResult['fileUrl'];
+		$fieldID = Webform::fieldName2fieldID($fieldName);
+		F::error(Webform::error(), $fieldID === false);
 		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
 		F::error(Webform::error(), $dataFieldName === false);
 		$fieldConfig = Webform::fieldConfig($fieldName);

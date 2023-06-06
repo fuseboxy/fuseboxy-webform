@@ -2692,47 +2692,68 @@ class Webform {
 					</structure>
 				</structure>
 				<!-- parameter -->
-				<string name="$uploaderID" comments="html elementID of button which applied simple-ajax-uploader" />
-				<string name="$fieldName" comments="webform field name" />
-				<string name="$originalName" comments="original filename" />
+				<structure name="$arguments">
+					<string name="fieldName" />
+				</structure>
+				<!-- tmp file uploaded -->
+				<structure name="file" scope="$_FILES">
+					<string name="name" example="my_doc.txt" />
+					<string name="type" example="application/msword" />
+					<string name="tmp_name" example="c:\tmp\php9394.tmp" />
+					<number name="error" example="0" />
+					<number name="size" example="65535" />
+				</structure>
 			</in>
 			<out>
+				<!-- file uploaded -->
+				<file path="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.~fileExt~" />
 				<!-- return value -->
 				<structure name="~return~">
 					<boolean name="success" />
-					<string name="msg" />
+					<string name="message" />
 					<string name="filename" optional="yes" oncondition="when success" />
 					<string name="baseUrl" optional="yes" oncondition="when success" />
 					<string name="fileUrl" optional="yes" oncondition="when success" />
 				</structure>
-				<!-- uploaded file -->
-				<file path="~uploadDir~/tmp/~sessionID~/~uniqueFilename~.~fileExt~" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function uploadFileToTemp($fieldName) {
-
-var_dump($fieldName);
-var_dump($_FILES);
-die();
-
-/*
-Webform::fileSizeInBytes($fieldConfig['filesize']);
-$fieldConfig['filetype'];
-$fieldConfig['filetypeError'];
-$fieldConfig['filesizeError'];
-*/
-
-
+	public static function uploadFileToTemp($arguments) {
+		$fieldName = $arguments['fieldName'] ?? '';
 		// validation
-		$err = array();
-		if ( !in_array(self::$config['fieldConfig'][$fieldName]['format'], ['file','image']) ) {
-			$err[] = "Field [{$fieldName}] must be [format=file|image]";
+		if ( empty($fieldName) ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Argument [fieldName] is required';
+			return false;
+		} elseif ( !isset(self::$config['fieldConfig'][$fieldName]) ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Field config for ['.$fieldName.'] is required';
+			return false;
+		} elseif ( !in_array(self::$config['fieldConfig'][$fieldName]['format'], ['file','image']) ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Field ['.$fieldName.'] must be [format=image|file]';
+			return false;
+		// validate temp file uploaded
+		} elseif ( empty($_FILES) ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] No file uploaded. The file might exceed the {post_max_size} of PHP settings';
+			return false;
+		} elseif ( empty($_FILES['file']['size']) ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Empty file size. The file might exceed the {upload_max_filesize} of PHP settings';
+			return false;
 		}
-		// check if any error
-		if ( !empty($err) ) {
-			self::$error = implode("\n", $err);
+		// retrieve corresponding field config
+		$fieldConfig = self::$config['fieldConfig'][$fieldName];
+		// validate file type (only allow image & doc by default)
+		$fileExt = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+		$allowed = array_map('strtolower', explode(',', $fieldConfig['filetype']));
+		if ( !in_array($fileExt, $allowed) ) {
+			self::$error = str_ireplace('{FILE_TYPE}', strtoupper(implode(', ', $allowed)), $fieldConfig['filetypeError']);
+			return false;
+		}
+		// validate file size
+		$fileSize = $_FILES['file']['size'];
+		$fileSizeLimit = self::fileSizeInBytes($fieldConfig['filesize']);
+		if ( $fileSizeLimit === false ) return false;
+		if ( $fileSize > $fileSizeLimit ) {
+			self::$error = str_ireplace('{FILE_SIZE}', $fieldConfig['filesize'], $fieldConfig['filesizeError']);
 			return false;
 		}
 		// determine target directory
@@ -2747,39 +2768,28 @@ $fieldConfig['filesizeError'];
 			self::$error = error_get_last()['message'];
 			return false;
 		}
-		// init object (specify [uploaderID] to know which DOM to update)
-		$uploader = new FileUpload($uploaderID);
-		// config : array of permitted file extensions (only allow image & doc by default)
-		// ===> validate file type again on server-side
-		$uploader->allowedExtensions = explode(',', self::$config['fieldConfig'][$fieldName]['filetype']);
-		// config : max file upload size in bytes
-		// ===> validate file size again on server-side
-		// ===> please make sure php {upload_max_filesize} config is larger
-		$uploader->sizeLimit = self::fileSizeInBytes(self::$config['fieldConfig'][$fieldName]['filesize']);
-		// config : assign unique name to avoid overwrite
+		// config : assign unique name to avoid overwrite any existing file
 		$uuid = Util::uuid();
 		if ( $uuid === false ) {
 			self::$error = Util::error();
 			return false;
 		}
-		$originalName = urldecode($originalName);
-		$uploader->newFileName = pathinfo($originalName, PATHINFO_FILENAME).'_'.$uuid.'.'.pathinfo($originalName, PATHINFO_EXTENSION);
-		// upload to specific directory
-		$uploader->uploadDir = $uploadDir;
-		$uploaded = $uploader->handleUpload();
-		// validate upload result
-		if ( !$uploaded ) {
-			self::$error = $uploader->getErrorMsg();
+		$originalName = urldecode($_FILES['file']['name']);
+		$uniqueFileName = pathinfo($originalName, PATHINFO_FILENAME).'_'.$uuid.'.'.pathinfo($originalName, PATHINFO_EXTENSION);
+		// move uploaded file to destination
+		$filePath = $uploadDir.$uniqueFileName;
+		$moved = move_uploaded_file($_FILES['file']['tmp_name'], $filePath);
+		if ( $moved === false ) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error moving uploaded file - '.( error_get_last()['message'] ?? '(unknown reason)' );
 			return false;
 		}
 		// success!
 		return array(
-			'success'    => true,
-			'msg'        => 'File uploaded successfully',
-			'baseUrl'    => $uploadBaseUrl,
-			'fileUrl'    => $uploadBaseUrl.$uploader->getFileName(),
-			'filename'   => $uploader->getFileName(),
-			'isWebImage' => $uploader->isWebImage($uploader->uploadDir.$uploader->getFileName()),
+			'success'  => true,
+			'message'  => 'File uploaded successfully',
+			'filename' => $uniqueFileName,
+			'baseUrl'  => $uploadBaseUrl,
+			'fileUrl'  => $uploadBaseUrl.$uniqueFileName,
 		);
 	}
 

@@ -17,10 +17,6 @@
 				<string name="placeholder" optional="yes" />
 				<boolean name="required" optional="yes" />
 				<boolean name="readonly" optional="yes" />
-				<number name="filesize" comments="server-side uses byte for validation; client-side uses KB for validation" />
-				<list name="filetype" delim="," />
-				<string name="filesizeError" comments="error message shown when file size failed" />
-				<string name="filetypeError" comments="error message shown when file type failed" />
 			</structure>
 			<structure name="$webform">
 				<structure name="customButton">
