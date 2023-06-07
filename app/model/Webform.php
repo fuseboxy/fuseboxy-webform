@@ -2017,7 +2017,7 @@ class Webform {
 		// ===> precedence: defined-value > submitted-value > default-value > empty
 		$fieldValue = $fieldConfig['value'] ?? self::nestedArrayGet($fieldName, $formData) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
-		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image','signature']) ) {
+		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image']) ) {
 			$xfa['ajaxUpload'] = F::command('controller').'.uploadFile&fieldName='.$fieldName;
 		}
 		// exit point : dynamic table
