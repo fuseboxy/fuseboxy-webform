@@ -7,7 +7,8 @@
 		<in>
 			<boolean name="$isEditMode" />
 			<structure name="$xfa">
-				<string name="ajaxUpload" />
+				<string name="ajaxUpload" optional="yes" />
+				<string name="removeFile" optional="yes" />
 			</structure>
 			<string name="$fieldID" />
 			<string name="$fieldName" />
@@ -63,32 +64,45 @@
 					style="bottom: 0;"
 					<?php if ( !empty($fieldConfig['required']) ) echo 'required' ?>
 					<?php include F::appPath('view/webform/input.data_toggle.php'); ?>
-					data-toggle="ajax-upload"
-					data-target="#<?php echo $fieldID; ?>"
-					data-form-action="<?php echo F::url($xfa['ajaxUpload']); ?>"
-					data-choose-button="#choose-<?php echo $fieldID; ?>"
-					data-remove-button="#remove-<?php echo $fieldID; ?>"
-					data-preview="#preview-<?php echo $fieldID; ?>"
+					<?php if ( isset($xfa['ajaxUpload']) ) : ?>
+						data-toggle="ajax-upload"
+						data-target="#<?php echo $fieldID; ?>"
+						data-form-action="<?php echo F::url($xfa['ajaxUpload']); ?>"
+						data-choose-button="#choose-<?php echo $fieldID; ?>"
+						data-preview="#preview-<?php echo $fieldID; ?>"
+					<?php endif; ?>
 				/><?php
 				// remove button
-				?><button 
-					type="button"
-					aria-label="Remove"
-					class="btn-remove close float-right"
-					<?php if ( empty($fieldValue) ) : ?>style="display: none;"<?php endif; ?>
-				>&times;</button><?php
+				if ( isset($xfa['removeFile']) ) :
+					?><a 
+						href="<?php echo F::url($xfa['removeFile']); ?>"
+						class="btn-remove close float-right"
+						aria-label="Remove"
+						data-toggle="ajax-load"
+						data-target="#<?php echo $fieldID; ?>"
+						data-transition="none"
+						data-callback="$('#<?php echo $fieldID; ?>-ajax-upload').remove();"
+					>&times;</a><?php
+				endif;
 				// upload button
-				?><button 
-					type="button" 
-					id="choose-<?php echo $fieldID; ?>" 
-					class="btn-choose btn btn-sm btn-primary mr-2"
-					data-button-text="<?php echo $webform['customButton']['chooseFile']['text']; ?>"
-					data-button-alt-text="<?php echo $webform['customButton']['chooseAnother']['text']; ?>"
-				><?php echo $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnother' ]['text']; ?></button><?php
+				if ( isset($xfa['ajaxUpload']) ) :
+					?><button 
+						type="button" 
+						id="choose-<?php echo $fieldID; ?>" 
+						class="btn-choose btn btn-sm btn-primary mr-2"
+						data-button-text="<?php echo $webform['customButton']['chooseFile']['text']; ?>"
+						data-button-alt-text="<?php echo $webform['customButton']['chooseAnother']['text']; ?>"
+					><?php echo $webform['customButton'][ empty($fieldValue) ? 'chooseFile' : 'chooseAnother' ]['text']; ?></button><?php
+				endif;
 			endif;
 			// preview link
 			if ( !empty($fieldValue) ) :
-				?><a href="<?php echo dirname($fieldValue).'/'.urlencode(basename($fieldValue)); ?>" class="preview-link small" target="_blank"><?php
+				?><a 
+					href="<?php echo dirname($fieldValue).'/'.urlencode(basename($fieldValue)); ?>"
+					id="preview-<?php echo $fieldID; ?>"
+					class="preview-link small"
+					target="_blank"
+				><?php
 					if ( in_array(strtolower(pathinfo($fieldValue, PATHINFO_EXTENSION)), ['gif','jpg','jpeg','png']) ) :
 						?><img src="<?php echo $fieldValue; ?>" class="img-thumbnail d-block mt-2" alt="" /><?php
 					else :

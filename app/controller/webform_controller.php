@@ -439,16 +439,21 @@ switch ( $fusebox->action ) :
 
 	// ajax file upload (for [format=file|image] field)
 	case 'uploadFile':
+	case 'removeFile':
 		if ( !empty($webform['closed']) ) die('Forbidden');
 		F::error('Argument [fieldName] is required', empty($arguments['fieldName']));
-		// proceed to upload
-		$uploadResult = Webform::uploadFileToTemp($arguments);
-		F::error(Webform::error(), $uploadResult === false);
-		F::error($uploadResult['message'], empty($uploadResult['success']));
+		// proceed to upload (when necessary)
+		if ( F::is('*.uploadFile') ) :
+			$uploadResult = Webform::uploadFileToTemp($arguments);
+			F::error(Webform::error(), $uploadResult === false);
+			F::error($uploadResult['message'], empty($uploadResult['success']));
+			$fieldValue = $uploadResult['fileUrl'];
+		else :
+			$fieldValue = '';
+		endif;
 		// prepare essential variables
 		$isEditMode = true;
 		$fieldName = $arguments['fieldName'];
-		$fieldValue = $uploadResult['fileUrl'];
 		$fieldID = Webform::fieldName2fieldID($fieldName);
 		F::error(Webform::error(), $fieldID === false);
 		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
@@ -456,7 +461,8 @@ switch ( $fusebox->action ) :
 		$fieldConfig = Webform::fieldConfig($fieldName);
 		F::error(Webform::error(), $fieldConfig === false);
 		// exit point
-		$xfa['ajaxUpload'] = F::command('command').'&fieldName='.$fieldName;
+		$xfa['ajaxUpload'] = F::command('controller').'.uploadFile&fieldName='.$fieldName;
+		if ( !empty($fieldValue) ) $xfa['removeFile'] = F::command('controller').'.removeFile&fieldName='.$fieldName;
 		// display field
 		include F::appPath('view/webform/input.'.( $fieldConfig['format'] ?? 'file' ).'.php');
 		break;

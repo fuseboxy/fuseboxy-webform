@@ -2019,6 +2019,7 @@ class Webform {
 		// exit point : ajax upload
 		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image']) ) {
 			$xfa['ajaxUpload'] = F::command('controller').'.uploadFile&fieldName='.$fieldName;
+			if ( !empty($fieldValue) ) $xfa['removeFile'] = F::command('controller').'.removeFile&fieldName='.$fieldName;
 		}
 		// exit point : dynamic table
 		if ( !F::is('*.view,*.confirm') and $fieldConfig['format'] == 'table' ) {
