@@ -447,24 +447,16 @@ switch ( $fusebox->action ) :
 			$uploadResult = Webform::uploadFileToTemp($arguments);
 			F::error(Webform::error(), $uploadResult === false);
 			F::error($uploadResult['message'], empty($uploadResult['success']));
-			$fieldValue = $uploadResult['fileUrl'];
-		else :
-			$fieldValue = '';
 		endif;
-		// prepare essential variables
-		$isEditMode = true;
-		$fieldName = $arguments['fieldName'];
-		$fieldID = Webform::fieldName2fieldID($fieldName);
-		F::error(Webform::error(), $fieldID === false);
-		$dataFieldName = Webform::fieldName2dataFieldName($fieldName);
-		F::error(Webform::error(), $dataFieldName === false);
-		$fieldConfig = Webform::fieldConfig($fieldName);
-		F::error(Webform::error(), $fieldConfig === false);
-		// exit point
-		$xfa['ajaxUpload'] = F::command('controller').'.uploadFile&fieldName='.$fieldName;
-		if ( !empty($fieldValue) ) $xfa['removeFile'] = F::command('controller').'.removeFile&fieldName='.$fieldName;
-		// display field
-		include F::appPath('view/webform/input.'.( $fieldConfig['format'] ?? 'file' ).'.php');
+		// prepare variables for render
+		$modeReady = Webform::mode('edit');
+		F::error(Webform::error(), $modeReady === false);
+		$dataReady = Webform::nestedArraySet($arguments['fieldName'], $formData, $uploadResult['fileUrl'] ?? '');
+		F::error(Webform::error(), $dataReady === false);
+		// render input field
+		$html = Webform::renderField($arguments['fieldName'], null, $formData);
+		$doc = Util::phpQuery($html);
+		echo $doc->find('.webform-input-file,.webform-input-image')->filter(':first');
 		break;
 
 
