@@ -20,3 +20,12 @@
 	</io>
 </fusedoc>
 */
+foreach ([
+	'data-toggle-attr'  => 'toggleAttr',
+	'data-toggle-value' => 'toggleValue',
+	'data-toggle-class' => 'toggleClass',
+] as $attrName => $toggleType ) :
+	if ( !empty($fieldConfig[$toggleType]) ) :
+		echo $attrName."='".json_encode($fieldConfig[$toggleType], JSON_HEX_APOS)."' ";
+	endif;
+endforeach;
