@@ -2018,8 +2018,8 @@ class Webform {
 		$fieldValue = $fieldConfig['value'] ?? self::nestedArrayGet($fieldName, $formData) ?? $fieldConfig['default'] ?? '';
 		// exit point : ajax upload
 		if ( !F::is('*.view,*.confirm') and in_array($fieldConfig['format'], ['file','image']) ) {
-			$xfa['ajaxUpload'] = F::command('controller').'.uploadFile&fieldName='.$fieldName;
-			if ( !empty($fieldValue) ) $xfa['removeFile'] = F::command('controller').'.removeFile&fieldName='.$fieldName;
+			$xfa['ajaxUpload'] = F::command('controller').'.uploadFile&fieldName='.$fieldName.self::$config['retainParam'];
+			if ( !empty($fieldValue) ) $xfa['removeFile'] = F::command('controller').'.removeFile&fieldName='.$fieldName.self::$config['retainParam'];;
 		}
 		// exit point : dynamic table
 		if ( !F::is('*.view,*.confirm') and $fieldConfig['format'] == 'table' ) {
